@@ -46,26 +46,82 @@ extern int yydebug;
   enum yytokentype
   {
     TK_INT = 258,
-    TK_FLOAT = 259,
-    TK_BOOL = 260,
+    TK_REAL = 259,
+    TK_BOOLEAN = 260,
     TK_CHAR = 261,
-    TK_MAIN = 262,
-    TK_ID = 263,
+    TK_ID = 262,
+    TK_MAIN = 263,
     TK_TIPO_INT = 264,
-    TK_FIM = 265,
-    TK_ERROR = 266
+    TK_TIPO_BOOLEAN = 265,
+    TK_TIPO_REAL = 266,
+    TK_TIPO_CHAR = 267,
+    TK_TIPO_ID = 268,
+    TK_RESTO = 269,
+    TK_MENOR = 270,
+    TK_MAIOR = 271,
+    TK_IGUAL = 272,
+    TK_DIFERENTE = 273,
+    TK_MENOR_IGUAL = 274,
+    TK_MAIOR_IGUAL = 275,
+    TK_AND = 276,
+    TK_OR = 277,
+    TK_NOT = 278,
+    TK_ATRIBUICAO = 279,
+    TK_CAST_INT = 280,
+    TK_CAST_FLOAT = 281,
+    TK_IF = 282,
+    TK_WHILE = 283,
+    TK_FOR = 284,
+    TK_ELSE = 285,
+    TK_ELSE_IF = 286,
+    TK_DO = 287,
+    TK_FIM_IF = 288,
+    TK_FIM_FOR = 289,
+    TK_FIM_WHILE = 290,
+    TK_FIM_ELSE_IF = 291,
+    TK_FIM_ELSE = 292,
+    TK_FIM = 293,
+    TK_ERROR = 294
   };
 #endif
 /* Tokens.  */
 #define TK_INT 258
-#define TK_FLOAT 259
-#define TK_BOOL 260
+#define TK_REAL 259
+#define TK_BOOLEAN 260
 #define TK_CHAR 261
-#define TK_MAIN 262
-#define TK_ID 263
+#define TK_ID 262
+#define TK_MAIN 263
 #define TK_TIPO_INT 264
-#define TK_FIM 265
-#define TK_ERROR 266
+#define TK_TIPO_BOOLEAN 265
+#define TK_TIPO_REAL 266
+#define TK_TIPO_CHAR 267
+#define TK_TIPO_ID 268
+#define TK_RESTO 269
+#define TK_MENOR 270
+#define TK_MAIOR 271
+#define TK_IGUAL 272
+#define TK_DIFERENTE 273
+#define TK_MENOR_IGUAL 274
+#define TK_MAIOR_IGUAL 275
+#define TK_AND 276
+#define TK_OR 277
+#define TK_NOT 278
+#define TK_ATRIBUICAO 279
+#define TK_CAST_INT 280
+#define TK_CAST_FLOAT 281
+#define TK_IF 282
+#define TK_WHILE 283
+#define TK_FOR 284
+#define TK_ELSE 285
+#define TK_ELSE_IF 286
+#define TK_DO 287
+#define TK_FIM_IF 288
+#define TK_FIM_FOR 289
+#define TK_FIM_WHILE 290
+#define TK_FIM_ELSE_IF 291
+#define TK_FIM_ELSE 292
+#define TK_FIM 293
+#define TK_ERROR 294
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

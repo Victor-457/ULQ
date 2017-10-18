@@ -1,0 +1,2 @@
+o compilador fara da seguinte forma:
+	o operador % que calcula o resto, ao invés de limitar o usuário a pegar restos de apenas int, ele converterá os valores de float para int e então calculará o resto dessa forma. Dados serão perdidos, mas o usuário não será punido diretamente ao tentar pegar o resto de uma divisão que contém float.
