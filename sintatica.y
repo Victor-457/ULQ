@@ -34,6 +34,7 @@ typedef map<string,cast> mapaCast;
 typedef map<string,variavel> mapaVar;
 
 int linha = 1;
+string erro;
 static int numero = -1;
 static mapaCast mapCast;
 static mapaVar mapVar;
@@ -49,6 +50,7 @@ void addVarMap(string,string,string);
 string retornaNome(string nome);
 string retornaTipo(string nome);
 void mudaTipo(string,string);
+int verificaDeclaracao(string);
 
 
 %}
@@ -59,7 +61,7 @@ void mudaTipo(string,string);
 
 %token TK_RESTO TK_MENOR TK_MAIOR TK_IGUAL TK_DIFERENTE TK_MENOR_IGUAL TK_MAIOR_IGUAL TK_AND TK_OR TK_NOT
 
-%token TK_ATRIBUICAO TK_CAST_INT TK_CAST_FLOAT
+%token TK_ATRIBUICAO TK_CAST_INT TK_CAST_FLOAT TK_CIN TK_COUT 
 
 %token TK_IF TK_WHILE TK_FOR TK_ELSE TK_ELSE_IF TK_DO TK_FIM_IF TK_FIM_FOR TK_FIM_WHILE TK_FIM_ELSE_IF TK_FIM_ELSE
 
@@ -111,6 +113,8 @@ E 			: '('E')'
 			| OP_REL
 			| CAST
 			| TERM
+			| CIN
+			| COUT
 			;
 DECLARA		: TIPO_BOOL
 			| TIPO_CHAR
@@ -252,7 +256,7 @@ OP_ARIT		: ADD
 ADD			: E '+' E
 			{
 				if(verificaCast($1.tipo,"+",$3.tipo)==-1){
-					string erro = "Erro de Semântica na Linha :  " + to_string(linha);
+					erro = "Erro de Semântica na Linha :  " + to_string(linha);
 					yyerror(erro);
 				}
 
@@ -284,21 +288,22 @@ ADD			: E '+' E
 
 			| TK_ID '+' E
 			{
-				string tempTipo = retornaTipo($1.label);
-				string tempLabel = retornaNome($1.label);
-				$$.label = geraLabel();
+				if(verificaDeclaracao($1.label)==1){
+					string tempTipo = retornaTipo($1.label);
+					string tempLabel = retornaNome($1.label);
+					$$.label = geraLabel();
 
-				if ( verificaCast(tempTipo,"+",$3.tipo) == -1 ){
-					string erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);
-				}
+					if ( verificaCast(tempTipo,"+",$3.tipo) == -1 ){
+						erro = "Erro de Semântica na Linha : " + to_string(linha);
+						yyerror(erro);
+					}
 
-				if ( verificaCast(tempTipo,"+",$3.tipo) == 0 ){
-					$$.tipo = tempTipo;
-					$$.traducao = $1.traducao + $3.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + tempLabel + " + " + $3.label +" ;\n\n";
-				}
-				if ( verificaCast(tempTipo,"+",$3.tipo) == 1 ){
+					if ( verificaCast(tempTipo,"+",$3.tipo) == 0 ){
+						$$.tipo = tempTipo;
+						$$.traducao = $1.traducao + $3.traducao + "\t" +
+						$$.tipo + " " + $$.label + " = " + tempLabel + " + " + $3.label +" ;\n\n";
+					}
+					if ( verificaCast(tempTipo,"+",$3.tipo) == 1 ){
 					$$.tipo = tempTipo = $3.tipo;
 					mudaTipo($1.label,$3.tipo);
 					string tempLabel0 = geraLabel();
@@ -306,25 +311,32 @@ ADD			: E '+' E
 					$$.traducao = $1.traducao + $3.traducao + "\t" +
 					$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
 					$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + " + " + $3.label +" ;\n\n";
-				}
-				if ( verificaCast(tempTipo,"+",$3.tipo) == 2 ){
-					$$.tipo = $3.tipo = tempTipo;
-					string tempLabel0 = geraLabel();
+					}
+					if ( verificaCast(tempTipo,"+",$3.tipo) == 2 ){
+						$$.tipo = $3.tipo = tempTipo;
+						string tempLabel0 = geraLabel();
 
-					$$.traducao = $1.traducao + $3.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + " " + "(" + $3.tipo + ")"+ $3.label + " ;\n\n" + "\t" +
-					$$.tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " + " + $$.label +" ;\n\n";
+						$$.traducao = $1.traducao + $3.traducao + "\t" +
+						$$.tipo + " " + $$.label + " = " + " " + "(" + $3.tipo + ")"+ $3.label + " ;\n\n" + "\t" +
+						$$.tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " + " + $$.label +" ;\n\n";
+					}
+				}
+				if(verificaDeclaracao($1.label)==0 )
+				{
+					erro = "Erro de Semântica na Linha : " + to_string(linha);
+					yyerror(erro);
 				}
 			}
 
 			| E '+' TK_ID
 			{
+				if(verificaDeclaracao($3.label)==1 ){
 				string tempTipo = retornaTipo($3.label);
 				string tempLabel = retornaNome($3.label);
 				$$.label = geraLabel();
 
 				if ( verificaCast($1.tipo,"+",tempTipo) == -1 ){
-					string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);
 				}
 
@@ -340,65 +352,78 @@ ADD			: E '+' E
 					$$.traducao = $3.traducao + $1.traducao + "\t" +
 					$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ $3.label + " ;\n\n" + "\t" +
 					$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + " + " + tempLabel +" ;\n\n";
-				}
-				if ( verificaCast($1.tipo,"+",tempTipo) == 2 ){
-					$$.tipo = tempTipo = $1.tipo;
-					mudaTipo($3.label,$1.tipo);
-					string tempLabel0 = geraLabel();
+					}
+					if ( verificaCast($1.tipo,"+",tempTipo) == 2 ){
+						$$.tipo = tempTipo = $1.tipo;
+						mudaTipo($3.label,$1.tipo);
+						string tempLabel0 = geraLabel();
 
-					$$.traducao = $1.traducao + $3.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + " " + "(" + $1.tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-					$$.tipo + " " + tempLabel0 + " = " + " "+ $1.label + " + " + $$.label +" ;\n\n";
+						$$.traducao = $1.traducao + $3.traducao + "\t" +
+						$$.tipo + " " + $$.label + " = " + " " + "(" + $1.tipo + ")" + tempLabel + " ;\n\n" + "\t" +
+						$$.tipo + " " + tempLabel0 + " = " + " "+ $1.label + " + " + $$.label +" ;\n\n";
+					}
+				}
+				if(verificaDeclaracao($3.label)==0)
+				{
+					erro = "Erro de Semântica na Linha : " + to_string(linha);
+					yyerror(erro);
 				}
 			}
 
 			| TK_ID '+' TK_ID
 
-			{
-				string tempLabel  = retornaNome($1.label);
-				string tempLabel2 = retornaNome($3.label);
-				string tempTipo   = retornaTipo($1.label);
-				string tempTipo2  = retornaTipo($3.label);
-				$$.label = geraLabel();
+			{	
+				
+				if(verificaDeclaracao($1.label)==1 && verificaDeclaracao($3.label)==1 ){
+					string tempLabel  = retornaNome($1.label);
+					string tempLabel2 = retornaNome($3.label);
+					string tempTipo   = retornaTipo($1.label);
+					string tempTipo2  = retornaTipo($3.label);
+					$$.label = geraLabel();
 
-				if ( verificaCast(tempTipo,"+",tempTipo2) == -1 ){
-					string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					if ( verificaCast(tempTipo,"+",tempTipo2) == -1 ){
+						erro = "Erro de Semântica na Linha : " + to_string(linha);
+						yyerror(erro);
+					}
+
+					if ( verificaCast(tempTipo,"+",tempTipo2) == 0 ){
+						$$.tipo = tempTipo;
+						$$.traducao = $3.traducao + $1.traducao + "\t" +
+						$$.tipo + " " + $$.label + " = " + tempLabel + " + " + tempLabel2 +" ;\n\n";
+					}
+
+					if ( verificaCast(tempTipo,"+",tempTipo2) == 1 ){
+						$$.tipo = tempTipo = tempTipo2;
+						mudaTipo(tempLabel,tempTipo2);
+						string tempLabel0 = geraLabel();
+
+						$$.traducao = $1.traducao + $3.traducao + "\t" +
+						$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
+						$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + " + " + tempLabel2 +" ;\n\n";
+					}
+
+					if ( verificaCast(tempTipo,"+",tempTipo2) == 2 ){
+						$$.tipo = tempTipo2 = tempTipo;
+						mudaTipo(tempLabel2,tempTipo);
+						string tempLabel0 = geraLabel();
+
+						$$.traducao = $1.traducao + $3.traducao + "\t" +
+						$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
+						$$.tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " + " + $$.label +" ;\n\n";
+					}
+				}
+				if(verificaDeclaracao($1.label)==0 || verificaDeclaracao($3.label)==0)
+				{
+					erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);
-				}
-
-				if ( verificaCast(tempTipo,"+",tempTipo2) == 0 ){
-					$$.tipo = tempTipo;
-					$$.traducao = $3.traducao + $1.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + tempLabel + " + " + tempLabel2 +" ;\n\n";
-				}
-
-				if ( verificaCast(tempTipo,"+",tempTipo2) == 1 ){
-					$$.tipo = tempTipo = tempTipo2;
-					mudaTipo(tempLabel,tempTipo2);
-					string tempLabel0 = geraLabel();
-
-					$$.traducao = $1.traducao + $3.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-					$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + " + " + tempLabel2 +" ;\n\n";
-				}
-
-				if ( verificaCast(tempTipo,"+",tempTipo2) == 2 ){
-					$$.tipo = tempTipo2 = tempTipo;
-					mudaTipo(tempLabel2,tempTipo);
-					string tempLabel0 = geraLabel();
-
-					$$.traducao = $1.traducao + $3.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-					$$.tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " + " + $$.label +" ;\n\n";
-				}
-
+				}			
 			}
 			;
 
 SUB			: E '-' E
 			{
 				if(verificaCast($1.tipo,"-",$3.tipo)==-1){
-					string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);
 					}
 
@@ -430,104 +455,123 @@ SUB			: E '-' E
 
 			| TK_ID '-' E
 			{
-				string tempTipo = retornaTipo($1.label);
-				string tempLabel = retornaNome($1.label);
-				$$.label = geraLabel();
+				if(verificaDeclaracao($1.label)==1)
+				{
+					string tempTipo = retornaTipo($1.label);
+					string tempLabel = retornaNome($1.label);
+					$$.label = geraLabel();
 
-				if ( verificaCast(tempTipo,"-",$3.tipo) == -1 ){
-					string erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);
+					if ( verificaCast(tempTipo,"-",$3.tipo) == -1 ){
+						erro = "Erro de Semântica na Linha : " + to_string(linha);
+						yyerror(erro);
+						}
+
+					if ( verificaCast(tempTipo,"-",$3.tipo) == 0 ){
+						$$.tipo = tempTipo;
+						$$.traducao = $1.traducao + $3.traducao + "\t" +
+						$$.tipo + " " + $$.label + " = " + tempLabel + " - " + $3.label +" ;\n\n";
 					}
+					if ( verificaCast(tempTipo,"-",$3.tipo) == 1 ){
+						$$.tipo = tempTipo = $3.tipo;
+						mudaTipo($1.label,$3.tipo);
+						string tempLabel0 = geraLabel();
 
-				if ( verificaCast(tempTipo,"-",$3.tipo) == 0 ){
-					$$.tipo = tempTipo;
-					$$.traducao = $1.traducao + $3.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + tempLabel + " - " + $3.label +" ;\n\n";
+						$$.traducao = $1.traducao + $3.traducao + "\t" +
+						$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
+						$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + " - " + $3.label +" ;\n\n";
+					}
+					if ( verificaCast(tempTipo,"-",$3.tipo) == 2 ){
+						$$.tipo = $3.tipo = tempTipo;
+						string tempLabel0 = geraLabel();
+
+						$$.traducao = $1.traducao + $3.traducao + "\t" +
+						$$.tipo + " " + $$.label + " = " + " " + "(" + $3.tipo + ")"+ $3.label + " ;\n\n" + "\t" +
+						$$.tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " - " + $$.label +" ;\n\n";
+					}
 				}
-				if ( verificaCast(tempTipo,"-",$3.tipo) == 1 ){
-					$$.tipo = tempTipo = $3.tipo;
-					mudaTipo($1.label,$3.tipo);
-					string tempLabel0 = geraLabel();
-
-					$$.traducao = $1.traducao + $3.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-					$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + " - " + $3.label +" ;\n\n";
-				}
-				if ( verificaCast(tempTipo,"-",$3.tipo) == 2 ){
-					$$.tipo = $3.tipo = tempTipo;
-					string tempLabel0 = geraLabel();
-
-					$$.traducao = $1.traducao + $3.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + " " + "(" + $3.tipo + ")"+ $3.label + " ;\n\n" + "\t" +
-					$$.tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " - " + $$.label +" ;\n\n";
+				if(verificaDeclaracao($1.label)==0 )
+				{
+					erro = "Erro de Semântica na Linha : " + to_string(linha);
+					yyerror(erro);
 				}
 			}
-
 			| E '-' TK_ID
 			{
-				string tempTipo = retornaTipo($3.label);
-				string tempLabel = retornaNome($3.label);
-				$$.label = geraLabel();
+				if(verificaDeclaracao($3.label) == 1)
+				{
+					string tempTipo = retornaTipo($3.label);
+					string tempLabel = retornaNome($3.label);
+					$$.label = geraLabel();
 
-				if ( verificaCast($1.tipo,"-",tempTipo) == -1 ){
-					string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					if ( verificaCast($1.tipo,"-",tempTipo) == -1 ){
+						erro = "Erro de Semântica na Linha : " + to_string(linha);
+						yyerror(erro);
+					}
+
+					if ( verificaCast($1.tipo,"-",tempTipo) == 0 ){
+						$$.tipo = tempTipo;
+						$$.traducao = $3.traducao + $1.traducao + "\t" +
+						$$.tipo + " " + $$.label + " = " + tempLabel + " - " + $1.label +" ;\n\n";
+					}
+					if ( verificaCast($1.tipo,"-",tempTipo) == 1 ){
+						$$.tipo = $3.tipo = tempTipo;
+						string tempLabel0 = geraLabel();
+
+						$$.traducao = $3.traducao + $1.traducao + "\t" +
+						$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ $3.label + " ;\n\n" + "\t" +
+						$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + " - " + tempLabel +" ;\n\n";
+					}
+					if ( verificaCast($1.tipo,"-",tempTipo) == 2 ){
+						$$.tipo = tempTipo = $1.tipo;
+						mudaTipo($3.label,$1.tipo);
+						string tempLabel0 = geraLabel();
+
+						$$.traducao = $1.traducao + $3.traducao + "\t" +
+						$$.tipo + " " + $$.label + " = " + " " + "(" + $1.tipo + ")" + tempLabel + " ;\n\n" + "\t" +
+						$$.tipo + " " + tempLabel0 + " = " + " "+ $1.label + " - " + $$.label +" ;\n\n";
+					}
+				}
+				if(verificaDeclaracao($3.label) == 0)
+				{
+					erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);
-				}
-
-				if ( verificaCast($1.tipo,"-",tempTipo) == 0 ){
-					$$.tipo = tempTipo;
-					$$.traducao = $3.traducao + $1.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + tempLabel + " - " + $1.label +" ;\n\n";
-				}
-				if ( verificaCast($1.tipo,"-",tempTipo) == 1 ){
-					$$.tipo = $3.tipo = tempTipo;
-					string tempLabel0 = geraLabel();
-
-					$$.traducao = $3.traducao + $1.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ $3.label + " ;\n\n" + "\t" +
-					$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + " - " + tempLabel +" ;\n\n";
-				}
-				if ( verificaCast($1.tipo,"-",tempTipo) == 2 ){
-					$$.tipo = tempTipo = $1.tipo;
-					mudaTipo($3.label,$1.tipo);
-					string tempLabel0 = geraLabel();
-
-					$$.traducao = $1.traducao + $3.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + " " + "(" + $1.tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-					$$.tipo + " " + tempLabel0 + " = " + " "+ $1.label + " - " + $$.label +" ;\n\n";
 				}
 			}
 
 			| TK_ID '-' TK_ID
 
 			{
-				string tempLabel  = retornaNome($1.label);
-				string tempLabel2 = retornaNome($3.label);
-				string tempTipo   = retornaTipo($1.label);
-				string tempTipo2  = retornaTipo($3.label);
-				$$.label = geraLabel();
+				if(verificaDeclaracao($1.label) == 1 && verificaDeclaracao($3.label) == 1)
+				{
+					string tempLabel  = retornaNome($1.label);
+					string tempLabel2 = retornaNome($3.label);
+					string tempTipo   = retornaTipo($1.label);
+					string tempTipo2  = retornaTipo($3.label);
+					$$.label = geraLabel();
 
-				if ( verificaCast(tempTipo,"-",tempTipo2) == -1 )
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
+					if ( verificaCast(tempTipo,"-",tempTipo2) == -1 )
+					{
+						erro = "Erro de Semântica na Linha : " + to_string(linha);
+						yyerror(erro);
+					}
+					
+					if ( verificaCast(tempTipo,"-",tempTipo2) == 0 ){
+						$$.tipo = tempTipo;
+						$$.traducao = $3.traducao + $1.traducao + "\t" +
+						$$.tipo + " " + $$.label + " = " + tempLabel + " - " + tempLabel2 +" ;\n\n";
+					}
+					
+					if ( verificaCast(tempTipo,"-",tempTipo2) == 1 ){
+						$$.tipo = tempTipo = tempTipo2;
+						mudaTipo(tempLabel,tempTipo2);
+						string tempLabel0 = geraLabel();
 
-				if ( verificaCast(tempTipo,"-",tempTipo2) == 0 ){
-					$$.tipo = tempTipo;
-					$$.traducao = $3.traducao + $1.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + tempLabel + " - " + tempLabel2 +" ;\n\n";
-				}
+						$$.traducao = $1.traducao + $3.traducao + "\t" +
+						$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
+						$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + " - " + tempLabel2 +" ;\n\n";
+					}
 
-				if ( verificaCast(tempTipo,"-",tempTipo2) == 1 ){
-					$$.tipo = tempTipo = tempTipo2;
-					mudaTipo(tempLabel,tempTipo2);
-					string tempLabel0 = geraLabel();
-
-					$$.traducao = $1.traducao + $3.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-					$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + " - " + tempLabel2 +" ;\n\n";
-				}
-
-				if ( verificaCast(tempTipo,"-",tempTipo2) == 2 ){
+					if ( verificaCast(tempTipo,"-",tempTipo2) == 2 ){
 					$$.tipo = tempTipo2 = tempTipo;
 					mudaTipo(tempLabel2,tempTipo);
 					string tempLabel0 = geraLabel();
@@ -535,6 +579,12 @@ SUB			: E '-' E
 					$$.traducao = $1.traducao + $3.traducao + "\t" +
 					$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
 					$$.tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " - " + $$.label +" ;\n\n";
+					}
+				}
+				if(verificaDeclaracao($1.label)==0 && verificaDeclaracao($3.label)==0)
+				{
+					erro = "Erro de Semântica na Linha : " + to_string(linha);
+					yyerror(erro);
 				}
 
 			}
@@ -543,7 +593,7 @@ SUB			: E '-' E
 MULT		: E '*' E
 			{
 				if(verificaCast($1.tipo,"*",$3.tipo)==-1)
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if(verificaCast($1.tipo,"*",$3.tipo)== 0 ){
@@ -579,7 +629,7 @@ MULT		: E '*' E
 				$$.label = geraLabel();
 
 				if ( verificaCast(tempTipo,"*",$3.tipo) == -1 )
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if ( verificaCast(tempTipo,"*",$3.tipo) == 0 ){
@@ -613,7 +663,7 @@ MULT		: E '*' E
 				$$.label = geraLabel();
 
 				if ( verificaCast($1.tipo,"*",tempTipo) == -1 )
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if ( verificaCast($1.tipo,"*",tempTipo) == 0 ){
@@ -650,7 +700,7 @@ MULT		: E '*' E
 				$$.label = geraLabel();
 
 				if ( verificaCast(tempTipo,"*",tempTipo2) == -1 )
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if ( verificaCast(tempTipo,"*",tempTipo2) == 0 ){
@@ -685,7 +735,7 @@ MULT		: E '*' E
 DIV			: E '/' E
 			{
 				if(verificaCast($1.tipo,"/",$3.tipo)==-1)
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if(verificaCast($1.tipo,"/",$3.tipo)== 0 ){
@@ -721,7 +771,7 @@ DIV			: E '/' E
 				$$.label = geraLabel();
 
 				if ( verificaCast(tempTipo,"/",$3.tipo) == -1 )
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if ( verificaCast(tempTipo,"/",$3.tipo) == 0 ){
@@ -755,7 +805,7 @@ DIV			: E '/' E
 				$$.label = geraLabel();
 
 				if ( verificaCast($1.tipo,"/",tempTipo) == -1 )
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if ( verificaCast($1.tipo,"/",tempTipo) == 0 ){
@@ -792,7 +842,7 @@ DIV			: E '/' E
 				$$.label = geraLabel();
 
 				if ( verificaCast(tempTipo,"/",tempTipo2) == -1 )
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if ( verificaCast(tempTipo,"+",tempTipo2) == 0 ){
@@ -827,7 +877,7 @@ DIV			: E '/' E
 RESTO		: E TK_RESTO E
 			{
 				if(verificaCast($1.tipo,"%",$3.tipo)==-1)
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if(verificaCast($1.tipo,"%",$3.tipo)== 0 ){
@@ -863,7 +913,7 @@ RESTO		: E TK_RESTO E
 				$$.label = geraLabel();
 
 				if ( verificaCast(tempTipo,"%",$3.tipo) == -1 )
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if ( verificaCast(tempTipo,"%",$3.tipo) == 0 ){
@@ -897,7 +947,7 @@ RESTO		: E TK_RESTO E
 				$$.label = geraLabel();
 
 				if ( verificaCast($1.tipo,"%",tempTipo) == -1 )
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if ( verificaCast($1.tipo,"%",tempTipo) == 0 ){
@@ -934,7 +984,7 @@ RESTO		: E TK_RESTO E
 				$$.label = geraLabel();
 
 				if ( verificaCast(tempTipo,"%",tempTipo2) == -1 )
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if ( verificaCast(tempTipo,"%",tempTipo2) == 0 ){
@@ -985,7 +1035,7 @@ AND 		: E TK_AND E
 			{
 
 				if(verificaCast($1.tipo,"and",$3.tipo)==-1)
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if(verificaCast($1.tipo,"and",$3.tipo)== 0 ){
@@ -1000,7 +1050,7 @@ AND 		: E TK_AND E
 				string tempLabel = retornaNome($1.label);
 
 				if(verificaCast(tempTipo,"and",$3.tipo)==-1)
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if(verificaCast(tempTipo,"and",$3.tipo)== 0 ){
@@ -1015,7 +1065,7 @@ AND 		: E TK_AND E
 				string tempLabel = retornaNome($3.label);
 
 				if(verificaCast($1.tipo,"and",tempTipo)==-1)
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if(verificaCast($1.tipo,"and",tempTipo)== 0 ){
@@ -1032,7 +1082,7 @@ AND 		: E TK_AND E
 				string tempLabel = retornaNome($3.label);
 
 				if(verificaCast(tempTipo1,"and",tempTipo)==-1)
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if(verificaCast(tempTipo1,"and",tempTipo)== 0 ){
@@ -1048,7 +1098,7 @@ OR			: E TK_OR E
 			{
 
 				if(verificaCast($1.tipo,"or",$3.tipo)==-1)
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if(verificaCast($1.tipo,"or",$3.tipo)== 0 ){
@@ -1063,7 +1113,7 @@ OR			: E TK_OR E
 				string tempLabel = retornaNome($1.label);
 
 				if(verificaCast(tempTipo,"or",$3.tipo)==-1)
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if(verificaCast(tempTipo,"or",$3.tipo)== 0 ){
@@ -1078,7 +1128,7 @@ OR			: E TK_OR E
 				string tempLabel = retornaNome($3.label);
 
 				if(verificaCast($1.tipo,"or",tempTipo)==-1)
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if(verificaCast($1.tipo,"or",tempTipo)== 0 ){
@@ -1095,7 +1145,7 @@ OR			: E TK_OR E
 				string tempLabel = retornaNome($3.label);
 
 				if(verificaCast(tempTipo1,"or",tempTipo)==-1)
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 				if(verificaCast(tempTipo1,"or",tempTipo)== 0 ){
@@ -1133,7 +1183,6 @@ TERM		: TK_INT
 
 			| TK_ID
 		    {
-		    
 		    }
 
 			| TK_CHAR
@@ -1171,7 +1220,7 @@ MENOR 		: E TK_MENOR E
 					
 					
 					if ( verificaCast(tempTipo,"<",tempTipo2) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if ( verificaCast(tempTipo,"<",tempTipo2) == 0 ){
@@ -1213,7 +1262,7 @@ MENOR 		: E TK_MENOR E
 					
 
 					if ( verificaCast(tempTipo,"<",$3.tipo) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if ( verificaCast(tempTipo,"<",$3.tipo) == 0 ){
@@ -1252,7 +1301,7 @@ MENOR 		: E TK_MENOR E
 					
 		
 					if ( verificaCast($1.tipo,"<",tempTipo) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 		
 					if ( verificaCast($1.tipo,"<",tempTipo) == 0 ){
@@ -1287,7 +1336,7 @@ MENOR 		: E TK_MENOR E
 
 				else
 					if(verificaCast($1.tipo,"<",$3.tipo)==-1)
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if(verificaCast($1.tipo,"<",$3.tipo)== 0 ){	
@@ -1334,7 +1383,7 @@ MAIOR 		: E TK_MAIOR E
 					
 					
 					if ( verificaCast(tempTipo,">",tempTipo2) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if ( verificaCast(tempTipo,">",tempTipo2) == 0 ){
@@ -1376,7 +1425,7 @@ MAIOR 		: E TK_MAIOR E
 					
 
 					if ( verificaCast(tempTipo,">",$3.tipo) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if ( verificaCast(tempTipo,">",$3.tipo) == 0 ){
@@ -1415,7 +1464,7 @@ MAIOR 		: E TK_MAIOR E
 					
 		
 					if ( verificaCast($1.tipo,">",tempTipo) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 		
 					if ( verificaCast($1.tipo,">",tempTipo) == 0 ){
@@ -1449,7 +1498,7 @@ MAIOR 		: E TK_MAIOR E
 		
 				else
 					if(verificaCast($1.tipo,">",$3.tipo)==-1)
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if(verificaCast($1.tipo,"<",$3.tipo)== 0 ){	
@@ -1496,7 +1545,7 @@ IGUAL 		: E TK_IGUAL E
 					
 					
 					if ( verificaCast(tempTipo,"==",tempTipo2) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if ( verificaCast(tempTipo,"==",tempTipo2) == 0 ){
@@ -1537,7 +1586,7 @@ IGUAL 		: E TK_IGUAL E
 					
 
 					if ( verificaCast(tempTipo,"==",$3.tipo) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if ( verificaCast(tempTipo,"==",$3.tipo) == 0 ){
@@ -1576,7 +1625,7 @@ IGUAL 		: E TK_IGUAL E
 					
 		
 					if ( verificaCast($1.tipo,"==",tempTipo) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 		
 					if ( verificaCast($1.tipo,"==",tempTipo) == 0 ){
@@ -1610,7 +1659,7 @@ IGUAL 		: E TK_IGUAL E
 		
 				else
 					if(verificaCast($1.tipo,"==",$3.tipo)==-1)
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if(verificaCast($1.tipo,"==",$3.tipo)== 0 ){	
@@ -1656,7 +1705,7 @@ DIFERENTE	: E TK_DIFERENTE E
 					
 					
 					if ( verificaCast(tempTipo,"!=",tempTipo2) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if ( verificaCast(tempTipo,"!=",tempTipo2) == 0 ){
@@ -1698,7 +1747,7 @@ DIFERENTE	: E TK_DIFERENTE E
 					
 
 					if ( verificaCast(tempTipo,"!=",$3.tipo) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if ( verificaCast(tempTipo,"!=",$3.tipo) == 0 ){
@@ -1737,7 +1786,7 @@ DIFERENTE	: E TK_DIFERENTE E
 					
 		
 					if ( verificaCast($1.tipo,"!=",tempTipo) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 		
 					if ( verificaCast($1.tipo,"!=",tempTipo) == 0 ){
@@ -1771,7 +1820,7 @@ DIFERENTE	: E TK_DIFERENTE E
 		
 				else
 					if(verificaCast($1.tipo,"!=",$3.tipo)==-1)
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if(verificaCast($1.tipo,"!=",$3.tipo)== 0 ){	
@@ -1816,7 +1865,7 @@ MENOR_IGUAL : E TK_MENOR_IGUAL E
 					
 					
 					if ( verificaCast(tempTipo,"<=",tempTipo2) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if ( verificaCast(tempTipo,"<=",tempTipo2) == 0 ){
@@ -1858,7 +1907,7 @@ MENOR_IGUAL : E TK_MENOR_IGUAL E
 					
 
 					if ( verificaCast(tempTipo,"<=",$3.tipo) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if ( verificaCast(tempTipo,"<=",$3.tipo) == 0 ){
@@ -1897,7 +1946,7 @@ MENOR_IGUAL : E TK_MENOR_IGUAL E
 					
 		
 					if ( verificaCast($1.tipo,"<=",tempTipo) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 		
 					if ( verificaCast($1.tipo,"<=",tempTipo) == 0 ){
@@ -1931,7 +1980,7 @@ MENOR_IGUAL : E TK_MENOR_IGUAL E
 
 				else
 					if(verificaCast($1.tipo,"<=",$3.tipo)==-1)
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if(verificaCast($1.tipo,"<",$3.tipo)== 0 ){	
@@ -1977,7 +2026,7 @@ MAIOR_IGUAL	: E TK_MAIOR_IGUAL E
 					
 					
 					if ( verificaCast(tempTipo,">=",tempTipo2) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if ( verificaCast(tempTipo,">=",tempTipo2) == 0 ){
@@ -2019,7 +2068,7 @@ MAIOR_IGUAL	: E TK_MAIOR_IGUAL E
 					
 
 					if ( verificaCast(tempTipo,">=",$3.tipo) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if ( verificaCast(tempTipo,">=",$3.tipo) == 0 ){
@@ -2058,7 +2107,7 @@ MAIOR_IGUAL	: E TK_MAIOR_IGUAL E
 					
 		
 					if ( verificaCast($1.tipo,">=",tempTipo) == -1 )
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 		
 					if ( verificaCast($1.tipo,">=",tempTipo) == 0 ){
@@ -2092,7 +2141,7 @@ MAIOR_IGUAL	: E TK_MAIOR_IGUAL E
 
 				else
 					if(verificaCast($1.tipo,">=",$3.tipo)==-1)
-						{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+						{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
 					if(verificaCast($1.tipo,"<=",$3.tipo)== 0 ){	
@@ -2168,7 +2217,7 @@ CAST 		: TK_CAST_INT TK_REAL
 
 				}
 				else{
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 				}
 
@@ -2209,8 +2258,35 @@ CAST 		: TK_CAST_INT TK_REAL
 
 				}
 				else{
-					{string erro = "Erro de Semântica na Linha : " + to_string(linha);
+					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
+				}
+			}
+			;
+
+CIN 		: TK_CIN '(' TK_ID ')'
+			{
+				if(verificaDeclaracao($3.label)==1){
+					string tempLabel = retornaNome($3.label);
+					$$.traducao = $1.traducao + $3.traducao + "\t"
+					+ "cin >> " + tempLabel + ";\n\n";
+				}
+				if(verificaDeclaracao($3.label)==0){
+					erro = "Erro de Semântica na Linha : " + to_string(linha);
+					yyerror(erro);}
+			}
+			;
+
+COUT 		: TK_COUT '(' TK_ID ')'
+			{
+				if(verificaDeclaracao($3.label)==1){
+					string tempLabel = retornaNome($3.label);
+					$$.traducao = $1.traducao + $3.traducao + "\t"
+					+ "cout<< " + tempLabel + " << endl;\n\n";
+				}	
+				if(verificaDeclaracao($3.label)==0){
+					erro = "Erro de Semântica na Linha : " + to_string(linha);
+					yyerror(erro);
 				}
 			}
 			;
@@ -2304,16 +2380,14 @@ void addVarMap(string tipo,string id,string nome){
 }
 
 
-/*int verificaDeclaracao(string tipo1, string op, string tipo2 ){
-
-	string id = geraId(tipo1,op,tipo2);
+int verificaDeclaracao(string id ){
 
 	if(mapVar.find(id) != mapVar.end()){
-		return -1;
+		return 1;
 	}
 	return 0;
 
-}*/
+}
 
 string retornaNome(string id){
 

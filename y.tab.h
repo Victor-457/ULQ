@@ -69,19 +69,21 @@ extern int yydebug;
     TK_ATRIBUICAO = 279,
     TK_CAST_INT = 280,
     TK_CAST_FLOAT = 281,
-    TK_IF = 282,
-    TK_WHILE = 283,
-    TK_FOR = 284,
-    TK_ELSE = 285,
-    TK_ELSE_IF = 286,
-    TK_DO = 287,
-    TK_FIM_IF = 288,
-    TK_FIM_FOR = 289,
-    TK_FIM_WHILE = 290,
-    TK_FIM_ELSE_IF = 291,
-    TK_FIM_ELSE = 292,
-    TK_FIM = 293,
-    TK_ERROR = 294
+    TK_CIN = 282,
+    TK_COUT = 283,
+    TK_IF = 284,
+    TK_WHILE = 285,
+    TK_FOR = 286,
+    TK_ELSE = 287,
+    TK_ELSE_IF = 288,
+    TK_DO = 289,
+    TK_FIM_IF = 290,
+    TK_FIM_FOR = 291,
+    TK_FIM_WHILE = 292,
+    TK_FIM_ELSE_IF = 293,
+    TK_FIM_ELSE = 294,
+    TK_FIM = 295,
+    TK_ERROR = 296
   };
 #endif
 /* Tokens.  */
@@ -109,19 +111,21 @@ extern int yydebug;
 #define TK_ATRIBUICAO 279
 #define TK_CAST_INT 280
 #define TK_CAST_FLOAT 281
-#define TK_IF 282
-#define TK_WHILE 283
-#define TK_FOR 284
-#define TK_ELSE 285
-#define TK_ELSE_IF 286
-#define TK_DO 287
-#define TK_FIM_IF 288
-#define TK_FIM_FOR 289
-#define TK_FIM_WHILE 290
-#define TK_FIM_ELSE_IF 291
-#define TK_FIM_ELSE 292
-#define TK_FIM 293
-#define TK_ERROR 294
+#define TK_CIN 282
+#define TK_COUT 283
+#define TK_IF 284
+#define TK_WHILE 285
+#define TK_FOR 286
+#define TK_ELSE 287
+#define TK_ELSE_IF 288
+#define TK_DO 289
+#define TK_FIM_IF 290
+#define TK_FIM_FOR 291
+#define TK_FIM_WHILE 292
+#define TK_FIM_ELSE_IF 293
+#define TK_FIM_ELSE 294
+#define TK_FIM 295
+#define TK_ERROR 296
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

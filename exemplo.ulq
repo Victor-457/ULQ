@@ -1,7 +1,8 @@
 int main()
 
 {
-	int a = 9;
+	int a;
+	a = 4;
 
-	a + bjfbvjvjv;
+		
 }

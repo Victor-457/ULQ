@@ -16,6 +16,7 @@ boolean [true|false]
 CHAR \'({LETRA}|{INT})\'
 ID {LETRA}({LETRA}|{INT})*
 
+
 %%
 
 "\n"		{linha++;}
@@ -27,7 +28,6 @@ ID {LETRA}({LETRA}|{INT})*
 "int"		{return TK_TIPO_INT;}
 
 "real"		{return TK_TIPO_REAL;}
-
 
 "id"		{return TK_TIPO_ID;}
 
@@ -61,6 +61,9 @@ ID {LETRA}({LETRA}|{INT})*
 
 "castR"		{return TK_CAST_FLOAT;}
 
+"que?!"		{return TK_CIN;}
+
+"puts"		{return TK_COUT;}
 
 "if"		{return TK_IF;}
 
