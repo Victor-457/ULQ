@@ -35,23 +35,31 @@ ID {LETRA}({LETRA}|{INT})*
 
 "bool"		{return TK_TIPO_BOOLEAN;}
 
-"%"			{return TK_RESTO;}
+"%"			{yylval.label = "%";return TK_ARIT;}
 
-"<"			{return TK_MENOR;}
+"+"			{yylval.label = "+";return TK_ARIT;}
 
-">"			{return  TK_MAIOR;}
+"-"			{yylval.label = "-";return TK_ARIT;}
 
-"=="		{return  TK_IGUAL;}
+"/"			{yylval.label = "/";return TK_ARIT;}
 
-"<="		{return  TK_MENOR_IGUAL;}
+"*"			{yylval.label = "*";return TK_ARIT;}
 
-">="		{return  TK_MAIOR_IGUAL;}
+"<"			{yylval.label = "<";return TK_REL;}
 
-"!="		{return  TK_DIFERENTE;}
+">"			{yylval.label = ">";return TK_REL;}
 
-"and"		{return  TK_AND;}
+"=="		{yylval.label = "==";return TK_REL;}
 
-"or"		{return  TK_OR;}
+"<="		{yylval.label = "<=";return TK_REL;}
+
+">="		{yylval.label = ">=";return TK_REL;}
+
+"!="		{yylval.label = "!=";return TK_REL;}
+
+"and"		{yylval.label = "and";return  TK_LOGIC;}
+
+"or"		{yylval.label = "or";return  TK_LOGIC;}
 
 "not"		{return  TK_NOT;}
 

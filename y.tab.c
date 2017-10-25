@@ -165,34 +165,36 @@ extern int yydebug;
     TK_TIPO_REAL = 266,
     TK_TIPO_CHAR = 267,
     TK_TIPO_ID = 268,
-    TK_RESTO = 269,
-    TK_MENOR = 270,
-    TK_MAIOR = 271,
-    TK_IGUAL = 272,
-    TK_DIFERENTE = 273,
-    TK_MENOR_IGUAL = 274,
-    TK_MAIOR_IGUAL = 275,
-    TK_AND = 276,
-    TK_OR = 277,
-    TK_NOT = 278,
-    TK_ATRIBUICAO = 279,
-    TK_CAST_INT = 280,
-    TK_CAST_FLOAT = 281,
-    TK_CIN = 282,
-    TK_COUT = 283,
-    TK_IF = 284,
-    TK_WHILE = 285,
-    TK_FOR = 286,
-    TK_ELSE = 287,
-    TK_ELSE_IF = 288,
-    TK_DO = 289,
-    TK_FIM_IF = 290,
-    TK_FIM_FOR = 291,
-    TK_FIM_WHILE = 292,
-    TK_FIM_ELSE_IF = 293,
-    TK_FIM_ELSE = 294,
-    TK_FIM = 295,
-    TK_ERROR = 296
+    TK_ARIT = 269,
+    TK_REL = 270,
+    TK_LOGIC = 271,
+    TK_NOT = 272,
+    TK_ATRIBUICAO = 273,
+    TK_CAST_INT = 274,
+    TK_CAST_FLOAT = 275,
+    TK_CIN = 276,
+    TK_COUT = 277,
+    TK_IF = 278,
+    TK_WHILE = 279,
+    TK_FOR = 280,
+    TK_ELSE = 281,
+    TK_ELSE_IF = 282,
+    TK_DO = 283,
+    TK_FIM_IF = 284,
+    TK_FIM_FOR = 285,
+    TK_FIM_WHILE = 286,
+    TK_FIM_ELSE_IF = 287,
+    TK_FIM_ELSE = 288,
+    TK_FIM = 289,
+    TK_ERROR = 290,
+    TK_RESTO = 291,
+    TK_MENOR = 292,
+    TK_MAIOR = 293,
+    TK_IGUAL = 294,
+    TK_MENOR_IGUAL = 295,
+    TK_MAIOR_IGUAL = 296,
+    TK_OR = 297,
+    TK_AND = 298
   };
 #endif
 /* Tokens.  */
@@ -207,34 +209,36 @@ extern int yydebug;
 #define TK_TIPO_REAL 266
 #define TK_TIPO_CHAR 267
 #define TK_TIPO_ID 268
-#define TK_RESTO 269
-#define TK_MENOR 270
-#define TK_MAIOR 271
-#define TK_IGUAL 272
-#define TK_DIFERENTE 273
-#define TK_MENOR_IGUAL 274
-#define TK_MAIOR_IGUAL 275
-#define TK_AND 276
-#define TK_OR 277
-#define TK_NOT 278
-#define TK_ATRIBUICAO 279
-#define TK_CAST_INT 280
-#define TK_CAST_FLOAT 281
-#define TK_CIN 282
-#define TK_COUT 283
-#define TK_IF 284
-#define TK_WHILE 285
-#define TK_FOR 286
-#define TK_ELSE 287
-#define TK_ELSE_IF 288
-#define TK_DO 289
-#define TK_FIM_IF 290
-#define TK_FIM_FOR 291
-#define TK_FIM_WHILE 292
-#define TK_FIM_ELSE_IF 293
-#define TK_FIM_ELSE 294
-#define TK_FIM 295
-#define TK_ERROR 296
+#define TK_ARIT 269
+#define TK_REL 270
+#define TK_LOGIC 271
+#define TK_NOT 272
+#define TK_ATRIBUICAO 273
+#define TK_CAST_INT 274
+#define TK_CAST_FLOAT 275
+#define TK_CIN 276
+#define TK_COUT 277
+#define TK_IF 278
+#define TK_WHILE 279
+#define TK_FOR 280
+#define TK_ELSE 281
+#define TK_ELSE_IF 282
+#define TK_DO 283
+#define TK_FIM_IF 284
+#define TK_FIM_FOR 285
+#define TK_FIM_WHILE 286
+#define TK_FIM_ELSE_IF 287
+#define TK_FIM_ELSE 288
+#define TK_FIM 289
+#define TK_ERROR 290
+#define TK_RESTO 291
+#define TK_MENOR 292
+#define TK_MAIOR 293
+#define TK_IGUAL 294
+#define TK_MENOR_IGUAL 295
+#define TK_MAIOR_IGUAL 296
+#define TK_OR 297
+#define TK_AND 298
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -252,7 +256,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 256 "y.tab.c" /* yacc.c:358  */
+#line 260 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -494,21 +498,21 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   516
+#define YYLAST   167
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  51
+#define YYNTOKENS  53
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  33
+#define YYNNTS  21
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  97
+#define YYNRULES  60
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  149
+#define YYNSTATES  97
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   296
+#define YYMAXUTOK   298
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -521,15 +525,15 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      46,    47,    44,    42,     2,    43,     2,    45,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,    50,
+      48,    49,    38,    36,     2,    37,     2,    39,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,    52,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    48,     2,    49,     2,     2,     2,     2,
+       2,     2,     2,    50,     2,    51,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -546,7 +550,7 @@ static const yytype_uint8 yytranslate[] =
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
       25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    38,    39,    40,    41
+      35,    40,    41,    42,    43,    44,    45,    46,    47
 };
 
 #if YYDEBUG
@@ -556,13 +560,10 @@ static const yytype_uint16 yyrline[] =
        0,    82,    82,    88,    94,    98,   101,   104,   110,   111,
      112,   113,   114,   115,   116,   117,   119,   120,   121,   122,
      123,   126,   134,   142,   153,   160,   168,   177,   184,   192,
-     201,   208,   216,   225,   232,   240,   250,   251,   252,   253,
-     254,   256,   289,   331,   373,   423,   456,   491,   526,   568,
-     600,   634,   668,   710,   742,   776,   810,   852,   884,   918,
-     952,   994,   995,   996,   999,  1009,  1022,  1037,  1052,  1072,
-    1085,  1100,  1115,  1135,  1141,  1147,  1152,  1159,  1163,  1169,
-    1176,  1177,  1178,  1179,  1180,  1181,  1184,  1346,  1509,  1668,
-    1829,  1990,  2151,  2175,  2200,  2217,  2242,  2255
+     201,   208,   216,   225,   232,   240,   250,   284,   326,   368,
+     418,   419,   422,   432,   445,   466,   486,   510,   516,   522,
+     527,   534,   538,   544,   551,   688,   712,   737,   754,   779,
+     792
 };
 #endif
 
@@ -573,18 +574,17 @@ static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "TK_INT", "TK_REAL", "TK_BOOLEAN",
   "TK_CHAR", "TK_ID", "TK_MAIN", "TK_TIPO_INT", "TK_TIPO_BOOLEAN",
-  "TK_TIPO_REAL", "TK_TIPO_CHAR", "TK_TIPO_ID", "TK_RESTO", "TK_MENOR",
-  "TK_MAIOR", "TK_IGUAL", "TK_DIFERENTE", "TK_MENOR_IGUAL",
-  "TK_MAIOR_IGUAL", "TK_AND", "TK_OR", "TK_NOT", "TK_ATRIBUICAO",
-  "TK_CAST_INT", "TK_CAST_FLOAT", "TK_CIN", "TK_COUT", "TK_IF", "TK_WHILE",
-  "TK_FOR", "TK_ELSE", "TK_ELSE_IF", "TK_DO", "TK_FIM_IF", "TK_FIM_FOR",
-  "TK_FIM_WHILE", "TK_FIM_ELSE_IF", "TK_FIM_ELSE", "TK_FIM", "TK_ERROR",
-  "'+'", "'-'", "'*'", "'/'", "'('", "')'", "'{'", "'}'", "';'", "$accept",
-  "S", "BLOCO", "COMANDOS", "COMANDO", "E", "DECLARA", "TIPO_INT",
-  "TIPO_REAL", "TIPO_CHAR", "TIPO_BOOL", "TIPO_ID", "OP_ARIT", "ADD",
-  "SUB", "MULT", "DIV", "RESTO", "OP_LOGIC", "NOT", "AND", "OR", "TERM",
-  "OP_REL", "MENOR", "MAIOR", "IGUAL", "DIFERENTE", "MENOR_IGUAL",
-  "MAIOR_IGUAL", "CAST", "CIN", "COUT", YY_NULLPTR
+  "TK_TIPO_REAL", "TK_TIPO_CHAR", "TK_TIPO_ID", "TK_ARIT", "TK_REL",
+  "TK_LOGIC", "TK_NOT", "TK_ATRIBUICAO", "TK_CAST_INT", "TK_CAST_FLOAT",
+  "TK_CIN", "TK_COUT", "TK_IF", "TK_WHILE", "TK_FOR", "TK_ELSE",
+  "TK_ELSE_IF", "TK_DO", "TK_FIM_IF", "TK_FIM_FOR", "TK_FIM_WHILE",
+  "TK_FIM_ELSE_IF", "TK_FIM_ELSE", "TK_FIM", "TK_ERROR", "'+'", "'-'",
+  "'*'", "'/'", "TK_RESTO", "TK_MENOR", "TK_MAIOR", "TK_IGUAL",
+  "TK_MENOR_IGUAL", "TK_MAIOR_IGUAL", "TK_OR", "TK_AND", "'('", "')'",
+  "'{'", "'}'", "';'", "$accept", "S", "BLOCO", "COMANDOS", "COMANDO", "E",
+  "DECLARA", "TIPO_INT", "TIPO_REAL", "TIPO_CHAR", "TIPO_BOOL", "TIPO_ID",
+  "OP_ARIT", "OP_LOGIC", "NOT", "AND_OR", "TERM", "OP_REL", "CAST", "CIN",
+  "COUT", YY_NULLPTR
 };
 #endif
 
@@ -596,16 +596,16 @@ static const yytype_uint16 yytoknum[] =
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
      275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
-     285,   286,   287,   288,   289,   290,   291,   292,   293,   294,
-     295,   296,    43,    45,    42,    47,    40,    41,   123,   125,
-      59
+     285,   286,   287,   288,   289,   290,    43,    45,    42,    47,
+     291,   292,   293,   294,   295,   296,   297,   298,    40,    41,
+     123,   125,    59
 };
 # endif
 
-#define YYPACT_NINF -41
+#define YYPACT_NINF -23
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-41)))
+  (!!((Yystate) == (-23)))
 
 #define YYTABLE_NINF -1
 
@@ -616,21 +616,16 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      13,    26,    29,   -40,   -41,    -7,    -1,    -2,   -41,   -41,
-     -41,   -41,   -41,     6,    46,    47,    80,    93,    99,    69,
-      48,    83,    61,    62,    42,    -2,    64,    -2,   419,   -41,
-     -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,
-     -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,
-     -41,   -41,   -41,   -41,   -41,   -41,    66,    92,   118,    77,
-     144,   170,   196,   222,    86,    87,    90,   102,   108,   -41,
-     -41,   -41,   -41,   -41,   109,   126,   -41,   -41,   437,   -41,
-     -41,   248,    -2,    -2,    -2,    -2,    -2,    -2,   274,   300,
-     326,   352,   378,   404,   -41,     6,    -3,     6,   116,     6,
-      67,   -41,   -41,   -41,   -41,   -41,     6,   471,     6,   471,
-       6,    -3,     6,    -3,   133,   132,   135,   134,   145,    95,
-     111,   -41,     6,    -3,    21,    21,    21,   456,    21,    21,
-       6,   116,     6,    67,     6,   471,     6,   471,     6,    -3,
-       6,    -3,   -41,   -41,   -41,   -41,   -41,   -41,   -41
+      -4,     4,    20,   -22,   -23,   -13,    24,    -3,   -23,   -23,
+     -23,   -23,   -23,    30,    40,    74,    86,    98,   100,   103,
+      90,     8,    61,    62,    69,    -3,    60,    -3,    35,   -23,
+     -23,   -23,   -23,   -23,   -23,   -23,   -23,   -23,   -23,   -23,
+     -23,   -23,   -23,   -23,    18,    58,    53,    94,    95,    96,
+      97,    99,   -23,   -23,   -23,   -23,   -23,   111,   112,   -23,
+     -23,    27,   -23,   -23,    79,    -3,   119,   -23,    30,    88,
+      30,    88,   -23,   -23,   -23,   -23,   -23,   117,   116,   129,
+     128,   130,    93,   101,   -23,    30,    88,    88,    30,    88,
+     -23,   -23,   -23,   -23,   -23,   -23,   -23
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -638,30 +633,24 @@ static const yytype_int16 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     0,     1,     0,     0,     5,     2,    73,
-      75,    79,    78,    77,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     1,     0,     0,     5,     2,    47,
+      49,    53,    52,    51,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     5,     0,     8,
-      18,    19,    17,    16,    20,     9,    36,    37,    38,    39,
-      40,    10,    61,    62,    63,    13,    11,    80,    81,    82,
-      85,    83,    84,    12,    14,    15,     0,     0,     0,     0,
-       0,     0,     0,     0,    23,    32,    26,    29,    35,    64,
-      92,    93,    94,    95,     0,     0,    74,    76,     0,     3,
-       4,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     6,    60,    58,    68,    66,    72,
-      70,    22,    25,    31,    28,    34,    44,    42,    48,    46,
-      52,    50,    56,    54,     0,     0,     0,     0,     0,     0,
-       0,     7,    59,    57,    86,    87,    88,    89,    90,    91,
-      67,    65,    71,    69,    43,    41,    47,    45,    51,    49,
-      55,    53,    21,    30,    24,    27,    33,    96,    97
+      18,    19,    17,    16,    20,     9,    10,    40,    41,    13,
+      11,    12,    14,    15,     0,     0,     0,    23,    32,    26,
+      29,    35,    42,    55,    56,    57,    58,     0,     0,    48,
+      50,     0,     3,     4,     0,     0,     0,     6,    39,    37,
+      46,    44,    22,    25,    31,    28,    34,     0,     0,     0,
+       0,     0,     0,     0,     7,    38,    36,    54,    45,    43,
+      21,    30,    24,    27,    33,    59,    60
 };
 
   /* YYPGOTO[NTERM-NUM].  */
-static const yytype_int16 yypgoto[] =
+static const yytype_int8 yypgoto[] =
 {
-     -41,   -41,   -41,   136,   -41,   -25,   -41,   -41,   -41,   -41,
-     -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,
-     -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,   -41,
-     -41,   -41,   -41
+     -23,   -23,   -23,   108,   -23,   -12,   -23,   -23,   -23,   -23,
+     -23,   -23,   -23,   -23,   -23,   -23,   -23,   -23,   -23,   -23,
+     -23
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -669,8 +658,7 @@ static const yytype_int8 yydefgoto[] =
 {
       -1,     2,     8,    26,    27,    28,    29,    30,    31,    32,
       33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
-      43,    44,    45,    46,    47,    48,    49,    50,    51,    52,
-      53,    54,    55
+      43
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -678,150 +666,72 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      78,     9,    10,    11,    12,    13,     5,    14,    15,    16,
-      17,    18,    82,    83,    84,    85,    86,    87,    88,    89,
-      56,    19,     1,    20,    21,    22,    23,    57,    58,     4,
-      59,    96,    98,   100,     3,   107,   109,   111,   113,    85,
-       6,    24,    88,    89,    25,    76,    77,     7,    60,    61,
-      62,    63,    70,    64,    65,    71,   123,   124,   125,   126,
-     127,   128,   129,   131,   133,   135,   137,   139,   141,     9,
-      10,    11,    12,    95,    69,    14,    15,    16,    17,    18,
-     101,   102,   103,   104,   105,    85,    72,    66,    88,    19,
-      73,    20,    21,    22,    23,     9,    10,    11,    12,    97,
-      67,    14,    15,    16,    17,    18,    68,    74,    75,    24,
-     114,   115,    25,    79,   116,    19,   119,    20,    21,    22,
-      23,     9,    10,    11,    12,    99,   117,    14,    15,    16,
-      17,    18,   118,   120,    85,    24,   142,   143,    25,   144,
-     145,    19,   147,    20,    21,    22,    23,     9,    10,    11,
-      12,   106,   146,    14,    15,    16,    17,    18,   148,     0,
-       0,    24,     0,    80,    25,     0,     0,    19,     0,    20,
-      21,    22,    23,     9,    10,    11,    12,   108,     0,    14,
-      15,    16,    17,    18,     0,     0,     0,    24,     0,     0,
-      25,     0,     0,    19,     0,    20,    21,    22,    23,     9,
-      10,    11,    12,   110,     0,    14,    15,    16,    17,    18,
-       0,     0,     0,    24,     0,     0,    25,     0,     0,    19,
-       0,    20,    21,    22,    23,     9,    10,    11,    12,   112,
-       0,    14,    15,    16,    17,    18,     0,     0,     0,    24,
-       0,     0,    25,     0,     0,    19,     0,    20,    21,    22,
-      23,     9,    10,    11,    12,   122,     0,    14,    15,    16,
-      17,    18,     0,     0,     0,    24,     0,     0,    25,     0,
-       0,    19,     0,    20,    21,    22,    23,     9,    10,    11,
-      12,   130,     0,    14,    15,    16,    17,    18,     0,     0,
-       0,    24,     0,     0,    25,     0,     0,    19,     0,    20,
-      21,    22,    23,     9,    10,    11,    12,   132,     0,    14,
-      15,    16,    17,    18,     0,     0,     0,    24,     0,     0,
-      25,     0,     0,    19,     0,    20,    21,    22,    23,     9,
-      10,    11,    12,   134,     0,    14,    15,    16,    17,    18,
-       0,     0,     0,    24,     0,     0,    25,     0,     0,    19,
-       0,    20,    21,    22,    23,     9,    10,    11,    12,   136,
-       0,    14,    15,    16,    17,    18,     0,     0,     0,    24,
-       0,     0,    25,     0,     0,    19,     0,    20,    21,    22,
-      23,     9,    10,    11,    12,   138,     0,    14,    15,    16,
-      17,    18,     0,     0,     0,    24,     0,     0,    25,     0,
-       0,    19,     0,    20,    21,    22,    23,     9,    10,    11,
-      12,   140,     0,    14,    15,    16,    17,    18,     0,     0,
-       0,    24,     0,     0,    25,     0,     0,    19,     0,    20,
-      21,    22,    23,    81,    82,    83,    84,    85,    86,    87,
-      88,    89,     0,     0,     0,     0,     0,    24,     0,     0,
-      25,    81,    82,    83,    84,    85,    86,    87,    88,    89,
-       0,    90,    91,    92,    93,     0,     0,     0,     0,    94,
-      81,    82,    83,    84,    85,    86,    87,    88,    89,    90,
-      91,    92,    93,     0,   121,    81,    82,    83,    84,    85,
-      86,    87,    88,    89,     0,     0,     0,     0,    90,    91,
-      92,    93,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,    92,    93
+       9,    10,    11,    12,    13,     1,    14,    15,    16,    17,
+      18,    55,     3,    61,    19,    56,    20,    21,    22,    23,
+       4,     9,    10,    11,    12,    68,     5,    14,    15,    16,
+      17,    18,    69,    71,    24,    19,     6,    20,    21,    22,
+      23,    64,    65,    66,    44,    25,    45,    47,    46,    64,
+      65,    66,    86,    87,    89,    24,    72,    73,    74,    75,
+      76,     9,    10,    11,    12,    70,    25,    14,    15,    16,
+      17,    18,    59,    60,     7,    19,    84,    20,    21,    22,
+      23,    48,     9,    10,    11,    12,    85,    67,    14,    15,
+      16,    17,    18,    49,    53,    24,    19,    54,    20,    21,
+      22,    23,    64,    65,    66,    50,    25,    51,    52,    57,
+      58,    62,    77,    78,    79,    80,    24,    81,    82,    83,
+      90,    91,     9,    10,    11,    12,    88,    25,    14,    15,
+      16,    17,    18,    92,    93,    63,    19,    94,    20,    21,
+      22,    23,    95,     0,     0,     0,     0,     0,     0,     0,
+      96,     0,     0,     0,     0,     0,    24,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,    25
 };
 
 static const yytype_int8 yycheck[] =
 {
-      25,     3,     4,     5,     6,     7,    46,     9,    10,    11,
-      12,    13,    15,    16,    17,    18,    19,    20,    21,    22,
-      14,    23,     9,    25,    26,    27,    28,    21,    22,     0,
-      24,    56,    57,    58,     8,    60,    61,    62,    63,    18,
-      47,    43,    21,    22,    46,     3,     4,    48,    42,    43,
-      44,    45,     4,     7,     7,     7,    81,    82,    83,    84,
-      85,    86,    87,    88,    89,    90,    91,    92,    93,     3,
-       4,     5,     6,     7,     5,     9,    10,    11,    12,    13,
-       3,     4,     5,     6,     7,    18,     3,     7,    21,    23,
-       7,    25,    26,    27,    28,     3,     4,     5,     6,     7,
-       7,     9,    10,    11,    12,    13,     7,    46,    46,    43,
-      24,    24,    46,    49,    24,    23,     7,    25,    26,    27,
-      28,     3,     4,     5,     6,     7,    24,     9,    10,    11,
-      12,    13,    24,     7,    18,    43,     3,     5,    46,     4,
-       6,    23,    47,    25,    26,    27,    28,     3,     4,     5,
-       6,     7,     7,     9,    10,    11,    12,    13,    47,    -1,
-      -1,    43,    -1,    27,    46,    -1,    -1,    23,    -1,    25,
-      26,    27,    28,     3,     4,     5,     6,     7,    -1,     9,
-      10,    11,    12,    13,    -1,    -1,    -1,    43,    -1,    -1,
-      46,    -1,    -1,    23,    -1,    25,    26,    27,    28,     3,
-       4,     5,     6,     7,    -1,     9,    10,    11,    12,    13,
-      -1,    -1,    -1,    43,    -1,    -1,    46,    -1,    -1,    23,
-      -1,    25,    26,    27,    28,     3,     4,     5,     6,     7,
-      -1,     9,    10,    11,    12,    13,    -1,    -1,    -1,    43,
-      -1,    -1,    46,    -1,    -1,    23,    -1,    25,    26,    27,
-      28,     3,     4,     5,     6,     7,    -1,     9,    10,    11,
-      12,    13,    -1,    -1,    -1,    43,    -1,    -1,    46,    -1,
-      -1,    23,    -1,    25,    26,    27,    28,     3,     4,     5,
-       6,     7,    -1,     9,    10,    11,    12,    13,    -1,    -1,
-      -1,    43,    -1,    -1,    46,    -1,    -1,    23,    -1,    25,
-      26,    27,    28,     3,     4,     5,     6,     7,    -1,     9,
-      10,    11,    12,    13,    -1,    -1,    -1,    43,    -1,    -1,
-      46,    -1,    -1,    23,    -1,    25,    26,    27,    28,     3,
-       4,     5,     6,     7,    -1,     9,    10,    11,    12,    13,
-      -1,    -1,    -1,    43,    -1,    -1,    46,    -1,    -1,    23,
-      -1,    25,    26,    27,    28,     3,     4,     5,     6,     7,
-      -1,     9,    10,    11,    12,    13,    -1,    -1,    -1,    43,
-      -1,    -1,    46,    -1,    -1,    23,    -1,    25,    26,    27,
-      28,     3,     4,     5,     6,     7,    -1,     9,    10,    11,
-      12,    13,    -1,    -1,    -1,    43,    -1,    -1,    46,    -1,
-      -1,    23,    -1,    25,    26,    27,    28,     3,     4,     5,
-       6,     7,    -1,     9,    10,    11,    12,    13,    -1,    -1,
-      -1,    43,    -1,    -1,    46,    -1,    -1,    23,    -1,    25,
-      26,    27,    28,    14,    15,    16,    17,    18,    19,    20,
-      21,    22,    -1,    -1,    -1,    -1,    -1,    43,    -1,    -1,
-      46,    14,    15,    16,    17,    18,    19,    20,    21,    22,
-      -1,    42,    43,    44,    45,    -1,    -1,    -1,    -1,    50,
-      14,    15,    16,    17,    18,    19,    20,    21,    22,    42,
-      43,    44,    45,    -1,    47,    14,    15,    16,    17,    18,
-      19,    20,    21,    22,    -1,    -1,    -1,    -1,    42,    43,
-      44,    45,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    44,    45
+       3,     4,     5,     6,     7,     9,     9,    10,    11,    12,
+      13,     3,     8,    25,    17,     7,    19,    20,    21,    22,
+       0,     3,     4,     5,     6,     7,    48,     9,    10,    11,
+      12,    13,    44,    45,    37,    17,    49,    19,    20,    21,
+      22,    14,    15,    16,    14,    48,    16,     7,    18,    14,
+      15,    16,    64,    65,    66,    37,     3,     4,     5,     6,
+       7,     3,     4,     5,     6,     7,    48,     9,    10,    11,
+      12,    13,     3,     4,    50,    17,    49,    19,    20,    21,
+      22,     7,     3,     4,     5,     6,     7,    52,     9,    10,
+      11,    12,    13,     7,     4,    37,    17,     7,    19,    20,
+      21,    22,    14,    15,    16,     7,    48,     7,     5,    48,
+      48,    51,    18,    18,    18,    18,    37,    18,     7,     7,
+       3,     5,     3,     4,     5,     6,     7,    48,     9,    10,
+      11,    12,    13,     4,     6,    27,    17,     7,    19,    20,
+      21,    22,    49,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      49,    -1,    -1,    -1,    -1,    -1,    37,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    48
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     9,    52,     8,     0,    46,    47,    48,    53,     3,
-       4,     5,     6,     7,     9,    10,    11,    12,    13,    23,
-      25,    26,    27,    28,    43,    46,    54,    55,    56,    57,
-      58,    59,    60,    61,    62,    63,    64,    65,    66,    67,
-      68,    69,    70,    71,    72,    73,    74,    75,    76,    77,
-      78,    79,    80,    81,    82,    83,    14,    21,    22,    24,
-      42,    43,    44,    45,     7,     7,     7,     7,     7,     5,
-       4,     7,     3,     7,    46,    46,     3,     4,    56,    49,
-      54,    14,    15,    16,    17,    18,    19,    20,    21,    22,
-      42,    43,    44,    45,    50,     7,    56,     7,    56,     7,
-      56,     3,     4,     5,     6,     7,     7,    56,     7,    56,
-       7,    56,     7,    56,    24,    24,    24,    24,    24,     7,
-       7,    47,     7,    56,    56,    56,    56,    56,    56,    56,
-       7,    56,     7,    56,     7,    56,     7,    56,     7,    56,
-       7,    56,     3,     5,     4,     6,     7,    47,    47
+       0,     9,    54,     8,     0,    48,    49,    50,    55,     3,
+       4,     5,     6,     7,     9,    10,    11,    12,    13,    17,
+      19,    20,    21,    22,    37,    48,    56,    57,    58,    59,
+      60,    61,    62,    63,    64,    65,    66,    67,    68,    69,
+      70,    71,    72,    73,    14,    16,    18,     7,     7,     7,
+       7,     7,     5,     4,     7,     3,     7,    48,    48,     3,
+       4,    58,    51,    56,    14,    15,    16,    52,     7,    58,
+       7,    58,     3,     4,     5,     6,     7,    18,    18,    18,
+      18,    18,     7,     7,    49,     7,    58,    58,     7,    58,
+       3,     5,     4,     6,     7,    49,    49
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    51,    52,    53,    54,    54,    55,    56,    56,    56,
-      56,    56,    56,    56,    56,    56,    57,    57,    57,    57,
-      57,    58,    58,    58,    59,    59,    59,    60,    60,    60,
-      61,    61,    61,    62,    62,    62,    63,    63,    63,    63,
-      63,    64,    64,    64,    64,    65,    65,    65,    65,    66,
-      66,    66,    66,    67,    67,    67,    67,    68,    68,    68,
-      68,    69,    69,    69,    70,    71,    71,    71,    71,    72,
-      72,    72,    72,    73,    73,    73,    73,    73,    73,    73,
-      74,    74,    74,    74,    74,    74,    75,    76,    77,    78,
-      79,    80,    81,    81,    81,    81,    82,    83
+       0,    53,    54,    55,    56,    56,    57,    58,    58,    58,
+      58,    58,    58,    58,    58,    58,    59,    59,    59,    59,
+      59,    60,    60,    60,    61,    61,    61,    62,    62,    62,
+      63,    63,    63,    64,    64,    64,    65,    65,    65,    65,
+      66,    66,    67,    68,    68,    68,    68,    69,    69,    69,
+      69,    69,    69,    69,    70,    71,    71,    71,    71,    72,
+      73
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -830,13 +740,10 @@ static const yytype_uint8 yyr2[] =
        0,     2,     5,     3,     2,     0,     2,     3,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     4,     3,     2,     4,     3,     2,     4,     3,     2,
-       4,     3,     2,     4,     3,     2,     1,     1,     1,     1,
-       1,     3,     3,     3,     3,     3,     3,     3,     3,     3,
-       3,     3,     3,     3,     3,     3,     3,     3,     3,     3,
-       3,     1,     1,     1,     2,     3,     3,     3,     3,     3,
-       3,     3,     3,     1,     2,     1,     2,     1,     1,     1,
-       1,     1,     1,     1,     1,     1,     3,     3,     3,     3,
-       3,     3,     2,     2,     2,     2,     4,     4
+       4,     3,     2,     4,     3,     2,     3,     3,     3,     3,
+       1,     1,     2,     3,     3,     3,     3,     1,     2,     1,
+       2,     1,     1,     1,     3,     2,     2,     2,     2,     4,
+       4
 };
 
 
@@ -1517,7 +1424,7 @@ yyreduce:
     {
 				cout << "/*Compilador Uma Linguagem Qualquer*/\n" << "#include <iostream>\n#include<string.h>\n#include<stdio.h>\nint main(void)\n{\n" << (yyvsp[0]).traducao << "\treturn 0;\n}" << endl;
 			}
-#line 1521 "y.tab.c" /* yacc.c:1646  */
+#line 1428 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
@@ -1525,7 +1432,7 @@ yyreduce:
     {
 				(yyval).traducao = (yyvsp[-1]).traducao;
 			}
-#line 1529 "y.tab.c" /* yacc.c:1646  */
+#line 1436 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
@@ -1533,7 +1440,7 @@ yyreduce:
     {
 				(yyval).traducao = (yyvsp[-1]).traducao + (yyvsp[0]).traducao;
 			}
-#line 1537 "y.tab.c" /* yacc.c:1646  */
+#line 1444 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
@@ -1543,7 +1450,7 @@ yyreduce:
 				(yyval).traducao= (yyvsp[-1]).traducao;
 
 			}
-#line 1547 "y.tab.c" /* yacc.c:1646  */
+#line 1454 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
@@ -1555,7 +1462,7 @@ yyreduce:
 
 				addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
 		    }
-#line 1559 "y.tab.c" /* yacc.c:1646  */
+#line 1466 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
@@ -1567,7 +1474,7 @@ yyreduce:
 
 				addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
 		    }
-#line 1571 "y.tab.c" /* yacc.c:1646  */
+#line 1478 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
@@ -1579,7 +1486,7 @@ yyreduce:
 
 				addVarMap("int",(yyvsp[0]).label,(yyval).label);
 		    }
-#line 1583 "y.tab.c" /* yacc.c:1646  */
+#line 1490 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
@@ -1590,7 +1497,7 @@ yyreduce:
 
 				addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
 		    }
-#line 1594 "y.tab.c" /* yacc.c:1646  */
+#line 1501 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
@@ -1602,7 +1509,7 @@ yyreduce:
 
 				addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
 		    }
-#line 1606 "y.tab.c" /* yacc.c:1646  */
+#line 1513 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
@@ -1614,7 +1521,7 @@ yyreduce:
 
 				addVarMap("float",(yyvsp[0]).label,(yyval).label);
 		    }
-#line 1618 "y.tab.c" /* yacc.c:1646  */
+#line 1525 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
@@ -1625,7 +1532,7 @@ yyreduce:
 
 				addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
 		    }
-#line 1629 "y.tab.c" /* yacc.c:1646  */
+#line 1536 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
@@ -1637,7 +1544,7 @@ yyreduce:
 
 				addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
 		    }
-#line 1641 "y.tab.c" /* yacc.c:1646  */
+#line 1548 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
@@ -1649,7 +1556,7 @@ yyreduce:
 
 				addVarMap("char",(yyvsp[0]).label,(yyval).label);
 		    }
-#line 1653 "y.tab.c" /* yacc.c:1646  */
+#line 1560 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
@@ -1660,7 +1567,7 @@ yyreduce:
 
 				addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
 		    }
-#line 1664 "y.tab.c" /* yacc.c:1646  */
+#line 1571 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
@@ -1672,7 +1579,7 @@ yyreduce:
 
 				addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
 		    }
-#line 1676 "y.tab.c" /* yacc.c:1646  */
+#line 1583 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
@@ -1684,7 +1591,7 @@ yyreduce:
 
 				addVarMap("boolean",(yyvsp[0]).label,(yyval).label);
 		    }
-#line 1688 "y.tab.c" /* yacc.c:1646  */
+#line 1595 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
@@ -1695,7 +1602,7 @@ yyreduce:
 
 				addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
 		    }
-#line 1699 "y.tab.c" /* yacc.c:1646  */
+#line 1606 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 34:
@@ -1707,7 +1614,7 @@ yyreduce:
 
 				addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
 		    }
-#line 1711 "y.tab.c" /* yacc.c:1646  */
+#line 1618 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 35:
@@ -1719,79 +1626,80 @@ yyreduce:
 
 				addVarMap("id",(yyvsp[0]).label,(yyval).label);
 		    }
-#line 1723 "y.tab.c" /* yacc.c:1646  */
+#line 1630 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 41:
-#line 257 "sintatica.y" /* yacc.c:1646  */
-    {
-				if(verificaCast((yyvsp[-2]).tipo,"+",(yyvsp[0]).tipo)==-1){
+  case 36:
+#line 251 "sintatica.y" /* yacc.c:1646  */
+    {	
+
+				if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)==-1){
 					erro = "Erro de Semântica na Linha :  " + to_string(linha);
 					yyerror(erro);
 				}
 
-				if(verificaCast((yyvsp[-2]).tipo,"+",(yyvsp[0]).tipo)== 0 ){
+				if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 0 ){
 					(yyval).label = geraLabel();
 					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + " + " + (yyvsp[0]).label +" ;\n\n";
+					(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
 				}
 
-				if(verificaCast((yyvsp[-2]).tipo,"+",(yyvsp[0]).tipo)== 1 ){
+				if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 1 ){
 					(yyval).tipo = (yyvsp[-2]).tipo = (yyvsp[0]).tipo;
 					(yyval).label = geraLabel();
 					string tempLabel = geraLabel();
 					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
 					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")"+ (yyvsp[-2]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel + " = " + " "+ (yyval).label + " + " + (yyvsp[0]).label +" ;\n\n";
+					(yyval).tipo + " " + tempLabel + " = " + " "+ (yyval).label + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
 
 				}
 
-				if(verificaCast((yyvsp[-2]).tipo,"+",(yyvsp[0]).tipo)== 2 ){
+				if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 2 ){
 					(yyval).tipo = (yyvsp[0]).tipo = (yyvsp[-2]).tipo;
 					(yyval).label = geraLabel();
 					string tempLabel = geraLabel();
 					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
 					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel + " = " + " "+ (yyvsp[-2]).label + " + " + (yyval).label +" ;\n\n";
+					(yyval).tipo + " " + tempLabel + " = " + " "+ (yyvsp[-2]).label + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
 				}
 			}
-#line 1759 "y.tab.c" /* yacc.c:1646  */
+#line 1667 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 42:
-#line 290 "sintatica.y" /* yacc.c:1646  */
+  case 37:
+#line 285 "sintatica.y" /* yacc.c:1646  */
     {
 				if(verificaDeclaracao((yyvsp[-2]).label)==1){
 					string tempTipo = retornaTipo((yyvsp[-2]).label);
 					string tempLabel = retornaNome((yyvsp[-2]).label);
 					(yyval).label = geraLabel();
 
-					if ( verificaCast(tempTipo,"+",(yyvsp[0]).tipo) == -1 ){
+					if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == -1 ){
 						erro = "Erro de Semântica na Linha : " + to_string(linha);
 						yyerror(erro);
 					}
 
-					if ( verificaCast(tempTipo,"+",(yyvsp[0]).tipo) == 0 ){
+					if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == 0 ){
 						(yyval).tipo = tempTipo;
 						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " + " + (yyvsp[0]).label +" ;\n\n";
+						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
 					}
-					if ( verificaCast(tempTipo,"+",(yyvsp[0]).tipo) == 1 ){
+					if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == 1 ){
 					(yyval).tipo = tempTipo = (yyvsp[0]).tipo;
 					mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
 					string tempLabel0 = geraLabel();
 
 					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
 					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " + " + (yyvsp[0]).label +" ;\n\n";
+					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
 					}
-					if ( verificaCast(tempTipo,"+",(yyvsp[0]).tipo) == 2 ){
+					if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == 2 ){
 						(yyval).tipo = (yyvsp[0]).tipo = tempTipo;
 						string tempLabel0 = geraLabel();
 
 						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
 						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " + " + (yyval).label +" ;\n\n";
+						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
 					}
 				}
 				if(verificaDeclaracao((yyvsp[-2]).label)==0 )
@@ -1800,43 +1708,43 @@ yyreduce:
 					yyerror(erro);
 				}
 			}
-#line 1804 "y.tab.c" /* yacc.c:1646  */
+#line 1712 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 43:
-#line 332 "sintatica.y" /* yacc.c:1646  */
+  case 38:
+#line 327 "sintatica.y" /* yacc.c:1646  */
     {
 				if(verificaDeclaracao((yyvsp[0]).label)==1 ){
 				string tempTipo = retornaTipo((yyvsp[0]).label);
 				string tempLabel = retornaNome((yyvsp[0]).label);
 				(yyval).label = geraLabel();
 
-				if ( verificaCast((yyvsp[-2]).tipo,"+",tempTipo) == -1 ){
+				if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == -1 ){
 					erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);
 				}
 
-				if ( verificaCast((yyvsp[-2]).tipo,"+",tempTipo) == 0 ){
+				if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == 0 ){
 					(yyval).tipo = tempTipo;
 					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " + " + (yyvsp[-2]).label +" ;\n\n";
+					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + (yyvsp[-1]).label + (yyvsp[-2]).label +" ;\n\n";
 				}
-				if ( verificaCast((yyvsp[-2]).tipo,"+",tempTipo) == 1 ){
+				if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == 1 ){
 					(yyval).tipo = (yyvsp[0]).tipo = tempTipo;
 					string tempLabel0 = geraLabel();
 
 					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
 					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " + " + tempLabel +" ;\n\n";
+					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + (yyvsp[-1]).label + tempLabel +" ;\n\n";
 					}
-					if ( verificaCast((yyvsp[-2]).tipo,"+",tempTipo) == 2 ){
+					if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == 2 ){
 						(yyval).tipo = tempTipo = (yyvsp[-2]).tipo;
 						mudaTipo((yyvsp[0]).label,(yyvsp[-2]).tipo);
 						string tempLabel0 = geraLabel();
 
 						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
 						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyvsp[-2]).label + " + " + (yyval).label +" ;\n\n";
+						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyvsp[-2]).label + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
 					}
 				}
 				if(verificaDeclaracao((yyvsp[0]).label)==0)
@@ -1845,11 +1753,11 @@ yyreduce:
 					yyerror(erro);
 				}
 			}
-#line 1849 "y.tab.c" /* yacc.c:1646  */
+#line 1757 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 44:
-#line 375 "sintatica.y" /* yacc.c:1646  */
+  case 39:
+#line 370 "sintatica.y" /* yacc.c:1646  */
     {	
 				
 				if(verificaDeclaracao((yyvsp[-2]).label)==1 && verificaDeclaracao((yyvsp[0]).label)==1 ){
@@ -1859,35 +1767,35 @@ yyreduce:
 					string tempTipo2  = retornaTipo((yyvsp[0]).label);
 					(yyval).label = geraLabel();
 
-					if ( verificaCast(tempTipo,"+",tempTipo2) == -1 ){
+					if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == -1 ){
 						erro = "Erro de Semântica na Linha : " + to_string(linha);
 						yyerror(erro);
 					}
 
-					if ( verificaCast(tempTipo,"+",tempTipo2) == 0 ){
+					if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == 0 ){
 						(yyval).tipo = tempTipo;
 						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " + " + tempLabel2 +" ;\n\n";
+						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + (yyvsp[-1]).label + tempLabel2 +" ;\n\n";
 					}
 
-					if ( verificaCast(tempTipo,"+",tempTipo2) == 1 ){
+					if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == 1 ){
 						(yyval).tipo = tempTipo = tempTipo2;
 						mudaTipo(tempLabel,tempTipo2);
 						string tempLabel0 = geraLabel();
 
 						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
 						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " + " + tempLabel2 +" ;\n\n";
+						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + (yyvsp[-1]).label + tempLabel2 +" ;\n\n";
 					}
 
-					if ( verificaCast(tempTipo,"+",tempTipo2) == 2 ){
+					if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == 2 ){
 						(yyval).tipo = tempTipo2 = tempTipo;
 						mudaTipo(tempLabel2,tempTipo);
 						string tempLabel0 = geraLabel();
 
 						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
 						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " + " + (yyval).label +" ;\n\n";
+						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
 					}
 				}
 				if(verificaDeclaracao((yyvsp[-2]).label)==0 || verificaDeclaracao((yyvsp[0]).label)==0)
@@ -1896,622 +1804,11 @@ yyreduce:
 					yyerror(erro);
 				}			
 			}
-#line 1900 "y.tab.c" /* yacc.c:1646  */
+#line 1808 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 45:
-#line 424 "sintatica.y" /* yacc.c:1646  */
-    {
-				if(verificaCast((yyvsp[-2]).tipo,"-",(yyvsp[0]).tipo)==-1){
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);
-					}
-
-				if(verificaCast((yyvsp[-2]).tipo,"-",(yyvsp[0]).tipo)== 0 ){
-					(yyval).label = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + " - " + (yyvsp[0]).label +" ;\n\n";
-				}
-
-				if(verificaCast((yyvsp[-2]).tipo,"-",(yyvsp[0]).tipo)== 1 ){
-					(yyval).tipo = (yyvsp[-2]).tipo = (yyvsp[0]).tipo;
-					(yyval).label = geraLabel();
-					string tempLabel = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")"+ (yyvsp[-2]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel + " = " + " "+ (yyval).label + " - " + (yyvsp[0]).label +" ;\n\n";
-
-				}
-
-				if(verificaCast((yyvsp[-2]).tipo,"-",(yyvsp[0]).tipo)== 2 ){
-					(yyval).tipo = (yyvsp[0]).tipo = (yyvsp[-2]).tipo;
-					(yyval).label = geraLabel();
-					string tempLabel = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel + " = " + " "+ (yyvsp[-2]).label + " - " + (yyval).label +" ;\n\n";
-				}
-			}
-#line 1936 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 46:
-#line 457 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempTipo = retornaTipo((yyvsp[-2]).label);
-				string tempLabel = retornaNome((yyvsp[-2]).label);
-				(yyval).label = geraLabel();
-
-				if ( verificaCast(tempTipo,"-",(yyvsp[0]).tipo) == -1 ){
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);
-					}
-
-				if ( verificaCast(tempTipo,"-",(yyvsp[0]).tipo) == 0 ){
-					(yyval).tipo = tempTipo;
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " - " + (yyvsp[0]).label +" ;\n\n";
-				}
-				if ( verificaCast(tempTipo,"-",(yyvsp[0]).tipo) == 1 ){
-					(yyval).tipo = tempTipo = (yyvsp[0]).tipo;
-					mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " - " + (yyvsp[0]).label +" ;\n\n";
-				}
-				if ( verificaCast(tempTipo,"-",(yyvsp[0]).tipo) == 2 ){
-					(yyval).tipo = (yyvsp[0]).tipo = tempTipo;
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " - " + (yyval).label +" ;\n\n";
-				}
-			}
-#line 1974 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 47:
-#line 492 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempTipo = retornaTipo((yyvsp[0]).label);
-				string tempLabel = retornaNome((yyvsp[0]).label);
-				(yyval).label = geraLabel();
-
-				if ( verificaCast((yyvsp[-2]).tipo,"-",tempTipo) == -1 ){
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);
-				}
-
-				if ( verificaCast((yyvsp[-2]).tipo,"-",tempTipo) == 0 ){
-					(yyval).tipo = tempTipo;
-					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " - " + (yyvsp[-2]).label +" ;\n\n";
-				}
-				if ( verificaCast((yyvsp[-2]).tipo,"-",tempTipo) == 1 ){
-					(yyval).tipo = (yyvsp[0]).tipo = tempTipo;
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " - " + tempLabel +" ;\n\n";
-				}
-				if ( verificaCast((yyvsp[-2]).tipo,"-",tempTipo) == 2 ){
-					(yyval).tipo = tempTipo = (yyvsp[-2]).tipo;
-					mudaTipo((yyvsp[0]).label,(yyvsp[-2]).tipo);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyvsp[-2]).label + " - " + (yyval).label +" ;\n\n";
-				}
-			}
-#line 2012 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 48:
-#line 528 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempLabel  = retornaNome((yyvsp[-2]).label);
-				string tempLabel2 = retornaNome((yyvsp[0]).label);
-				string tempTipo   = retornaTipo((yyvsp[-2]).label);
-				string tempTipo2  = retornaTipo((yyvsp[0]).label);
-				(yyval).label = geraLabel();
-
-				if ( verificaCast(tempTipo,"-",tempTipo2) == -1 )
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if ( verificaCast(tempTipo,"-",tempTipo2) == 0 ){
-					(yyval).tipo = tempTipo;
-					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " - " + tempLabel2 +" ;\n\n";
-				}
-
-				if ( verificaCast(tempTipo,"-",tempTipo2) == 1 ){
-					(yyval).tipo = tempTipo = tempTipo2;
-					mudaTipo(tempLabel,tempTipo2);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " - " + tempLabel2 +" ;\n\n";
-				}
-
-				if ( verificaCast(tempTipo,"-",tempTipo2) == 2 ){
-					(yyval).tipo = tempTipo2 = tempTipo;
-					mudaTipo(tempLabel2,tempTipo);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " - " + (yyval).label +" ;\n\n";
-				}
-
-			}
-#line 2055 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 49:
-#line 569 "sintatica.y" /* yacc.c:1646  */
-    {
-				if(verificaCast((yyvsp[-2]).tipo,"*",(yyvsp[0]).tipo)==-1)
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if(verificaCast((yyvsp[-2]).tipo,"*",(yyvsp[0]).tipo)== 0 ){
-					(yyval).label = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + " * " + (yyvsp[0]).label +" ;\n\n";
-				}
-
-				if(verificaCast((yyvsp[-2]).tipo,"*",(yyvsp[0]).tipo)== 1 ){
-					(yyval).tipo = (yyvsp[-2]).tipo = (yyvsp[0]).tipo;
-					(yyval).label = geraLabel();
-					string tempLabel = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")"+ (yyvsp[-2]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel + " = " + " "+ (yyval).label + " * " + (yyvsp[0]).label +" ;\n\n";
-
-				}
-
-				if(verificaCast((yyvsp[-2]).tipo,"*",(yyvsp[0]).tipo)== 2 ){
-					(yyval).tipo = (yyvsp[0]).tipo = (yyvsp[-2]).tipo;
-					(yyval).label = geraLabel();
-					string tempLabel = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel + " = " + " "+ (yyvsp[-2]).label + " * " + (yyval).label +" ;\n\n";
-				}
-			}
-#line 2090 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 50:
-#line 601 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempTipo = retornaTipo((yyvsp[-2]).label);
-				string tempLabel = retornaNome((yyvsp[-2]).label);
-				(yyval).label = geraLabel();
-
-				if ( verificaCast(tempTipo,"*",(yyvsp[0]).tipo) == -1 )
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if ( verificaCast(tempTipo,"*",(yyvsp[0]).tipo) == 0 ){
-					(yyval).tipo = tempTipo;
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " * " + (yyvsp[0]).label +" ;\n\n";
-				}
-				if ( verificaCast(tempTipo,"*",(yyvsp[0]).tipo) == 1 ){
-					(yyval).tipo = tempTipo = (yyvsp[0]).tipo;
-					mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " * " + (yyvsp[0]).label +" ;\n\n";
-				}
-				if ( verificaCast(tempTipo,"*",(yyvsp[0]).tipo) == 2 ){
-					(yyval).tipo = (yyvsp[0]).tipo = tempTipo;
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " * " + (yyval).label +" ;\n\n";
-				}
-			}
-#line 2127 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 51:
-#line 635 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempTipo = retornaTipo((yyvsp[0]).label);
-				string tempLabel = retornaNome((yyvsp[0]).label);
-				(yyval).label = geraLabel();
-
-				if ( verificaCast((yyvsp[-2]).tipo,"*",tempTipo) == -1 )
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if ( verificaCast((yyvsp[-2]).tipo,"*",tempTipo) == 0 ){
-					(yyval).tipo = tempTipo;
-					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " * " + (yyvsp[-2]).label +" ;\n\n";
-				}
-				if ( verificaCast((yyvsp[-2]).tipo,"*",tempTipo) == 1 ){
-					(yyval).tipo = (yyvsp[0]).tipo = tempTipo;
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " * " + tempLabel +" ;\n\n";
-				}
-				if ( verificaCast((yyvsp[-2]).tipo,"*",tempTipo) == 2 ){
-					(yyval).tipo = tempTipo = (yyvsp[-2]).tipo;
-					mudaTipo((yyvsp[0]).label,(yyvsp[-2]).tipo);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyvsp[-2]).label + " * " + (yyval).label +" ;\n\n";
-				}
-			}
-#line 2164 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 52:
-#line 670 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempLabel  = retornaNome((yyvsp[-2]).label);
-				string tempLabel2 = retornaNome((yyvsp[0]).label);
-				string tempTipo   = retornaTipo((yyvsp[-2]).label);
-				string tempTipo2  = retornaTipo((yyvsp[0]).label);
-				(yyval).label = geraLabel();
-
-				if ( verificaCast(tempTipo,"*",tempTipo2) == -1 )
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if ( verificaCast(tempTipo,"*",tempTipo2) == 0 ){
-					(yyval).tipo = tempTipo;
-					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " * " + tempLabel2 +" ;\n\n";
-				}
-
-				if ( verificaCast(tempTipo,"*",tempTipo2) == 1 ){
-					(yyval).tipo = tempTipo = tempTipo2;
-					mudaTipo(tempLabel,tempTipo2);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " * " + tempLabel2 +" ;\n\n";
-				}
-
-				if ( verificaCast(tempTipo,"*",tempTipo2) == 2 ){
-					(yyval).tipo = tempTipo2 = tempTipo;
-					mudaTipo(tempLabel2,tempTipo);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " * " + (yyval).label +" ;\n\n";
-				}
-
-			}
-#line 2207 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 53:
-#line 711 "sintatica.y" /* yacc.c:1646  */
-    {
-				if(verificaCast((yyvsp[-2]).tipo,"/",(yyvsp[0]).tipo)==-1)
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if(verificaCast((yyvsp[-2]).tipo,"/",(yyvsp[0]).tipo)== 0 ){
-					(yyval).label = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + " / " + (yyvsp[0]).label +" ;\n\n";
-				}
-
-				if(verificaCast((yyvsp[-2]).tipo,"/",(yyvsp[0]).tipo)== 1 ){
-					(yyval).tipo = (yyvsp[-2]).tipo = (yyvsp[0]).tipo;
-					(yyval).label = geraLabel();
-					string tempLabel = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")"+ (yyvsp[-2]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel + " = " + " "+ (yyval).label + " / " + (yyvsp[0]).label +" ;\n\n";
-
-				}
-
-				if(verificaCast((yyvsp[-2]).tipo,"/",(yyvsp[0]).tipo)== 2 ){
-					(yyval).tipo = (yyvsp[0]).tipo = (yyvsp[-2]).tipo;
-					(yyval).label = geraLabel();
-					string tempLabel = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel + " = " + " "+ (yyvsp[-2]).label + " / " + (yyval).label +" ;\n\n";
-				}
-			}
-#line 2242 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 54:
-#line 743 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempTipo = retornaTipo((yyvsp[-2]).label);
-				string tempLabel = retornaNome((yyvsp[-2]).label);
-				(yyval).label = geraLabel();
-
-				if ( verificaCast(tempTipo,"/",(yyvsp[0]).tipo) == -1 )
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if ( verificaCast(tempTipo,"/",(yyvsp[0]).tipo) == 0 ){
-					(yyval).tipo = tempTipo;
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " / " + (yyvsp[0]).label +" ;\n\n";
-				}
-				if ( verificaCast(tempTipo,"/",(yyvsp[0]).tipo) == 1 ){
-					(yyval).tipo = tempTipo = (yyvsp[0]).tipo;
-					mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " / " + (yyvsp[0]).label +" ;\n\n";
-				}
-				if ( verificaCast(tempTipo,"/",(yyvsp[0]).tipo) == 2 ){
-					(yyval).tipo = (yyvsp[0]).tipo = tempTipo;
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " / " + (yyval).label +" ;\n\n";
-				}
-			}
-#line 2279 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 55:
-#line 777 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempTipo = retornaTipo((yyvsp[0]).label);
-				string tempLabel = retornaNome((yyvsp[0]).label);
-				(yyval).label = geraLabel();
-
-				if ( verificaCast((yyvsp[-2]).tipo,"/",tempTipo) == -1 )
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if ( verificaCast((yyvsp[-2]).tipo,"/",tempTipo) == 0 ){
-					(yyval).tipo = tempTipo;
-					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " / " + (yyvsp[-2]).label +" ;\n\n";
-				}
-				if ( verificaCast((yyvsp[-2]).tipo,"/",tempTipo) == 1 ){
-					(yyval).tipo = (yyvsp[0]).tipo = tempTipo;
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " / " + tempLabel +" ;\n\n";
-				}
-				if ( verificaCast((yyvsp[-2]).tipo,"/",tempTipo) == 2 ){
-					(yyval).tipo = tempTipo = (yyvsp[-2]).tipo;
-					mudaTipo((yyvsp[0]).label,(yyvsp[-2]).tipo);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyvsp[-2]).label + " / " + (yyval).label +" ;\n\n";
-				}
-			}
-#line 2316 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 56:
-#line 812 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempLabel  = retornaNome((yyvsp[-2]).label);
-				string tempLabel2 = retornaNome((yyvsp[0]).label);
-				string tempTipo   = retornaTipo((yyvsp[-2]).label);
-				string tempTipo2  = retornaTipo((yyvsp[0]).label);
-				(yyval).label = geraLabel();
-
-				if ( verificaCast(tempTipo,"/",tempTipo2) == -1 )
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if ( verificaCast(tempTipo,"+",tempTipo2) == 0 ){
-					(yyval).tipo = tempTipo;
-					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " / " + tempLabel2 +" ;\n\n";
-				}
-
-				if ( verificaCast(tempTipo,"/",tempTipo2) == 1 ){
-					(yyval).tipo = tempTipo = tempTipo2;
-					mudaTipo(tempLabel,tempTipo2);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " / " + tempLabel2 +" ;\n\n";
-				}
-
-				if ( verificaCast(tempTipo,"/",tempTipo2) == 2 ){
-					(yyval).tipo = tempTipo2 = tempTipo;
-					mudaTipo(tempLabel2,tempTipo);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " / " + (yyval).label +" ;\n\n";
-				}
-
-			}
-#line 2359 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 57:
-#line 853 "sintatica.y" /* yacc.c:1646  */
-    {
-				if(verificaCast((yyvsp[-2]).tipo,"%",(yyvsp[0]).tipo)==-1)
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if(verificaCast((yyvsp[-2]).tipo,"%",(yyvsp[0]).tipo)== 0 ){
-					(yyval).label = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + " % " + (yyvsp[0]).label +" ;\n\n";
-				}
-
-				if(verificaCast((yyvsp[-2]).tipo,"%",(yyvsp[0]).tipo)== 1 ){
-					(yyval).tipo = (yyvsp[-2]).tipo = (yyvsp[0]).tipo;
-					(yyval).label = geraLabel();
-					string tempLabel = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")"+ (yyvsp[-2]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel + " = " + " "+ (yyval).label + " % " + (yyvsp[0]).label +" ;\n\n";
-
-				}
-
-				if(verificaCast((yyvsp[-2]).tipo,"%",(yyvsp[0]).tipo)== 2 ){
-					(yyval).tipo = (yyvsp[0]).tipo = (yyvsp[-2]).tipo;
-					(yyval).label = geraLabel();
-					string tempLabel = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel + " = " + " "+ (yyvsp[-2]).label + " % " + (yyval).label +" ;\n\n";
-				}
-			}
-#line 2394 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 58:
-#line 885 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempTipo = retornaTipo((yyvsp[-2]).label);
-				string tempLabel = retornaNome((yyvsp[-2]).label);
-				(yyval).label = geraLabel();
-
-				if ( verificaCast(tempTipo,"%",(yyvsp[0]).tipo) == -1 )
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if ( verificaCast(tempTipo,"%",(yyvsp[0]).tipo) == 0 ){
-					(yyval).tipo = tempTipo;
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " % " + (yyvsp[0]).label +" ;\n\n";
-				}
-				if ( verificaCast(tempTipo,"%",(yyvsp[0]).tipo) == 1 ){
-					(yyval).tipo = tempTipo = (yyvsp[0]).tipo;
-					mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " % " + (yyvsp[0]).label +" ;\n\n";
-				}
-				if ( verificaCast(tempTipo,"%",(yyvsp[0]).tipo) == 2 ){
-					(yyval).tipo = (yyvsp[0]).tipo = tempTipo;
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " % " + (yyval).label +" ;\n\n";
-				}
-			}
-#line 2431 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 59:
-#line 919 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempTipo = retornaTipo((yyvsp[0]).label);
-				string tempLabel = retornaNome((yyvsp[0]).label);
-				(yyval).label = geraLabel();
-
-				if ( verificaCast((yyvsp[-2]).tipo,"%",tempTipo) == -1 )
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if ( verificaCast((yyvsp[-2]).tipo,"%",tempTipo) == 0 ){
-					(yyval).tipo = tempTipo;
-					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " % " + (yyvsp[-2]).label +" ;\n\n";
-				}
-				if ( verificaCast((yyvsp[-2]).tipo,"%",tempTipo) == 1 ){
-					(yyval).tipo = (yyvsp[0]).tipo = tempTipo;
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " % " + tempLabel +" ;\n\n";
-				}
-				if ( verificaCast((yyvsp[-2]).tipo,"%",tempTipo) == 2 ){
-					(yyval).tipo = tempTipo = (yyvsp[-2]).tipo;
-					mudaTipo((yyvsp[0]).label,(yyvsp[-2]).tipo);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyvsp[-2]).label + " % " + (yyval).label +" ;\n\n";
-				}
-			}
-#line 2468 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 60:
-#line 954 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempLabel  = retornaNome((yyvsp[-2]).label);
-				string tempLabel2 = retornaNome((yyvsp[0]).label);
-				string tempTipo   = retornaTipo((yyvsp[-2]).label);
-				string tempTipo2  = retornaTipo((yyvsp[0]).label);
-				(yyval).label = geraLabel();
-
-				if ( verificaCast(tempTipo,"%",tempTipo2) == -1 )
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if ( verificaCast(tempTipo,"%",tempTipo2) == 0 ){
-					(yyval).tipo = tempTipo;
-					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " % " + tempLabel2 +" ;\n\n";
-				}
-
-				if ( verificaCast(tempTipo,"%",tempTipo2) == 1 ){
-					(yyval).tipo = tempTipo = tempTipo2;
-					mudaTipo(tempLabel,tempTipo2);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " % " + tempLabel2 +" ;\n\n";
-				}
-
-				if ( verificaCast(tempTipo,"%",tempTipo2) == 2 ){
-					(yyval).tipo = tempTipo2 = tempTipo;
-					mudaTipo(tempLabel2,tempTipo);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " % " + (yyval).label +" ;\n\n";
-				}
-
-			}
-#line 2511 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 64:
-#line 1000 "sintatica.y" /* yacc.c:1646  */
+  case 42:
+#line 423 "sintatica.y" /* yacc.c:1646  */
     {
 				(yyval).label = geraLabel();
 				string templabel = geraLabel();
@@ -2519,1205 +1816,304 @@ yyreduce:
 				(yyvsp[0]).tipo + " " + (yyval).label + " = " + " " + (yyvsp[0]).label +" ;\n\n\t" +
 				(yyvsp[0]).tipo + " " + templabel + " = " + " not " + (yyval).label +" ;\n\n";
 			}
-#line 2523 "y.tab.c" /* yacc.c:1646  */
+#line 1820 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 65:
-#line 1010 "sintatica.y" /* yacc.c:1646  */
+  case 43:
+#line 433 "sintatica.y" /* yacc.c:1646  */
     {
 
-				if(verificaCast((yyvsp[-2]).tipo,"and",(yyvsp[0]).tipo)==-1)
+				if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)==-1)
 					{erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 
-				if(verificaCast((yyvsp[-2]).tipo,"and",(yyvsp[0]).tipo)== 0 ){
+				if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 0 ){
 					(yyval).label = geraLabel();
 					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + " and " + (yyvsp[0]).label +" ;\n\n";
+					(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
 				}
 			}
-#line 2540 "y.tab.c" /* yacc.c:1646  */
+#line 1837 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 66:
-#line 1023 "sintatica.y" /* yacc.c:1646  */
+  case 44:
+#line 446 "sintatica.y" /* yacc.c:1646  */
     {
-				string tempTipo = retornaTipo((yyvsp[-2]).label);
-				string tempLabel = retornaNome((yyvsp[-2]).label);
+				if(verificaDeclaracao((yyvsp[-2]).label) == 1){
+					string tempTipo = retornaTipo((yyvsp[-2]).label);
+					string tempLabel = retornaNome((yyvsp[-2]).label);
 
-				if(verificaCast(tempTipo,"and",(yyvsp[0]).tipo)==-1)
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if(verificaCast(tempTipo,"and",(yyvsp[0]).tipo)== 0 ){
-					(yyval).label = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " and " + (yyvsp[0]).label +" ;\n\n";
+					if(verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)==-1){
+						erro = "Erro de Semântica na Linha : " + to_string(linha);
+						yyerror(erro);
+					}
+					if(verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 0 ){
+						(yyval).label = geraLabel();
+						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
+						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
+					}
+				}
+				if(verificaDeclaracao((yyvsp[-2]).label) == 0){
+					erro = "Erro de Semântica na Linha : " + to_string(linha);
+					yyerror(erro);
 				}
 			}
-#line 2559 "y.tab.c" /* yacc.c:1646  */
+#line 1862 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 67:
-#line 1038 "sintatica.y" /* yacc.c:1646  */
+  case 45:
+#line 467 "sintatica.y" /* yacc.c:1646  */
     {
-				string tempTipo = retornaTipo((yyvsp[0]).label);
-				string tempLabel = retornaNome((yyvsp[0]).label);
-
-				if(verificaCast((yyvsp[-2]).tipo,"and",tempTipo)==-1)
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if(verificaCast((yyvsp[-2]).tipo,"and",tempTipo)== 0 ){
-					(yyval).label = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + " and " + tempLabel +" ;\n\n";
+				if(verificaDeclaracao((yyvsp[0]).label)== 1){
+					string tempTipo = retornaTipo((yyvsp[0]).label);
+					string tempLabel = retornaNome((yyvsp[0]).label);
+					if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo)==-1){
+						erro = "Erro de Semântica na Linha : " + to_string(linha);
+						yyerror(erro);
+					}
+					if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo)== 0 ){
+						(yyval).label = geraLabel();
+						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
+						(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + (yyvsp[-1]).label + tempLabel +" ;\n\n";
+					}
+				}
+				if(verificaDeclaracao((yyvsp[0]).label)==0){
+					erro = "Erro de Semântica na Linha : " + to_string(linha);
+					yyerror(erro);			
 				}
 			}
-#line 2578 "y.tab.c" /* yacc.c:1646  */
+#line 1886 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 68:
-#line 1053 "sintatica.y" /* yacc.c:1646  */
+  case 46:
+#line 487 "sintatica.y" /* yacc.c:1646  */
     {
-				string tempTipo1 = retornaTipo((yyvsp[-2]).label);
-				string tempLabel1 = retornaNome((yyvsp[-2]).label);
-				string tempTipo = retornaTipo((yyvsp[0]).label);
-				string tempLabel = retornaNome((yyvsp[0]).label);
-
-				if(verificaCast(tempTipo1,"and",tempTipo)==-1)
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if(verificaCast(tempTipo1,"and",tempTipo)== 0 ){
-					(yyval).label = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel1 + " and " + tempLabel +" ;\n\n";
+				if(verificaDeclaracao((yyvsp[-2]).label) == 1 && verificaDeclaracao((yyvsp[0]).label) ==1 ){
+					string tempTipo1 = retornaTipo((yyvsp[-2]).label);
+					string tempLabel1 = retornaNome((yyvsp[-2]).label);
+					string tempTipo = retornaTipo((yyvsp[0]).label);
+					string tempLabel = retornaNome((yyvsp[0]).label);
+					if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo)==-1){
+						erro = "Erro de Semântica na Linha : " + to_string(linha);
+						yyerror(erro);
+					}
+					if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo)== 0 ){
+						(yyval).label = geraLabel();
+						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
+						(yyval).tipo + " " + (yyval).label + " = " + tempLabel1 + (yyvsp[-1]).label + tempLabel +" ;\n\n";
+					}
 				}
-
-			}
-#line 2600 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 69:
-#line 1073 "sintatica.y" /* yacc.c:1646  */
-    {
-
-				if(verificaCast((yyvsp[-2]).tipo,"or",(yyvsp[0]).tipo)==-1)
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if(verificaCast((yyvsp[-2]).tipo,"or",(yyvsp[0]).tipo)== 0 ){
-					(yyval).label = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + " or " + (yyvsp[0]).label +" ;\n\n";
+				if(verificaDeclaracao((yyvsp[-2]).label)==0 || verificaDeclaracao((yyvsp[0]).label) == 0){
+					erro = "Erro de Semântica na Linha : " + to_string(linha);
+					yyerror(erro);			
 				}
 			}
-#line 2617 "y.tab.c" /* yacc.c:1646  */
+#line 1912 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 70:
-#line 1086 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempTipo = retornaTipo((yyvsp[-2]).label);
-				string tempLabel = retornaNome((yyvsp[-2]).label);
-
-				if(verificaCast(tempTipo,"or",(yyvsp[0]).tipo)==-1)
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if(verificaCast(tempTipo,"or",(yyvsp[0]).tipo)== 0 ){
-					(yyval).label = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " or " + (yyvsp[0]).label +" ;\n\n";
-				}
-			}
-#line 2636 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 71:
-#line 1101 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempTipo = retornaTipo((yyvsp[0]).label);
-				string tempLabel = retornaNome((yyvsp[0]).label);
-
-				if(verificaCast((yyvsp[-2]).tipo,"or",tempTipo)==-1)
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if(verificaCast((yyvsp[-2]).tipo,"or",tempTipo)== 0 ){
-					(yyval).label = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + " or " + tempLabel +" ;\n\n";
-				}
-			}
-#line 2655 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 72:
-#line 1116 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempTipo1 = retornaTipo((yyvsp[-2]).label);
-				string tempLabel1 = retornaNome((yyvsp[-2]).label);
-				string tempTipo = retornaTipo((yyvsp[0]).label);
-				string tempLabel = retornaNome((yyvsp[0]).label);
-
-				if(verificaCast(tempTipo1,"or",tempTipo)==-1)
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if(verificaCast(tempTipo1,"or",tempTipo)== 0 ){
-					(yyval).label = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel1 + " or " + tempLabel +" ;\n\n";
-				}
-
-			}
-#line 2677 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 73:
-#line 1136 "sintatica.y" /* yacc.c:1646  */
+  case 47:
+#line 511 "sintatica.y" /* yacc.c:1646  */
     {
 		    	(yyval).label = geraLabel();
 					(yyval).traducao = "\t" + (yyval).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
 		    }
-#line 2686 "y.tab.c" /* yacc.c:1646  */
+#line 1921 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 74:
-#line 1142 "sintatica.y" /* yacc.c:1646  */
+  case 48:
+#line 517 "sintatica.y" /* yacc.c:1646  */
     {
 				(yyval).label = geraLabel();
 				(yyval).tipo = (yyvsp[0]).tipo;
 				(yyval).traducao = "\t" + (yyval).tipo + " " + (yyval).label + " = " + " - " + (yyvsp[0]).label + ";\n\n";
 			}
-#line 2696 "y.tab.c" /* yacc.c:1646  */
+#line 1931 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 75:
-#line 1148 "sintatica.y" /* yacc.c:1646  */
+  case 49:
+#line 523 "sintatica.y" /* yacc.c:1646  */
     {
 		    	(yyval).label = geraLabel();
 					(yyval).traducao = "\t" + (yyval).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
 		    }
-#line 2705 "y.tab.c" /* yacc.c:1646  */
+#line 1940 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 76:
-#line 1153 "sintatica.y" /* yacc.c:1646  */
+  case 50:
+#line 528 "sintatica.y" /* yacc.c:1646  */
     {
 					(yyval).label = geraLabel();
 					(yyval).tipo = (yyvsp[0]).tipo;
 					(yyval).traducao = "\t" + (yyval).tipo + " " + (yyval).label + " = " + " - " + (yyvsp[0]).label + ";\n\n";
 				}
-#line 2715 "y.tab.c" /* yacc.c:1646  */
+#line 1950 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 77:
-#line 1160 "sintatica.y" /* yacc.c:1646  */
+  case 51:
+#line 535 "sintatica.y" /* yacc.c:1646  */
     {
 		    }
-#line 2722 "y.tab.c" /* yacc.c:1646  */
+#line 1957 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 78:
-#line 1164 "sintatica.y" /* yacc.c:1646  */
+  case 52:
+#line 539 "sintatica.y" /* yacc.c:1646  */
     {
 		    	(yyval).label = geraLabel();
 					(yyval).traducao = "\t" + (yyval).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
 		    }
-#line 2731 "y.tab.c" /* yacc.c:1646  */
+#line 1966 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 79:
-#line 1170 "sintatica.y" /* yacc.c:1646  */
+  case 53:
+#line 545 "sintatica.y" /* yacc.c:1646  */
     {
 		    	(yyval).label = geraLabel();
 					(yyval).traducao = "\t" + (yyval).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
 		    }
-#line 2740 "y.tab.c" /* yacc.c:1646  */
+#line 1975 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 86:
-#line 1185 "sintatica.y" /* yacc.c:1646  */
+  case 54:
+#line 552 "sintatica.y" /* yacc.c:1646  */
     {
 				(yyval).tipo = "boolean";
 				(yyval).label = geraLabel();
 
 				if((yyvsp[-2]).tipo == "id" && (yyvsp[0]).tipo == "id"){
-
-					string tempLabel1  = retornaNome((yyvsp[-2]).label);
-					string tempLabel2 = retornaNome((yyvsp[0]).label);
-					string tempTipo   = retornaTipo((yyvsp[-2]).label);
-					string tempTipo2  = retornaTipo((yyvsp[0]).label);
-					
-					
-					if ( verificaCast(tempTipo,"<",tempTipo2) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if ( verificaCast(tempTipo,"<",tempTipo2) == 0 ){
-						
-						
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel1 + " < " + tempLabel2 +" ;\n\n";
-					}
-
-					if ( verificaCast(tempTipo,"<",tempTipo2) == 1 ){
-						
-						
-						tempTipo = tempTipo2;
-						mudaTipo(tempLabel1,tempTipo2);
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel1 + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " < " + tempLabel2 +" ;\n\n";
-					}
-
-					if ( verificaCast(tempTipo,"<",tempTipo2) == 2 ){
-						
-						
-						tempTipo2 = tempTipo;
-						mudaTipo(tempLabel2,tempTipo);
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel1 + " < " + (yyval).label +" ;\n\n";
-					}
-				}
-
-				else if((yyvsp[-2]).tipo == "id"){
-				
-					string tempTipo = retornaTipo((yyvsp[-2]).label);
-					string tempLabel = retornaNome((yyvsp[-2]).label);
-					
-
-					if ( verificaCast(tempTipo,"<",(yyvsp[0]).tipo) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if ( verificaCast(tempTipo,"<",(yyvsp[0]).tipo) == 0 ){
-				
-						
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " < " + (yyvsp[0]).label +" ;\n\n";
-					}
-				
-					if ( verificaCast(tempTipo,"<",(yyvsp[0]).tipo) == 1 ){
-				
-						tempTipo = (yyvsp[0]).tipo;
-						mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
-						string tempLabel0 = geraLabel();
-				
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " < " + (yyvsp[0]).label +" ;\n\n";
-					}
-				
-					if ( verificaCast(tempTipo,"<",(yyvsp[0]).tipo) == 2 ){
-				
-						(yyvsp[0]).tipo = tempTipo;
-						string tempLabel0 = geraLabel();
-				
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " < " + (yyval).label +" ;\n\n";
-					}
-				}
-			
-				else if((yyvsp[0]).tipo == "id"){
-		
-					string tempTipo = retornaTipo((yyvsp[0]).label);
-					string tempLabel = retornaNome((yyvsp[0]).label);
-					
-		
-					if ( verificaCast((yyvsp[-2]).tipo,"<",tempTipo) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-		
-					if ( verificaCast((yyvsp[-2]).tipo,"<",tempTipo) == 0 ){
-			
-						
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " < " + (yyvsp[-2]).label +" ;\n\n";
-					}
-			
-					if ( verificaCast((yyvsp[-2]).tipo,"<",tempTipo) == 1 ){
-			
-						(yyvsp[0]).tipo = tempTipo;
-						string tempLabel0 = geraLabel();
-			
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " < " + tempLabel +" ;\n\n";
-					}
-			
-					if ( verificaCast((yyvsp[-2]).tipo,"<",tempTipo) == 2 ){
-			
-						tempTipo = (yyvsp[-2]).tipo;
-						mudaTipo((yyvsp[0]).label,(yyvsp[-2]).tipo);
-						string tempLabel0 = geraLabel();
-			
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyvsp[-2]).label + " < " + (yyval).label +" ;\n\n";
-					}
-				}
-
-
-				else
-					if(verificaCast((yyvsp[-2]).tipo,"<",(yyvsp[0]).tipo)==-1)
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if(verificaCast((yyvsp[-2]).tipo,"<",(yyvsp[0]).tipo)== 0 ){	
-							
+					if(verificaDeclaracao((yyvsp[-2]).label) == 1 && verificaDeclaracao((yyvsp[0]).label) == 1){
+						string tempLabel1  = retornaNome((yyvsp[-2]).label);
+						string tempLabel2 = retornaNome((yyvsp[0]).label);
+						string tempTipo   = retornaTipo((yyvsp[-2]).label);
+						string tempTipo2  = retornaTipo((yyvsp[0]).label);			
+						if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == -1 ){
+							erro = "Erro de Semântica na Linha : " + to_string(linha);
+							yyerror(erro);
+						}
+						if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == 0 ){		
+							(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
+							(yyval).tipo + " " + (yyval).label + " = " + tempLabel1 + (yyvsp[-1]).label + tempLabel2 +" ;\n\n";
+						}
+						if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == 1 ){					
+							tempTipo = tempTipo2;
+							mudaTipo(tempLabel1,tempTipo2);
+							string tempLabel0 = geraLabel();
 							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + " < " + (yyvsp[0]).label +" ;\n\n";
-					}
-					
-					if(verificaCast((yyvsp[-2]).tipo,"<",(yyvsp[0]).tipo)== 1 ){
-						(yyval).tipo = (yyvsp[-2]).tipo = (yyvsp[0]).tipo;
-						
-						string tempLabel = geraLabel();
-					
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")"+ (yyvsp[-2]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyval).label + " < " + (yyvsp[0]).label +" ;\n\n";
-					}
-					
-					if(verificaCast((yyvsp[-2]).tipo,"<",(yyvsp[0]).tipo)== 2 ){
-						(yyval).tipo = (yyvsp[0]).tipo = (yyvsp[-2]).tipo;
-						
-						string tempLabel = geraLabel();
-					
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyvsp[-2]).label + " < " + (yyval).label +" ;\n\n";
-					}
-			
-			}
-#line 2904 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 87:
-#line 1347 "sintatica.y" /* yacc.c:1646  */
-    {
-
-				(yyval).tipo = "boolean";
-				(yyval).label = geraLabel();
-
-				if((yyvsp[-2]).tipo == "id" && (yyvsp[0]).tipo == "id"){
-
-					string tempLabel1  = retornaNome((yyvsp[-2]).label);
-					string tempLabel2 = retornaNome((yyvsp[0]).label);
-					string tempTipo   = retornaTipo((yyvsp[-2]).label);
-					string tempTipo2  = retornaTipo((yyvsp[0]).label);
-					
-					
-					if ( verificaCast(tempTipo,">",tempTipo2) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if ( verificaCast(tempTipo,">",tempTipo2) == 0 ){
-						
-						
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel1 + " > " + tempLabel2 +" ;\n\n";
-					}
-
-					if ( verificaCast(tempTipo,">",tempTipo2) == 1 ){
-						
-						
-						tempTipo = tempTipo2;
-						mudaTipo(tempLabel1,tempTipo2);
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel1 + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " > " + tempLabel2 +" ;\n\n";
-					}
-
-					if ( verificaCast(tempTipo,">",tempTipo2) == 2 ){
-						
-						
-						tempTipo2 = tempTipo;
-						mudaTipo(tempLabel2,tempTipo);
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel1 + " > " + (yyval).label +" ;\n\n";
-					}
-				}
-
-				else if((yyvsp[-2]).tipo == "id"){
-				
-					string tempTipo = retornaTipo((yyvsp[-2]).label);
-					string tempLabel = retornaNome((yyvsp[-2]).label);
-					
-
-					if ( verificaCast(tempTipo,">",(yyvsp[0]).tipo) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if ( verificaCast(tempTipo,">",(yyvsp[0]).tipo) == 0 ){
-				
-						
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " > " + (yyvsp[0]).label +" ;\n\n";
-					}
-				
-					if ( verificaCast(tempTipo,">",(yyvsp[0]).tipo) == 1 ){
-				
-						tempTipo = (yyvsp[0]).tipo;
-						mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
-						string tempLabel0 = geraLabel();
-				
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " > " + (yyvsp[0]).label +" ;\n\n";
-					}
-				
-					if ( verificaCast(tempTipo,">",(yyvsp[0]).tipo) == 2 ){
-				
-						(yyvsp[0]).tipo = tempTipo;
-						string tempLabel0 = geraLabel();
-				
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " > " + (yyval).label +" ;\n\n";
-					}
-				}
-			
-				else if((yyvsp[0]).tipo == "id"){
-		
-					string tempTipo = retornaTipo((yyvsp[0]).label);
-					string tempLabel = retornaNome((yyvsp[0]).label);
-					
-		
-					if ( verificaCast((yyvsp[-2]).tipo,">",tempTipo) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-		
-					if ( verificaCast((yyvsp[-2]).tipo,">",tempTipo) == 0 ){
-			
-						
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " > " + (yyvsp[-2]).label +" ;\n\n";
-					}
-			
-					if ( verificaCast((yyvsp[-2]).tipo,">",tempTipo) == 1 ){
-			
-						(yyvsp[0]).tipo = tempTipo;
-						string tempLabel0 = geraLabel();
-			
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " > " + tempLabel +" ;\n\n";
-					}
-			
-					if ( verificaCast((yyvsp[-2]).tipo,">",tempTipo) == 2 ){
-			
-						tempTipo = (yyvsp[-2]).tipo;
-						mudaTipo((yyvsp[0]).label,(yyvsp[-2]).tipo);
-						string tempLabel0 = geraLabel();
-			
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyvsp[-2]).label + " > " + (yyval).label +" ;\n\n";
-					}
-				}
-		
-				else
-					if(verificaCast((yyvsp[-2]).tipo,">",(yyvsp[0]).tipo)==-1)
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if(verificaCast((yyvsp[-2]).tipo,"<",(yyvsp[0]).tipo)== 0 ){	
-							
+							(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel1 + " ;\n\n" + "\t" +
+							(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + (yyvsp[-1]).label + tempLabel2 +" ;\n\n";
+						}
+						if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == 2 ){												
+							tempTipo2 = tempTipo;
+							mudaTipo(tempLabel2,tempTipo);
+							string tempLabel0 = geraLabel();
 							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + " > " + (yyvsp[0]).label +" ;\n\n";
+							(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
+							(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel1 + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
+						}
 					}
-					
-					if(verificaCast((yyvsp[-2]).tipo,">",(yyvsp[0]).tipo)== 1 ){
-						(yyval).tipo = (yyvsp[-2]).tipo = (yyvsp[0]).tipo;
-						
-						string tempLabel = geraLabel();
-					
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")"+ (yyvsp[-2]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyval).label + " > " + (yyvsp[0]).label +" ;\n\n";
-					}
-					
-					if(verificaCast((yyvsp[-2]).tipo,">",(yyvsp[0]).tipo)== 2 ){
-						(yyval).tipo = (yyvsp[0]).tipo = (yyvsp[-2]).tipo;
-						
-						string tempLabel = geraLabel();
-					
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyvsp[-2]).label + " > " + (yyval).label +" ;\n\n";
-					}
-
-			}
-#line 3068 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 88:
-#line 1510 "sintatica.y" /* yacc.c:1646  */
-    {
-				(yyval).tipo = "boolean";
-				(yyval).label = geraLabel();
-				
-				if((yyvsp[-2]).tipo == "id" && (yyvsp[0]).tipo == "id"){
-
-					string tempLabel1  = retornaNome((yyvsp[-2]).label);
-					string tempLabel2 = retornaNome((yyvsp[0]).label);
-					string tempTipo   = retornaTipo((yyvsp[-2]).label);
-					string tempTipo2  = retornaTipo((yyvsp[0]).label);
-					
-					
-					if ( verificaCast(tempTipo,"==",tempTipo2) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if ( verificaCast(tempTipo,"==",tempTipo2) == 0 ){
-						
-						
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel1 + " == " + tempLabel2 +" ;\n\n";
-					}
-
-					if ( verificaCast(tempTipo,"==",tempTipo2) == 1 ){
-						
-						
-						tempTipo = tempTipo2;
-						mudaTipo(tempLabel1,tempTipo2);
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel1 + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " == " + tempLabel2 +" ;\n\n";
-					}
-
-					if ( verificaCast(tempTipo,"==",tempTipo2) == 2 ){
-						
-						
-						tempTipo2 = tempTipo;
-						mudaTipo(tempLabel2,tempTipo);
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel1 + " == " + (yyval).label +" ;\n\n";
+					if(verificaDeclaracao((yyvsp[-2]).label) == 0 || verificaDeclaracao((yyvsp[0]).label) == 0){
+						erro = "Erro de Semântica na Linha : " + to_string(linha);
+						yyerror(erro);
 					}
 				}
 				else if((yyvsp[-2]).tipo == "id"){
-				
-					string tempTipo = retornaTipo((yyvsp[-2]).label);
-					string tempLabel = retornaNome((yyvsp[-2]).label);
-					
-
-					if ( verificaCast(tempTipo,"==",(yyvsp[0]).tipo) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if ( verificaCast(tempTipo,"==",(yyvsp[0]).tipo) == 0 ){
-				
-						
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " == " + (yyvsp[0]).label +" ;\n\n";
-					}
-				
-					if ( verificaCast(tempTipo,"==",(yyvsp[0]).tipo) == 1 ){
-				
-						tempTipo = (yyvsp[0]).tipo;
-						mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
-						string tempLabel0 = geraLabel();
-				
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " == " + (yyvsp[0]).label +" ;\n\n";
-					}
-				
-					if ( verificaCast(tempTipo,"==",(yyvsp[0]).tipo) == 2 ){
-				
-						(yyvsp[0]).tipo = tempTipo;
-						string tempLabel0 = geraLabel();
-				
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " == " + (yyval).label +" ;\n\n";
-					}
-				}
-			
-				else if((yyvsp[0]).tipo == "id"){
-		
-					string tempTipo = retornaTipo((yyvsp[0]).label);
-					string tempLabel = retornaNome((yyvsp[0]).label);
-					
-		
-					if ( verificaCast((yyvsp[-2]).tipo,"==",tempTipo) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-		
-					if ( verificaCast((yyvsp[-2]).tipo,"==",tempTipo) == 0 ){
-			
-						
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " == " + (yyvsp[-2]).label +" ;\n\n";
-					}
-			
-					if ( verificaCast((yyvsp[-2]).tipo,"==",tempTipo) == 1 ){
-			
-						(yyvsp[0]).tipo = tempTipo;
-						string tempLabel0 = geraLabel();
-			
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " == " + tempLabel +" ;\n\n";
-					}
-			
-					if ( verificaCast((yyvsp[-2]).tipo,"==",tempTipo) == 2 ){
-			
-						tempTipo = (yyvsp[-2]).tipo;
-						mudaTipo((yyvsp[0]).label,(yyvsp[-2]).tipo);
-						string tempLabel0 = geraLabel();
-			
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyvsp[-2]).label + " == " + (yyval).label +" ;\n\n";
-					}
-				}
-		
-				else
-					if(verificaCast((yyvsp[-2]).tipo,"==",(yyvsp[0]).tipo)==-1)
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if(verificaCast((yyvsp[-2]).tipo,"==",(yyvsp[0]).tipo)== 0 ){	
-							
+					if(verificaDeclaracao((yyvsp[-2]).label) == 1){
+						string tempTipo = retornaTipo((yyvsp[-2]).label);
+						string tempLabel = retornaNome((yyvsp[-2]).label);
+						if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == -1 ){
+							erro = "Erro de Semântica na Linha : " + to_string(linha);
+							yyerror(erro);
+						}
+						if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == 0 ){
 							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + " == " + (yyvsp[0]).label +" ;\n\n";
+							(yyval).tipo + " " + (yyval).label + " = " + tempLabel + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
+						}
+						if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == 1 ){
+					
+							tempTipo = (yyvsp[0]).tipo;
+							mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
+							string tempLabel0 = geraLabel();
+				
+							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
+							(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
+							(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
+						}
+						if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == 2 ){
+							(yyvsp[0]).tipo = tempTipo;
+							string tempLabel0 = geraLabel();
+							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
+							(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
+							(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
+						}
 					}
-					
-					if(verificaCast((yyvsp[-2]).tipo,"==",(yyvsp[0]).tipo)== 1 ){
+					if(verificaDeclaracao((yyvsp[-2]).label) == 0){
+						erro = "Erro de Semântica na Linha : " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+				else if((yyvsp[0]).tipo == "id"){
+					if(verificaDeclaracao((yyvsp[0]).label) == 1){
+						string tempTipo = retornaTipo((yyvsp[0]).label);
+						string tempLabel = retornaNome((yyvsp[0]).label);		
+						if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == -1 ){
+							erro = "Erro de Semântica na Linha : " + to_string(linha);
+							yyerror(erro);
+						}
+						if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == 0 ){
+							(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
+							(yyval).tipo + " " + (yyval).label + " = " + tempLabel + (yyvsp[-1]).label + (yyvsp[-2]).label +" ;\n\n";
+						}
+						if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == 1 ){
+							(yyvsp[0]).tipo = tempTipo;
+							string tempLabel0 = geraLabel();
+							(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
+							(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
+							(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + (yyvsp[-1]).label + tempLabel +" ;\n\n";
+						}
+						if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == 2 ){
+							tempTipo = (yyvsp[-2]).tipo;
+							mudaTipo((yyvsp[0]).label,(yyvsp[-2]).tipo);
+							string tempLabel0 = geraLabel();
+							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
+							(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")" + tempLabel + " ;\n\n" + "\t" +
+							(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyvsp[-2]).label + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
+						}
+					}
+					if(verificaDeclaracao((yyvsp[0]).label) == 0){
+						erro = "Erro de Semântica na Linha : " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+				else{
+					if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)==-1){
+						erro = "Erro de Semântica na Linha : " + to_string(linha);
+						yyerror(erro);
+					}
+					if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 0 ){			
+							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
+							(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
+					}					
+					if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 1 ){
 						(yyval).tipo = (yyvsp[-2]).tipo = (yyvsp[0]).tipo;
-						
 						string tempLabel = geraLabel();
-					
 						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
 						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")"+ (yyvsp[-2]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyval).label + " == " + (yyvsp[0]).label +" ;\n\n";
-					}
-					
-					if(verificaCast((yyvsp[-2]).tipo,"==",(yyvsp[0]).tipo)== 2 ){
+						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyval).label + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
+					}					
+					if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 2 ){
 						(yyval).tipo = (yyvsp[0]).tipo = (yyvsp[-2]).tipo;
-						
 						string tempLabel = geraLabel();
-					
 						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
 						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyvsp[-2]).label + " == " + (yyval).label +" ;\n\n";
+						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyvsp[-2]).label + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
 					}
+				}
 			}
-#line 3229 "y.tab.c" /* yacc.c:1646  */
+#line 2113 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 89:
-#line 1669 "sintatica.y" /* yacc.c:1646  */
-    {
-
-				(yyval).tipo = "boolean";
-				(yyval).label = geraLabel();
-				
-				if((yyvsp[-2]).tipo == "id" && (yyvsp[0]).tipo == "id"){
-
-					string tempLabel1  = retornaNome((yyvsp[-2]).label);
-					string tempLabel2 = retornaNome((yyvsp[0]).label);
-					string tempTipo   = retornaTipo((yyvsp[-2]).label);
-					string tempTipo2  = retornaTipo((yyvsp[0]).label);
-					
-					
-					if ( verificaCast(tempTipo,"!=",tempTipo2) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if ( verificaCast(tempTipo,"!=",tempTipo2) == 0 ){
-						
-						
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel1 + " != " + tempLabel2 +" ;\n\n";
-					}
-
-					if ( verificaCast(tempTipo,"!=",tempTipo2) == 1 ){
-						
-						
-						tempTipo = tempTipo2;
-						mudaTipo(tempLabel1,tempTipo2);
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel1 + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " != " + tempLabel2 +" ;\n\n";
-					}
-
-					if ( verificaCast(tempTipo,"!=",tempTipo2) == 2 ){
-						
-						
-						tempTipo2 = tempTipo;
-						mudaTipo(tempLabel2,tempTipo);
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel1 + " != " + (yyval).label +" ;\n\n";
-					}
-				}
-
-				else if((yyvsp[-2]).tipo == "id"){
-				
-					string tempTipo = retornaTipo((yyvsp[-2]).label);
-					string tempLabel = retornaNome((yyvsp[-2]).label);
-					
-
-					if ( verificaCast(tempTipo,"!=",(yyvsp[0]).tipo) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if ( verificaCast(tempTipo,"!=",(yyvsp[0]).tipo) == 0 ){
-				
-						
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " != " + (yyvsp[0]).label +" ;\n\n";
-					}
-				
-					if ( verificaCast(tempTipo,"!=",(yyvsp[0]).tipo) == 1 ){
-				
-						tempTipo = (yyvsp[0]).tipo;
-						mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
-						string tempLabel0 = geraLabel();
-				
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " != " + (yyvsp[0]).label +" ;\n\n";
-					}
-				
-					if ( verificaCast(tempTipo,"!=",(yyvsp[0]).tipo) == 2 ){
-				
-						(yyvsp[0]).tipo = tempTipo;
-						string tempLabel0 = geraLabel();
-				
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " != " + (yyval).label +" ;\n\n";
-					}
-				}
-			
-				else if((yyvsp[0]).tipo == "id"){
-		
-					string tempTipo = retornaTipo((yyvsp[0]).label);
-					string tempLabel = retornaNome((yyvsp[0]).label);
-					
-		
-					if ( verificaCast((yyvsp[-2]).tipo,"!=",tempTipo) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-		
-					if ( verificaCast((yyvsp[-2]).tipo,"!=",tempTipo) == 0 ){
-			
-						
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " != " + (yyvsp[-2]).label +" ;\n\n";
-					}
-			
-					if ( verificaCast((yyvsp[-2]).tipo,"!=",tempTipo) == 1 ){
-			
-						(yyvsp[0]).tipo = tempTipo;
-						string tempLabel0 = geraLabel();
-			
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " != " + tempLabel +" ;\n\n";
-					}
-			
-					if ( verificaCast((yyvsp[-2]).tipo,"!=",tempTipo) == 2 ){
-			
-						tempTipo = (yyvsp[-2]).tipo;
-						mudaTipo((yyvsp[0]).label,(yyvsp[-2]).tipo);
-						string tempLabel0 = geraLabel();
-			
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyvsp[-2]).label + " != " + (yyval).label +" ;\n\n";
-					}
-				}
-		
-				else
-					if(verificaCast((yyvsp[-2]).tipo,"!=",(yyvsp[0]).tipo)==-1)
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if(verificaCast((yyvsp[-2]).tipo,"!=",(yyvsp[0]).tipo)== 0 ){	
-							
-							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + " != " + (yyvsp[0]).label +" ;\n\n";
-					}
-					
-					if(verificaCast((yyvsp[-2]).tipo,"!=",(yyvsp[0]).tipo)== 1 ){
-						(yyval).tipo = (yyvsp[-2]).tipo = (yyvsp[0]).tipo;
-						
-						string tempLabel = geraLabel();
-					
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")"+ (yyvsp[-2]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyval).label + " != " + (yyvsp[0]).label +" ;\n\n";
-					}
-					
-					if(verificaCast((yyvsp[-2]).tipo,"!=",(yyvsp[0]).tipo)== 2 ){
-						(yyval).tipo = (yyvsp[0]).tipo = (yyvsp[-2]).tipo;
-						
-						string tempLabel = geraLabel();
-					
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyvsp[-2]).label + " != " + (yyval).label +" ;\n\n";
-					}
-			}
-#line 3392 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 90:
-#line 1830 "sintatica.y" /* yacc.c:1646  */
-    {
-				(yyval).tipo = "boolean";
-				(yyval).label = geraLabel();
-	
-				if((yyvsp[-2]).tipo == "id" && (yyvsp[0]).tipo == "id"){
-
-					string tempLabel1  = retornaNome((yyvsp[-2]).label);
-					string tempLabel2 = retornaNome((yyvsp[0]).label);
-					string tempTipo   = retornaTipo((yyvsp[-2]).label);
-					string tempTipo2  = retornaTipo((yyvsp[0]).label);
-					
-					
-					if ( verificaCast(tempTipo,"<=",tempTipo2) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if ( verificaCast(tempTipo,"<=",tempTipo2) == 0 ){
-						
-						
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel1 + " <= " + tempLabel2 +" ;\n\n";
-					}
-
-					if ( verificaCast(tempTipo,"<=",tempTipo2) == 1 ){
-						
-						
-						tempTipo = tempTipo2;
-						mudaTipo(tempLabel1,tempTipo2);
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel1 + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " <= " + tempLabel2 +" ;\n\n";
-					}
-
-					if ( verificaCast(tempTipo,"<=",tempTipo2) == 2 ){
-						
-						
-						tempTipo2 = tempTipo;
-						mudaTipo(tempLabel2,tempTipo);
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel1 + " <= " + (yyval).label +" ;\n\n";
-					}
-				}
-
-				else if((yyvsp[-2]).tipo == "id"){
-				
-					string tempTipo = retornaTipo((yyvsp[-2]).label);
-					string tempLabel = retornaNome((yyvsp[-2]).label);
-					
-
-					if ( verificaCast(tempTipo,"<=",(yyvsp[0]).tipo) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if ( verificaCast(tempTipo,"<=",(yyvsp[0]).tipo) == 0 ){
-				
-						
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " <= " + (yyvsp[0]).label +" ;\n\n";
-					}
-				
-					if ( verificaCast(tempTipo,"<=",(yyvsp[0]).tipo) == 1 ){
-				
-						tempTipo = (yyvsp[0]).tipo;
-						mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
-						string tempLabel0 = geraLabel();
-				
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " <= " + (yyvsp[0]).label +" ;\n\n";
-					}
-				
-					if ( verificaCast(tempTipo,"<=",(yyvsp[0]).tipo) == 2 ){
-				
-						(yyvsp[0]).tipo = tempTipo;
-						string tempLabel0 = geraLabel();
-				
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " <= " + (yyval).label +" ;\n\n";
-					}
-				}
-			
-				else if((yyvsp[0]).tipo == "id"){
-		
-					string tempTipo = retornaTipo((yyvsp[0]).label);
-					string tempLabel = retornaNome((yyvsp[0]).label);
-					
-		
-					if ( verificaCast((yyvsp[-2]).tipo,"<=",tempTipo) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-		
-					if ( verificaCast((yyvsp[-2]).tipo,"<=",tempTipo) == 0 ){
-			
-						
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " <= " + (yyvsp[-2]).label +" ;\n\n";
-					}
-			
-					if ( verificaCast((yyvsp[-2]).tipo,"<=",tempTipo) == 1 ){
-			
-						(yyvsp[0]).tipo = tempTipo;
-						string tempLabel0 = geraLabel();
-			
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " <= " + tempLabel +" ;\n\n";
-					}
-			
-					if ( verificaCast((yyvsp[-2]).tipo,"<=",tempTipo) == 2 ){
-			
-						tempTipo = (yyvsp[-2]).tipo;
-						mudaTipo((yyvsp[0]).label,(yyvsp[-2]).tipo);
-						string tempLabel0 = geraLabel();
-			
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyvsp[-2]).label + " <= " + (yyval).label +" ;\n\n";
-					}
-				}
-
-				else
-					if(verificaCast((yyvsp[-2]).tipo,"<=",(yyvsp[0]).tipo)==-1)
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if(verificaCast((yyvsp[-2]).tipo,"<",(yyvsp[0]).tipo)== 0 ){	
-							
-							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + " <= " + (yyvsp[0]).label +" ;\n\n";
-					}
-					
-					if(verificaCast((yyvsp[-2]).tipo,"<=",(yyvsp[0]).tipo)== 1 ){
-						(yyval).tipo = (yyvsp[-2]).tipo = (yyvsp[0]).tipo;
-						
-						string tempLabel = geraLabel();
-					
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")"+ (yyvsp[-2]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyval).label + " <= " + (yyvsp[0]).label +" ;\n\n";
-					}
-					
-					if(verificaCast((yyvsp[-2]).tipo,"<=",(yyvsp[0]).tipo)== 2 ){
-						(yyval).tipo = (yyvsp[0]).tipo = (yyvsp[-2]).tipo;
-						
-						string tempLabel = geraLabel();
-					
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyvsp[-2]).label + " <= " + (yyval).label +" ;\n\n";
-					}
-
-			}
-#line 3555 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 91:
-#line 1991 "sintatica.y" /* yacc.c:1646  */
-    {
-				(yyval).tipo = "boolean";
-				(yyval).label = geraLabel();
-
-				if((yyvsp[-2]).tipo == "id" && (yyvsp[0]).tipo == "id"){
-
-					string tempLabel1  = retornaNome((yyvsp[-2]).label);
-					string tempLabel2 = retornaNome((yyvsp[0]).label);
-					string tempTipo   = retornaTipo((yyvsp[-2]).label);
-					string tempTipo2  = retornaTipo((yyvsp[0]).label);
-					
-					
-					if ( verificaCast(tempTipo,">=",tempTipo2) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if ( verificaCast(tempTipo,">=",tempTipo2) == 0 ){
-						
-						
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel1 + " >= " + tempLabel2 +" ;\n\n";
-					}
-
-					if ( verificaCast(tempTipo,">=",tempTipo2) == 1 ){
-						
-						
-						tempTipo = tempTipo2;
-						mudaTipo(tempLabel1,tempTipo2);
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel1 + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " >= " + tempLabel2 +" ;\n\n";
-					}
-
-					if ( verificaCast(tempTipo,">=",tempTipo2) == 2 ){
-						
-						
-						tempTipo2 = tempTipo;
-						mudaTipo(tempLabel2,tempTipo);
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel1 + " >= " + (yyval).label +" ;\n\n";
-					}
-				}
-
-				else if((yyvsp[-2]).tipo == "id"){
-				
-					string tempTipo = retornaTipo((yyvsp[-2]).label);
-					string tempLabel = retornaNome((yyvsp[-2]).label);
-					
-
-					if ( verificaCast(tempTipo,">=",(yyvsp[0]).tipo) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if ( verificaCast(tempTipo,">=",(yyvsp[0]).tipo) == 0 ){
-				
-						
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " >= " + (yyvsp[0]).label +" ;\n\n";
-					}
-				
-					if ( verificaCast(tempTipo,">=",(yyvsp[0]).tipo) == 1 ){
-				
-						tempTipo = (yyvsp[0]).tipo;
-						mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
-						string tempLabel0 = geraLabel();
-				
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " >= " + (yyvsp[0]).label +" ;\n\n";
-					}
-				
-					if ( verificaCast(tempTipo,">=",(yyvsp[0]).tipo) == 2 ){
-				
-						(yyvsp[0]).tipo = tempTipo;
-						string tempLabel0 = geraLabel();
-				
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + " >= " + (yyval).label +" ;\n\n";
-					}
-				}
-			
-				else if((yyvsp[0]).tipo == "id"){
-		
-					string tempTipo = retornaTipo((yyvsp[0]).label);
-					string tempLabel = retornaNome((yyvsp[0]).label);
-					
-		
-					if ( verificaCast((yyvsp[-2]).tipo,">=",tempTipo) == -1 )
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-		
-					if ( verificaCast((yyvsp[-2]).tipo,">=",tempTipo) == 0 ){
-			
-						
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + " >= " + (yyvsp[-2]).label +" ;\n\n";
-					}
-			
-					if ( verificaCast((yyvsp[-2]).tipo,">=",tempTipo) == 1 ){
-			
-						(yyvsp[0]).tipo = tempTipo;
-						string tempLabel0 = geraLabel();
-			
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + " >= " + tempLabel +" ;\n\n";
-					}
-			
-					if ( verificaCast((yyvsp[-2]).tipo,">=",tempTipo) == 2 ){
-			
-						tempTipo = (yyvsp[-2]).tipo;
-						mudaTipo((yyvsp[0]).label,(yyvsp[-2]).tipo);
-						string tempLabel0 = geraLabel();
-			
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyvsp[-2]).label + " >= " + (yyval).label +" ;\n\n";
-					}
-				}	
-
-				else
-					if(verificaCast((yyvsp[-2]).tipo,">=",(yyvsp[0]).tipo)==-1)
-						{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-					if(verificaCast((yyvsp[-2]).tipo,"<=",(yyvsp[0]).tipo)== 0 ){	
-							
-							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + " >= " + (yyvsp[0]).label +" ;\n\n";
-					}
-					
-					if(verificaCast((yyvsp[-2]).tipo,">=",(yyvsp[0]).tipo)== 1 ){
-						(yyval).tipo = (yyvsp[-2]).tipo = (yyvsp[0]).tipo;
-						
-						string tempLabel = geraLabel();
-					
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")"+ (yyvsp[-2]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyval).label + " >= " + (yyvsp[0]).label +" ;\n\n";
-					}
-					
-					if(verificaCast((yyvsp[-2]).tipo,">=",(yyvsp[0]).tipo)== 2 ){
-						(yyval).tipo = (yyvsp[0]).tipo = (yyvsp[-2]).tipo;
-						
-						string tempLabel = geraLabel();
-					
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyvsp[-2]).label + " >= " + (yyval).label +" ;\n\n";
-					}
-			}
-#line 3717 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 92:
-#line 2152 "sintatica.y" /* yacc.c:1646  */
+  case 55:
+#line 689 "sintatica.y" /* yacc.c:1646  */
     {
 				string label = geraLabel(),
 						tipo0 = (yyvsp[0]).tipo,
@@ -3741,11 +2137,11 @@ yyreduce:
 
 
 			}
-#line 3745 "y.tab.c" /* yacc.c:1646  */
+#line 2141 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 93:
-#line 2176 "sintatica.y" /* yacc.c:1646  */
+  case 56:
+#line 713 "sintatica.y" /* yacc.c:1646  */
     {
 				string tempTipoA = retornaTipo((yyvsp[0]).label);
 				string tempLabel = retornaNome((yyvsp[0]).label);
@@ -3770,11 +2166,11 @@ yyreduce:
 				}
 
 			}
-#line 3774 "y.tab.c" /* yacc.c:1646  */
+#line 2170 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 94:
-#line 2201 "sintatica.y" /* yacc.c:1646  */
+  case 57:
+#line 738 "sintatica.y" /* yacc.c:1646  */
     {
 				string label = geraLabel(),
 						tipo0 = (yyvsp[0]).tipo,
@@ -3791,11 +2187,11 @@ yyreduce:
 				+ tipo0 + " " + label + " = (" + tipo1 + ")" + label + ";\n\n\t"+
 				(yyval).tipo + " " + label + " = " + (yyvsp[0]).traducao + ";\n\n";
 			}
-#line 3795 "y.tab.c" /* yacc.c:1646  */
+#line 2191 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 95:
-#line 2218 "sintatica.y" /* yacc.c:1646  */
+  case 58:
+#line 755 "sintatica.y" /* yacc.c:1646  */
     {
 				string tempTipoA = retornaTipo((yyvsp[0]).label);
 				string tempLabel = retornaNome((yyvsp[0]).label);
@@ -3818,11 +2214,11 @@ yyreduce:
 					yyerror(erro);}
 				}
 			}
-#line 3822 "y.tab.c" /* yacc.c:1646  */
+#line 2218 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 96:
-#line 2243 "sintatica.y" /* yacc.c:1646  */
+  case 59:
+#line 780 "sintatica.y" /* yacc.c:1646  */
     {
 				if(verificaDeclaracao((yyvsp[-1]).label)==1){
 					string tempLabel = retornaNome((yyvsp[-1]).label);
@@ -3833,11 +2229,11 @@ yyreduce:
 					erro = "Erro de Semântica na Linha : " + to_string(linha);
 					yyerror(erro);}
 			}
-#line 3837 "y.tab.c" /* yacc.c:1646  */
+#line 2233 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 97:
-#line 2256 "sintatica.y" /* yacc.c:1646  */
+  case 60:
+#line 793 "sintatica.y" /* yacc.c:1646  */
     {
 				if(verificaDeclaracao((yyvsp[-1]).label)==1){
 					string tempLabel = retornaNome((yyvsp[-1]).label);
@@ -3849,11 +2245,11 @@ yyreduce:
 					yyerror(erro);
 				}
 			}
-#line 3853 "y.tab.c" /* yacc.c:1646  */
+#line 2249 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 3857 "y.tab.c" /* yacc.c:1646  */
+#line 2253 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -4081,7 +2477,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 2269 "sintatica.y" /* yacc.c:1906  */
+#line 806 "sintatica.y" /* yacc.c:1906  */
 
 
 #include "lex.yy.c"
