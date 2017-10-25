@@ -63,7 +63,7 @@ int verificaDeclaracao(string);
 
 %token TK_ATRIBUICAO TK_CAST_INT TK_CAST_FLOAT TK_CIN TK_COUT 
 
-%token TK_IF TK_WHILE TK_FOR TK_ELSE TK_ELSE_IF TK_DO TK_FIM_IF TK_FIM_FOR TK_FIM_WHILE TK_FIM_ELSE_IF TK_FIM_ELSE
+%token TK_IF TK_WHILE TK_FOR TK_ELSE TK_ELSE_IF TK_DO 
 
 %token TK_FIM TK_ERROR
 
@@ -133,11 +133,17 @@ TIPO_INT    : TK_TIPO_INT TK_ID TK_ATRIBUICAO TK_INT
 		    }
 		    | TK_ID TK_ATRIBUICAO TK_INT
 		    {
-		    	$$.label = geraLabel();
+		    	if(verificaDeclaracao($1.label)==0){
+		    		$$.label = geraLabel();
 
-				$$.traducao = "\t" + $3.tipo + " " + $$.label + " = " + $3.label + ";\n\n";
+					$$.traducao = "\t" + $3.tipo + " " + $$.label + " = " + $3.label + ";\n\n";
 
-				addVarMap($3.tipo,$1.label,$$.label);
+					addVarMap($3.tipo,$1.label,$$.label);
+				}
+				if(verificaDeclaracao($1.label)==1){
+					string tempLabel = retornaNome($1.label);
+					$$.traducao = "\t" + tempLabel + " = " + $3.label + ";\n\n";
+ 				}
 		    }
 		    | TK_TIPO_INT TK_ID
 		    {
@@ -147,8 +153,6 @@ TIPO_INT    : TK_TIPO_INT TK_ID TK_ATRIBUICAO TK_INT
 
 				addVarMap("int",$2.label,$$.label);
 		    }
-
-
 			;
 TIPO_REAL    : TK_TIPO_REAL TK_ID TK_ATRIBUICAO TK_REAL
 		    {
@@ -159,11 +163,17 @@ TIPO_REAL    : TK_TIPO_REAL TK_ID TK_ATRIBUICAO TK_REAL
 		    }
 		    | TK_ID TK_ATRIBUICAO TK_REAL
 		    {
-		    	$$.label = geraLabel();
+		    	if(verificaDeclaracao($1.label)==0){
+		    		$$.label = geraLabel();
 
-				$$.traducao = "\t" + $3.tipo + " " + $$.label + " = " + $3.label + ";\n\n";
+					$$.traducao = "\t" + $3.tipo + " " + $$.label + " = " + $3.label + ";\n\n";
 
-				addVarMap($3.tipo,$1.label,$$.label);
+					addVarMap($3.tipo,$1.label,$$.label);
+				}
+				if(verificaDeclaracao($1.label)==1){
+					string tempLabel = retornaNome($1.label);
+					$$.traducao = "\t" + tempLabel + " = " + $3.label + ";\n\n";
+ 				}
 		    }
 		    | TK_TIPO_REAL TK_ID
 		    {
@@ -183,11 +193,17 @@ TIPO_CHAR    : TK_TIPO_CHAR TK_ID TK_ATRIBUICAO TK_CHAR
 		    }
 		    | TK_ID TK_ATRIBUICAO TK_CHAR
 		    {
-		    	$$.label = geraLabel();
+		    	if(verificaDeclaracao($1.label)==0){
+		    		$$.label = geraLabel();
 
-				$$.traducao = "\t" + $3.tipo + " " + $$.label + " = " + $3.label + ";\n\n";
+					$$.traducao = "\t" + $3.tipo + " " + $$.label + " = " + $3.label + ";\n\n";
 
-				addVarMap($3.tipo,$1.label,$$.label);
+					addVarMap($3.tipo,$1.label,$$.label);
+				}
+				if(verificaDeclaracao($1.label)==1){
+					string tempLabel = retornaNome($1.label);
+					$$.traducao = "\t" + tempLabel + " = " + $3.label + ";\n\n";
+ 				}
 		    }
 		    | TK_TIPO_CHAR TK_ID
 		    {
@@ -207,11 +223,17 @@ TIPO_BOOL    : TK_TIPO_BOOLEAN TK_ID TK_ATRIBUICAO TK_BOOLEAN
 		    }
 		    | TK_ID TK_ATRIBUICAO TK_BOOLEAN
 		    {
-		    	$$.label = geraLabel();
+		    	if(verificaDeclaracao($1.label)==0){
+		    		$$.label = geraLabel();
 
-				$$.traducao = "\t" + $3.tipo + " " + $$.label + " = " + $3.label + ";\n\n";
+					$$.traducao = "\t" + $3.tipo + " " + $$.label + " = " + $3.label + ";\n\n";
 
-				addVarMap($3.tipo,$1.label,$$.label);
+					addVarMap($3.tipo,$1.label,$$.label);
+				}
+				if(verificaDeclaracao($1.label)==1){
+					string tempLabel = retornaNome($1.label);
+					$$.traducao = "\t" + tempLabel + " = " + $3.label + ";\n\n";
+ 				}
 		    }
 			| TK_TIPO_BOOLEAN TK_ID
 		    {
@@ -231,11 +253,17 @@ TIPO_ID    	: TK_TIPO_ID TK_ID TK_ATRIBUICAO TK_ID
 		    }
 		    | TK_ID TK_ATRIBUICAO TK_ID
 		    {
-		    	$$.label = geraLabel();
+		    	if(verificaDeclaracao($1.label)==0){
+		    		$$.label = geraLabel();
 
-				$$.traducao = "\t" + $3.tipo + " " + $$.label + " = " + $3.label + ";\n\n";
+					$$.traducao = "\t" + $3.tipo + " " + $$.label + " = " + $3.label + ";\n\n";
 
-				addVarMap($3.tipo,$1.label,$$.label);
+					addVarMap($3.tipo,$1.label,$$.label);
+				}
+				if(verificaDeclaracao($1.label)==1){
+					string tempLabel = retornaNome($1.label);
+					$$.traducao = "\t" + tempLabel + " = " + $3.label + ";\n\n";
+ 				}
 		    }
 		    | TK_TIPO_ID TK_ID
 		    {

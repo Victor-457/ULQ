@@ -85,15 +85,7 @@ ID {LETRA}({LETRA}|{INT})*
 
 "do" 		{return TK_DO;}
 
-"fimI"		{return TK_FIM_IF;}
 
-"fimF" 		{return TK_FIM_FOR;}
-
-"fimW" 		{return TK_FIM_WHILE;}
-
-"fimEI"		{return TK_FIM_ELSE_IF;}
-
-"fimE"		{return TK_FIM_ELSE;}
 
 [(){}[\];,]	{ return *yytext; }
 

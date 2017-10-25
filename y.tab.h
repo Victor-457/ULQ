@@ -71,21 +71,16 @@ extern int yydebug;
     TK_ELSE = 281,
     TK_ELSE_IF = 282,
     TK_DO = 283,
-    TK_FIM_IF = 284,
-    TK_FIM_FOR = 285,
-    TK_FIM_WHILE = 286,
-    TK_FIM_ELSE_IF = 287,
-    TK_FIM_ELSE = 288,
-    TK_FIM = 289,
-    TK_ERROR = 290,
-    TK_RESTO = 291,
-    TK_MENOR = 292,
-    TK_MAIOR = 293,
-    TK_IGUAL = 294,
-    TK_MENOR_IGUAL = 295,
-    TK_MAIOR_IGUAL = 296,
-    TK_OR = 297,
-    TK_AND = 298
+    TK_FIM = 284,
+    TK_ERROR = 285,
+    TK_RESTO = 286,
+    TK_MENOR = 287,
+    TK_MAIOR = 288,
+    TK_IGUAL = 289,
+    TK_MENOR_IGUAL = 290,
+    TK_MAIOR_IGUAL = 291,
+    TK_OR = 292,
+    TK_AND = 293
   };
 #endif
 /* Tokens.  */
@@ -115,21 +110,16 @@ extern int yydebug;
 #define TK_ELSE 281
 #define TK_ELSE_IF 282
 #define TK_DO 283
-#define TK_FIM_IF 284
-#define TK_FIM_FOR 285
-#define TK_FIM_WHILE 286
-#define TK_FIM_ELSE_IF 287
-#define TK_FIM_ELSE 288
-#define TK_FIM 289
-#define TK_ERROR 290
-#define TK_RESTO 291
-#define TK_MENOR 292
-#define TK_MAIOR 293
-#define TK_IGUAL 294
-#define TK_MENOR_IGUAL 295
-#define TK_MAIOR_IGUAL 296
-#define TK_OR 297
-#define TK_AND 298
+#define TK_FIM 284
+#define TK_ERROR 285
+#define TK_RESTO 286
+#define TK_MENOR 287
+#define TK_MAIOR 288
+#define TK_IGUAL 289
+#define TK_MENOR_IGUAL 290
+#define TK_MAIOR_IGUAL 291
+#define TK_OR 292
+#define TK_AND 293
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
