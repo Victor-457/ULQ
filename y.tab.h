@@ -49,38 +49,24 @@ extern int yydebug;
     TK_REAL = 259,
     TK_BOOLEAN = 260,
     TK_CHAR = 261,
-    TK_ID = 262,
-    TK_MAIN = 263,
-    TK_TIPO_INT = 264,
-    TK_TIPO_BOOLEAN = 265,
-    TK_TIPO_REAL = 266,
-    TK_TIPO_CHAR = 267,
-    TK_TIPO_ID = 268,
-    TK_ARIT = 269,
+    TK_STRING = 262,
+    TK_ID = 263,
+    TK_MAIN = 264,
+    TK_TIPO = 265,
+    TK_TIPO_VAR = 266,
+    TK_TIPO_STRING = 267,
+    TK_ADD_SUB = 268,
+    TK_MULT_DIV_RES = 269,
     TK_REL = 270,
     TK_LOGIC = 271,
-    TK_NOT = 272,
-    TK_ATRIBUICAO = 273,
-    TK_CAST_INT = 274,
-    TK_CAST_FLOAT = 275,
-    TK_CIN = 276,
-    TK_COUT = 277,
-    TK_IF = 278,
-    TK_WHILE = 279,
-    TK_FOR = 280,
-    TK_ELSE = 281,
-    TK_ELSE_IF = 282,
-    TK_DO = 283,
-    TK_FIM = 284,
-    TK_ERROR = 285,
-    TK_RESTO = 286,
-    TK_MENOR = 287,
-    TK_MAIOR = 288,
-    TK_IGUAL = 289,
-    TK_MENOR_IGUAL = 290,
-    TK_MAIOR_IGUAL = 291,
-    TK_OR = 292,
-    TK_AND = 293
+    TK_ATRIBUICAO = 272,
+    TK_CAST = 273,
+    TK_IO = 274,
+    TK_NOT = 275,
+    TK_COND = 276,
+    TK_LOOP = 277,
+    TK_FIM = 278,
+    TK_ERROR = 279
   };
 #endif
 /* Tokens.  */
@@ -88,38 +74,24 @@ extern int yydebug;
 #define TK_REAL 259
 #define TK_BOOLEAN 260
 #define TK_CHAR 261
-#define TK_ID 262
-#define TK_MAIN 263
-#define TK_TIPO_INT 264
-#define TK_TIPO_BOOLEAN 265
-#define TK_TIPO_REAL 266
-#define TK_TIPO_CHAR 267
-#define TK_TIPO_ID 268
-#define TK_ARIT 269
+#define TK_STRING 262
+#define TK_ID 263
+#define TK_MAIN 264
+#define TK_TIPO 265
+#define TK_TIPO_VAR 266
+#define TK_TIPO_STRING 267
+#define TK_ADD_SUB 268
+#define TK_MULT_DIV_RES 269
 #define TK_REL 270
 #define TK_LOGIC 271
-#define TK_NOT 272
-#define TK_ATRIBUICAO 273
-#define TK_CAST_INT 274
-#define TK_CAST_FLOAT 275
-#define TK_CIN 276
-#define TK_COUT 277
-#define TK_IF 278
-#define TK_WHILE 279
-#define TK_FOR 280
-#define TK_ELSE 281
-#define TK_ELSE_IF 282
-#define TK_DO 283
-#define TK_FIM 284
-#define TK_ERROR 285
-#define TK_RESTO 286
-#define TK_MENOR 287
-#define TK_MAIOR 288
-#define TK_IGUAL 289
-#define TK_MENOR_IGUAL 290
-#define TK_MAIOR_IGUAL 291
-#define TK_OR 292
-#define TK_AND 293
+#define TK_ATRIBUICAO 272
+#define TK_CAST 273
+#define TK_IO 274
+#define TK_NOT 275
+#define TK_COND 276
+#define TK_LOOP 277
+#define TK_FIM 278
+#define TK_ERROR 279
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

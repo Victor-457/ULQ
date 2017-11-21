@@ -62,7 +62,7 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 1 "sintatica.y" /* yacc.c:339  */
+#line 34 "sintatica.y" /* yacc.c:339  */
 
 #include <iostream>
 #include <string>
@@ -70,8 +70,11 @@
 #include <fstream>
 #include <stdio.h>
 #include <map>
+#include <vector>
 
 #define YYSTYPE atributos
+#define true  1
+#define false 0
 
 using namespace std;
 
@@ -80,6 +83,8 @@ struct atributos
 	string label;
 	string traducao;
 	string tipo;
+	string tipo_traducao;
+	int tamanho;
 };
 
 typedef struct
@@ -93,10 +98,15 @@ struct variavel
 {
 	string tipo;
 	string nome;
+	string valor;/* Na versão anterior este campo não existia, pois o valor já era atribuido na mesma linha do código intermediário então ele não era necessário.*/
+	string tam;
 };
 
 typedef map<string,cast> mapaCast;
 typedef map<string,variavel> mapaVar;
+
+vector<map<string,variavel>> pilhaVar;// pilha utilizada para armazenar os mapas de variaveis, ela sempre começa com as variaveis globais
+int pilhaPos = -1;
 
 int linha = 1;
 string erro;
@@ -104,22 +114,28 @@ static int numero = -1;
 static mapaCast mapCast;
 static mapaVar mapVar;
 
-int yylex(void);
-void yyerror(string);
-string geraLabel();
-string geraId(string,string,string);
-void preencheMapCast();
-int verificaCast(string,string,string);
-string	intToString(int);
-void addVarMap(string,string,string);
-string retornaNome(string nome);
-string retornaTipo(string nome);
+void addVarMap(string,string,string,string);
+void setTamString(string,string);
+void alteraValor(string,string);
 void mudaTipo(string,string);
+void buscaMapa(string);
+void empilhaNovoMapa();
+void preencheMapCast();
+void yyerror(string);
+
+string declara_variaveis_temp(mapaVar,int);
+string geraId(string,string,string);
+string retornaValor(string);
+string retornaNome(string);
+string retornaTipo(string);
+string geraLabel();
+
+int verificaCast(string,string,string);
 int verificaDeclaracao(string);
+int yylex(void);
 
 
-
-#line 123 "y.tab.c" /* yacc.c:339  */
+#line 139 "y.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -158,38 +174,24 @@ extern int yydebug;
     TK_REAL = 259,
     TK_BOOLEAN = 260,
     TK_CHAR = 261,
-    TK_ID = 262,
-    TK_MAIN = 263,
-    TK_TIPO_INT = 264,
-    TK_TIPO_BOOLEAN = 265,
-    TK_TIPO_REAL = 266,
-    TK_TIPO_CHAR = 267,
-    TK_TIPO_ID = 268,
-    TK_ARIT = 269,
+    TK_STRING = 262,
+    TK_ID = 263,
+    TK_MAIN = 264,
+    TK_TIPO = 265,
+    TK_TIPO_VAR = 266,
+    TK_TIPO_STRING = 267,
+    TK_ADD_SUB = 268,
+    TK_MULT_DIV_RES = 269,
     TK_REL = 270,
     TK_LOGIC = 271,
-    TK_NOT = 272,
-    TK_ATRIBUICAO = 273,
-    TK_CAST_INT = 274,
-    TK_CAST_FLOAT = 275,
-    TK_CIN = 276,
-    TK_COUT = 277,
-    TK_IF = 278,
-    TK_WHILE = 279,
-    TK_FOR = 280,
-    TK_ELSE = 281,
-    TK_ELSE_IF = 282,
-    TK_DO = 283,
-    TK_FIM = 284,
-    TK_ERROR = 285,
-    TK_RESTO = 286,
-    TK_MENOR = 287,
-    TK_MAIOR = 288,
-    TK_IGUAL = 289,
-    TK_MENOR_IGUAL = 290,
-    TK_MAIOR_IGUAL = 291,
-    TK_OR = 292,
-    TK_AND = 293
+    TK_ATRIBUICAO = 272,
+    TK_CAST = 273,
+    TK_IO = 274,
+    TK_NOT = 275,
+    TK_COND = 276,
+    TK_LOOP = 277,
+    TK_FIM = 278,
+    TK_ERROR = 279
   };
 #endif
 /* Tokens.  */
@@ -197,38 +199,24 @@ extern int yydebug;
 #define TK_REAL 259
 #define TK_BOOLEAN 260
 #define TK_CHAR 261
-#define TK_ID 262
-#define TK_MAIN 263
-#define TK_TIPO_INT 264
-#define TK_TIPO_BOOLEAN 265
-#define TK_TIPO_REAL 266
-#define TK_TIPO_CHAR 267
-#define TK_TIPO_ID 268
-#define TK_ARIT 269
+#define TK_STRING 262
+#define TK_ID 263
+#define TK_MAIN 264
+#define TK_TIPO 265
+#define TK_TIPO_VAR 266
+#define TK_TIPO_STRING 267
+#define TK_ADD_SUB 268
+#define TK_MULT_DIV_RES 269
 #define TK_REL 270
 #define TK_LOGIC 271
-#define TK_NOT 272
-#define TK_ATRIBUICAO 273
-#define TK_CAST_INT 274
-#define TK_CAST_FLOAT 275
-#define TK_CIN 276
-#define TK_COUT 277
-#define TK_IF 278
-#define TK_WHILE 279
-#define TK_FOR 280
-#define TK_ELSE 281
-#define TK_ELSE_IF 282
-#define TK_DO 283
-#define TK_FIM 284
-#define TK_ERROR 285
-#define TK_RESTO 286
-#define TK_MENOR 287
-#define TK_MAIOR 288
-#define TK_IGUAL 289
-#define TK_MENOR_IGUAL 290
-#define TK_MAIOR_IGUAL 291
-#define TK_OR 292
-#define TK_AND 293
+#define TK_ATRIBUICAO 272
+#define TK_CAST 273
+#define TK_IO 274
+#define TK_NOT 275
+#define TK_COND 276
+#define TK_LOOP 277
+#define TK_FIM 278
+#define TK_ERROR 279
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
@@ -246,7 +234,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 250 "y.tab.c" /* yacc.c:358  */
+#line 238 "y.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -486,23 +474,23 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  4
+#define YYFINAL  3
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   187
+#define YYLAST   104
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  48
+#define YYNTOKENS  31
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  21
+#define YYNNTS  17
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  60
+#define YYNRULES  51
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  97
+#define YYNSTATES  91
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   293
+#define YYMAXUTOK   279
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -515,15 +503,15 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-      43,    44,    33,    31,     2,    32,     2,    34,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,    47,
+      25,    26,     2,     2,     2,    30,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,     2,    29,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,    45,     2,    46,     2,     2,     2,     2,
+       2,     2,     2,    27,     2,    28,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -538,22 +526,19 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    30,    35,    36,    37,    38,
-      39,    40,    41,    42
+      15,    16,    17,    18,    19,    20,    21,    22,    23,    24
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    82,    82,    88,    94,    98,   101,   104,   110,   111,
-     112,   113,   114,   115,   116,   117,   119,   120,   121,   122,
-     123,   126,   134,   148,   157,   164,   178,   187,   194,   208,
-     217,   224,   238,   247,   254,   268,   278,   312,   354,   396,
-     446,   447,   450,   460,   473,   494,   514,   538,   544,   550,
-     555,   562,   566,   572,   579,   716,   740,   765,   782,   807,
-     820
+       0,   123,   123,   132,   136,   147,   151,   153,   157,   160,
+     161,   162,   163,   191,   210,   212,   241,   271,   299,   329,
+     358,   396,   437,   479,   503,   508,   527,   546,   598,   635,
+     674,   724,   761,   811,   851,   889,   916,   921,   930,   946,
+     972,   988,  1011,  1026,  1055,  1060,  1266,  1473,  1676,  1724,
+    1826,  1875
 };
 #endif
 
@@ -563,16 +548,13 @@ static const yytype_uint16 yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "TK_INT", "TK_REAL", "TK_BOOLEAN",
-  "TK_CHAR", "TK_ID", "TK_MAIN", "TK_TIPO_INT", "TK_TIPO_BOOLEAN",
-  "TK_TIPO_REAL", "TK_TIPO_CHAR", "TK_TIPO_ID", "TK_ARIT", "TK_REL",
-  "TK_LOGIC", "TK_NOT", "TK_ATRIBUICAO", "TK_CAST_INT", "TK_CAST_FLOAT",
-  "TK_CIN", "TK_COUT", "TK_IF", "TK_WHILE", "TK_FOR", "TK_ELSE",
-  "TK_ELSE_IF", "TK_DO", "TK_FIM", "TK_ERROR", "'+'", "'-'", "'*'", "'/'",
-  "TK_RESTO", "TK_MENOR", "TK_MAIOR", "TK_IGUAL", "TK_MENOR_IGUAL",
-  "TK_MAIOR_IGUAL", "TK_OR", "TK_AND", "'('", "')'", "'{'", "'}'", "';'",
-  "$accept", "S", "BLOCO", "COMANDOS", "COMANDO", "E", "DECLARA",
-  "TIPO_INT", "TIPO_REAL", "TIPO_CHAR", "TIPO_BOOL", "TIPO_ID", "OP_ARIT",
-  "OP_LOGIC", "NOT", "AND_OR", "TERM", "OP_REL", "CAST", "CIN", "COUT", YY_NULLPTR
+  "TK_CHAR", "TK_STRING", "TK_ID", "TK_MAIN", "TK_TIPO", "TK_TIPO_VAR",
+  "TK_TIPO_STRING", "TK_ADD_SUB", "TK_MULT_DIV_RES", "TK_REL", "TK_LOGIC",
+  "TK_ATRIBUICAO", "TK_CAST", "TK_IO", "TK_NOT", "TK_COND", "TK_LOOP",
+  "TK_FIM", "TK_ERROR", "'('", "')'", "'{'", "'}'", "';'", "'-'",
+  "$accept", "S", "BLOCOGLOBAL", "BLOCO", "D", "COMANDOS", "COMANDO",
+  "STRING", "DECLARA", "ALTERA", "TERM", "OP_ARIT", "OP_REL", "OP_LOG",
+  "OP_LOG1", "CAST", "IO", YY_NULLPTR
 };
 #endif
 
@@ -583,36 +565,35 @@ static const yytype_uint16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
-     275,   276,   277,   278,   279,   280,   281,   282,   283,   284,
-     285,    43,    45,    42,    47,   286,   287,   288,   289,   290,
-     291,   292,   293,    40,    41,   123,   125,    59
+     275,   276,   277,   278,   279,    40,    41,   123,   125,    59,
+      45
 };
 # endif
 
-#define YYPACT_NINF -26
+#define YYPACT_NINF -30
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-26)))
+  (!!((Yystate) == (-30)))
 
-#define YYTABLE_NINF -1
+#define YYTABLE_NINF -33
 
 #define yytable_value_is_error(Yytable_value) \
   0
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
-static const yytype_int16 yypact[] =
+static const yytype_int8 yypact[] =
 {
-       3,    22,    32,    10,   -26,    11,     9,     4,   -26,   -26,
-     -26,   -26,   -26,    17,    61,    62,    65,    66,    67,    70,
-      63,    15,    33,    45,    34,     4,    43,     4,   -13,   -26,
-     -26,   -26,   -26,   -26,   -26,   -26,   -26,   -26,   -26,   -26,
-     -26,   -26,   -26,   -26,    39,    74,    59,    72,    79,    80,
-      81,    82,   -26,   -26,   -26,   -26,   -26,    85,    94,   -26,
-     -26,    13,   -26,   -26,   109,     4,   144,   -26,    17,   -10,
-      17,   -10,   -26,   -26,   -26,   -26,   -26,    99,    98,   100,
-     101,   102,    64,    83,   -26,    17,   -10,   -10,    17,   -10,
-     -26,   -26,   -26,   -26,   -26,   -26,   -26
+     -30,     8,   -30,   -30,    13,    -7,    27,    28,    31,     9,
+      11,    16,    33,   -30,    35,   -30,   -30,    21,     1,    51,
+      45,   -30,    32,    37,    38,    39,   -30,    -1,    52,    41,
+      55,     3,   -30,   -30,   -30,   -30,    53,    54,    44,    46,
+      45,    43,    47,   -30,    48,    49,    50,   -30,   -30,   -30,
+     -30,   -30,   -30,    70,    60,    56,   -30,    41,    41,    41,
+       7,   -30,    72,   -30,   -30,   -30,   -30,   -30,   -30,   -30,
+      41,   -30,   -30,   -30,   -30,    57,    58,    59,    61,    30,
+      41,   -30,   -30,   -30,    63,   -30,    62,   -30,    66,   -30,
+     -30
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -620,121 +601,101 @@ static const yytype_int16 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     0,     1,     0,     0,     5,     2,    47,
-      49,    53,    52,    51,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     5,     0,     8,
-      18,    19,    17,    16,    20,     9,    10,    40,    41,    13,
-      11,    12,    14,    15,     0,     0,     0,    23,    32,    26,
-      29,    35,    42,    55,    56,    57,    58,     0,     0,    48,
-      50,     0,     3,     4,     0,     0,     0,     6,    39,    37,
-      46,    44,    22,    25,    31,    28,    34,     0,     0,     0,
-       0,     0,     0,     0,     7,    38,    36,    54,    45,    43,
-      21,    30,    24,    27,    33,    59,    60
+       3,     0,     6,     1,     0,     0,     0,     0,     0,     0,
+       0,     0,    25,    26,     0,    14,     5,     0,     0,     0,
+       8,     2,    38,    40,    43,    42,    44,     0,     0,     0,
+       0,     0,    21,    23,    24,    13,     0,     0,     0,     0,
+       8,     0,     0,    37,     0,     0,    39,    18,    48,    38,
+      40,    43,    42,     0,     0,     0,    41,     0,     0,     0,
+       0,    50,     0,     4,     7,     9,    12,    11,    10,    39,
+       0,    22,    45,    46,    49,    38,    40,    43,    42,     0,
+       0,    33,    35,    36,     0,    47,    39,    30,     0,    51,
+      34
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -26,   -26,   -26,    78,   -26,   -25,   -26,   -26,   -26,   -26,
-     -26,   -26,   -26,   -26,   -26,   -26,   -26,   -26,   -26,   -26,
-     -26
+     -30,   -30,   -30,   -30,   -30,    64,   -30,   -30,    77,   -30,
+     -29,    23,     4,   -17,    25,   -30,   -30
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     2,     8,    26,    27,    28,    29,    30,    31,    32,
-      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
-      43
+      -1,     1,     2,    21,     4,    39,    40,     9,    41,    42,
+      31,    32,    55,    43,    34,    44,    45
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
      positive, shift that token.  If negative, reduce the rule whose
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
-static const yytype_uint8 yytable[] =
+static const yytype_int8 yytable[] =
 {
-      61,    64,    65,    66,    64,    65,    66,     9,    10,    11,
-      12,    13,     1,    14,    15,    16,    17,    18,    55,    69,
-      71,    19,    56,    20,    21,    22,    23,    64,    65,    66,
-       3,    44,     4,    45,    67,    46,    24,    59,    60,    86,
-      87,    89,     9,    10,    11,    12,    68,    25,    14,    15,
-      16,    17,    18,     5,     7,     6,    19,    84,    20,    21,
-      22,    23,    72,    73,    74,    75,    76,    53,    47,    48,
-      54,    24,    49,    50,    51,    52,    57,     9,    10,    11,
-      12,    70,    25,    14,    15,    16,    17,    18,    58,    62,
-      77,    19,    82,    20,    21,    22,    23,    78,    79,    80,
-      81,    83,    90,    91,    92,    63,    24,    93,    95,    94,
-       0,     0,     9,    10,    11,    12,    85,    25,    14,    15,
-      16,    17,    18,     0,     0,     0,    19,    96,    20,    21,
-      22,    23,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,    24,     0,     0,     0,     0,     0,     9,    10,    11,
-      12,    88,    25,    14,    15,    16,    17,    18,     0,     0,
-       0,    19,     0,    20,    21,    22,    23,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,    24,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,    25
+      54,    33,    46,    47,    22,    23,    24,    25,     3,    26,
+      75,    76,    77,    78,    27,    26,    57,    58,    11,    59,
+      79,    28,     5,     6,     7,     8,    29,    28,    72,    73,
+      74,    30,    80,    86,    87,    12,    13,    30,    15,    14,
+      16,    85,    17,    82,    49,    50,    51,    52,    20,    26,
+      18,    54,    19,    36,    53,     6,     7,     8,    35,    56,
+      48,   -15,    61,    37,    38,    28,   -17,   -20,   -19,    62,
+      60,    30,    65,    69,    63,    70,    66,    67,    68,   -16,
+      84,    10,    71,    81,    88,    83,   -31,   -29,   -27,    89,
+     -28,   -32,    90,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,    64
 };
 
 static const yytype_int8 yycheck[] =
 {
-      25,    14,    15,    16,    14,    15,    16,     3,     4,     5,
-       6,     7,     9,     9,    10,    11,    12,    13,     3,    44,
-      45,    17,     7,    19,    20,    21,    22,    14,    15,    16,
-       8,    14,     0,    16,    47,    18,    32,     3,     4,    64,
-      65,    66,     3,     4,     5,     6,     7,    43,     9,    10,
-      11,    12,    13,    43,    45,    44,    17,    44,    19,    20,
-      21,    22,     3,     4,     5,     6,     7,     4,     7,     7,
-       7,    32,     7,     7,     7,     5,    43,     3,     4,     5,
-       6,     7,    43,     9,    10,    11,    12,    13,    43,    46,
-      18,    17,     7,    19,    20,    21,    22,    18,    18,    18,
-      18,     7,     3,     5,     4,    27,    32,     6,    44,     7,
-      -1,    -1,     3,     4,     5,     6,     7,    43,     9,    10,
-      11,    12,    13,    -1,    -1,    -1,    17,    44,    19,    20,
-      21,    22,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    32,    -1,    -1,    -1,    -1,    -1,     3,     4,     5,
-       6,     7,    43,     9,    10,    11,    12,    13,    -1,    -1,
-      -1,    17,    -1,    19,    20,    21,    22,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    32,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    43
+      29,    18,     3,     4,     3,     4,     5,     6,     0,     8,
+       3,     4,     5,     6,    13,     8,    13,    14,    25,    16,
+      13,    20,     9,    10,    11,    12,    25,    20,    57,    58,
+      59,    30,    25,     3,     4,     8,     8,    30,    29,     8,
+      29,    70,    26,    60,     3,     4,     5,     6,    27,     8,
+      17,    80,    17,     8,    13,    10,    11,    12,     7,     4,
+       8,    29,     8,    18,    19,    20,    29,    29,    29,    25,
+      17,    30,    29,     3,    28,    15,    29,    29,    29,    29,
+       8,     4,    26,    60,    80,    60,    29,    29,    29,    26,
+      29,    29,    26,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    40
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     9,    49,     8,     0,    43,    44,    45,    50,     3,
-       4,     5,     6,     7,     9,    10,    11,    12,    13,    17,
-      19,    20,    21,    22,    32,    43,    51,    52,    53,    54,
-      55,    56,    57,    58,    59,    60,    61,    62,    63,    64,
-      65,    66,    67,    68,    14,    16,    18,     7,     7,     7,
-       7,     7,     5,     4,     7,     3,     7,    43,    43,     3,
-       4,    53,    46,    51,    14,    15,    16,    47,     7,    53,
-       7,    53,     3,     4,     5,     6,     7,    18,    18,    18,
-      18,    18,     7,     7,    44,     7,    53,    53,     7,    53,
-       3,     5,     4,     6,     7,    44,    44
+       0,    32,    33,     0,    35,     9,    10,    11,    12,    38,
+      39,    25,     8,     8,     8,    29,    29,    26,    17,    17,
+      27,    34,     3,     4,     5,     6,     8,    13,    20,    25,
+      30,    41,    42,    44,    45,     7,     8,    18,    19,    36,
+      37,    39,    40,    44,    46,    47,     3,     4,     8,     3,
+       4,     5,     6,    13,    41,    43,     4,    13,    14,    16,
+      17,     8,    25,    28,    36,    29,    29,    29,    29,     3,
+      15,    26,    41,    41,    41,     3,     4,     5,     6,    13,
+      25,    42,    44,    45,     8,    41,     3,     4,    43,    26,
+      26
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,    48,    49,    50,    51,    51,    52,    53,    53,    53,
-      53,    53,    53,    53,    53,    53,    54,    54,    54,    54,
-      54,    55,    55,    55,    56,    56,    56,    57,    57,    57,
-      58,    58,    58,    59,    59,    59,    60,    60,    60,    60,
-      61,    61,    62,    63,    63,    63,    63,    64,    64,    64,
-      64,    64,    64,    64,    65,    66,    66,    66,    66,    67,
-      68
+       0,    31,    32,    33,    34,    35,    35,    36,    36,    37,
+      37,    37,    37,    38,    39,    39,    39,    39,    39,    39,
+      39,    39,    39,    39,    39,    39,    39,    40,    40,    40,
+      40,    40,    40,    40,    40,    40,    40,    40,    41,    41,
+      41,    41,    41,    41,    41,    42,    42,    43,    44,    45,
+      46,    47
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     5,     3,     2,     0,     2,     3,     1,     1,
-       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     4,     3,     2,     4,     3,     2,     4,     3,     2,
-       4,     3,     2,     4,     3,     2,     3,     3,     3,     3,
-       1,     1,     2,     3,     3,     3,     3,     1,     2,     1,
-       2,     1,     1,     1,     3,     2,     2,     2,     2,     4,
-       4
+       0,     2,     6,     0,     3,     3,     0,     2,     0,     2,
+       2,     2,     2,     4,     2,     4,     5,     4,     5,     4,
+       4,     4,     6,     4,     4,     2,     2,     3,     3,     3,
+       4,     3,     4,     3,     5,     3,     3,     1,     1,     2,
+       1,     2,     1,     1,     1,     3,     3,     3,     2,     3,
+       2,     4
 };
 
 
@@ -1411,866 +1372,1878 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 83 "sintatica.y" /* yacc.c:1646  */
+#line 124 "sintatica.y" /* yacc.c:1646  */
     {
-				cout << "/*Compilador Uma Linguagem Qualquer*/\n" << "#include <iostream>\n#include<string.h>\n#include<stdio.h>\nint main(void)\n{\n" << (yyvsp[0]).traducao << "\treturn 0;\n}" << endl;
+				string s = declara_variaveis_temp(pilhaVar[pilhaPos],0);
+				cout << "/*Compilador Uma Linguagem Qualquer*/\n" << "#include <iostream>\n#include<string.h>\n#include<stdio.h>\n\nusing namespace std;\n"<< s <<(yyvsp[-4]).traducao << "\nint main(void)\n{\n" << (yyvsp[0]).traducao << "\treturn 0;\n}" << endl;
 			}
-#line 1419 "y.tab.c" /* yacc.c:1646  */
+#line 1381 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 89 "sintatica.y" /* yacc.c:1646  */
+#line 132 "sintatica.y" /* yacc.c:1646  */
     {
-				(yyval).traducao = (yyvsp[-1]).traducao;
+					empilhaNovoMapa();
 			}
-#line 1427 "y.tab.c" /* yacc.c:1646  */
+#line 1389 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 95 "sintatica.y" /* yacc.c:1646  */
+#line 137 "sintatica.y" /* yacc.c:1646  */
     {
-				(yyval).traducao = (yyvsp[-1]).traducao + (yyvsp[0]).traducao;
+
+				pilhaPos = pilhaVar.size() - 1; // Pego o topo da pilha
+				string s = declara_variaveis_temp(pilhaVar[pilhaPos],1);
+				(yyval).traducao = s + (yyvsp[-1]).traducao;
+				pilhaVar.pop_back();// desempilho o mapa ao final do bloco
+				pilhaPos = pilhaVar.size() - 1;
 			}
-#line 1435 "y.tab.c" /* yacc.c:1646  */
+#line 1402 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 5:
+#line 148 "sintatica.y" /* yacc.c:1646  */
+    {
+				(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[-1]).traducao;
+			}
+#line 1410 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 105 "sintatica.y" /* yacc.c:1646  */
+#line 154 "sintatica.y" /* yacc.c:1646  */
     {
-				(yyval).label = "(" + (yyvsp[-1]).label +")";
-				(yyval).traducao= (yyvsp[-1]).traducao;
+				(yyval).traducao = (yyvsp[-1]).traducao + (yyvsp[0]).traducao;
+			}
+#line 1418 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 13:
+#line 192 "sintatica.y" /* yacc.c:1646  */
+    {
+				buscaMapa((yyvsp[-2]).label);
+
+				if(verificaDeclaracao((yyvsp[-2]).label) == 1){
+					erro = "Erro de Semântica na Linha : Eu to na string " + to_string(linha);
+					yyerror(erro);
+				}
+				else if(verificaDeclaracao((yyvsp[-2]).label) == 0){
+					(yyval).label = geraLabel();
+					addVarMap((yyvsp[-3]).tipo,(yyvsp[-2]).label,(yyval).label,(yyvsp[0]).label);
+					string tam = to_string((yyvsp[-3]).tamanho);
+					setTamString((yyvsp[-2]).label,tam);
+				}
+
 
 			}
-#line 1445 "y.tab.c" /* yacc.c:1646  */
+#line 1439 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 15:
+#line 213 "sintatica.y" /* yacc.c:1646  */
+    {
+		
+				if((yyvsp[-3]).label=="int"){
+		
+					buscaMapa((yyvsp[-2]).label);
+		
+					if(verificaDeclaracao((yyvsp[-2]).label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+		
+						erro = "Erro de Semântica na Linha :  eu to na declaracao de int atribuindo valor" + to_string(linha);
+						yyerror(erro);
+					}
+		
+					else if(verificaDeclaracao((yyvsp[-2]).label) == 0){
+		
+						(yyval).label = geraLabel();
+						(yyval).traducao = (yyval).label + " = " + (yyvsp[0]).label + ";\n";
+		
+						addVarMap((yyvsp[-3]).label,(yyvsp[-2]).label,(yyval).label,(yyvsp[0]).label);
+					}
+				}
+		
+				else{
+		
+					erro = "Erro de Semântica na Linha :  eu to na declaracao de int atribuindo valor2" + to_string(linha);
+					yyerror(erro);
+				}
+			}
+#line 1471 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 16:
+#line 242 "sintatica.y" /* yacc.c:1646  */
+    {
+	
+				if((yyvsp[-4]).label == "int" && (yyvsp[-1]).label == "-"){
+	
+					buscaMapa((yyvsp[-3]).label);
+	
+					if(verificaDeclaracao((yyvsp[-3]).label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id 	já declarado.
+	
+						erro = "Erro de Semântica na Linha : eu to na declaracao de int atribuindo valor negativo" + to_string(linha);
+						yyerror(erro);
+					}
+					
+					else if(verificaDeclaracao((yyvsp[-3]).label) == 0){
+							
+						(yyval).label = geraLabel();
+						string temp = "-" + (yyvsp[0]).label;
+						(yyval).traducao = (yyval).label + " = " + temp + ";\n";
+						
+						addVarMap((yyvsp[-4]).label,(yyvsp[-3]).label,(yyval).label,temp);
+					}
+				}
+	
+				else{
+	
+					erro = "Erro de Semântica na Linha : eu to na declaracao de int atribuindo valor negativo " + to_string(linha);
+					yyerror(erro);
+				}	
+			}
+#line 1504 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 17:
+#line 272 "sintatica.y" /* yacc.c:1646  */
+    {
+				if((yyvsp[-3]).label == "float"){
+				
+					buscaMapa((yyvsp[-2]).label);
+				
+					if(verificaDeclaracao((yyvsp[-2]).label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id 	já declarado.
+				
+						erro = "Erro de Semântica na Linha : eu to na declaracao de real atribuindo valor " + to_string(linha);
+						yyerror(erro);
+					}
+				
+					else if(verificaDeclaracao((yyvsp[-2]).label) == 0){
+				
+						(yyval).label = geraLabel();
+						(yyval).traducao = (yyval).label + " = " + (yyvsp[0]).label + ";\n";
+				
+						addVarMap((yyvsp[-3]).label,(yyvsp[-2]).label,(yyval).label,(yyvsp[0]).label);
+					}
+				}
+				
+				else{
+				
+					erro = "Erro de Semântica na Linha : eu to na declaracao de real atribuindo valor2 " + to_string(linha);
+					yyerror(erro);
+				}
+			}
+#line 1535 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 18:
+#line 300 "sintatica.y" /* yacc.c:1646  */
+    {
+	
+				if((yyvsp[-4]).label == "float" && (yyvsp[-1]).label == "-"){
+	
+					buscaMapa((yyvsp[-3]).label);
+	
+					if(verificaDeclaracao((yyvsp[-3]).label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id 	já declarado.
+	
+						erro = "Erro de Semântica na Linha : eu to na declaracao de real atribuindo valor negativo " + to_string(linha);
+						yyerror(erro);
+					}
+	
+					else if(verificaDeclaracao((yyvsp[-3]).label) == 0){
+	
+						(yyval).label = geraLabel();
+						string temp = "-" + (yyvsp[0]).label;
+						(yyval).traducao = (yyval).label + " = " + temp + ";\n";
+	
+						addVarMap((yyvsp[-4]).label,(yyvsp[-3]).label,(yyval).label,temp);
+					}
+				}
+	
+				else{
+	
+					erro = "Erro de Semântica na Linha :  eu to na declaracao de real atribuindo valor negativo" + to_string(linha);
+					yyerror(erro);
+				}
+			}
+#line 1568 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 19:
+#line 330 "sintatica.y" /* yacc.c:1646  */
+    {
+	
+				if((yyvsp[-3]).label == "char"){
+		
+					buscaMapa((yyvsp[-2]).label);
+		
+					if(verificaDeclaracao((yyvsp[-2]).label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+		
+						erro = "Erro de Semântica na Linha : eu to na declaracao de char atribuindo valor " + to_string(linha);
+						yyerror(erro);
+					}
+		
+					else if(verificaDeclaracao((yyvsp[-2]).label) == 0){
+		
+						(yyval).label = geraLabel();
+						(yyval).traducao = (yyval).label + " = " + (yyvsp[0]).label + ";\n";
+		
+						addVarMap((yyvsp[-3]).label,(yyvsp[-2]).label,(yyval).label,(yyvsp[0]).label);
+					}
+				}
+		
+				else{
+		
+					erro = "Erro de Semântica na Linha : eu to na declaracao de char atribuindo valor2 " + to_string(linha);
+					yyerror(erro);
+				}
+			}
+#line 1600 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 20:
+#line 359 "sintatica.y" /* yacc.c:1646  */
+    {
+	
+				if((yyvsp[-3]).label == "bool"){
+	
+					buscaMapa((yyvsp[-2]).label);
+	
+					if(verificaDeclaracao((yyvsp[-2]).label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+	
+						erro = "Erro de Semântica na Linha : eu to na declaracao de boolean atribuindo valor " + to_string(linha);
+						yyerror(erro);
+					}
+	
+					else if(verificaDeclaracao((yyvsp[-2]).label) == 0){
+	
+						(yyval).label = geraLabel();
+	
+						if((yyvsp[0]).label=="true"){
+	
+							(yyval).traducao = (yyval).label + " = " + "1" + ";\n";
+							addVarMap((yyvsp[-3]).label,(yyvsp[-2]).label,(yyval).label,"1");
+						}
+	
+						else if((yyvsp[0]).label == "false"){
+	
+							(yyval).traducao = (yyval).label + " = " + "0" + ";\n";
+							addVarMap((yyvsp[-3]).label,(yyvsp[-2]).label,(yyval).label,"0");
+						}
+					}
+				}
+	
+				else{
+	
+					erro = "Erro de Semântica na Linha : eu to na declaracao de boolean atribuindo valor2 " + to_string(linha);
+					yyerror(erro);
+				}
+			}
+#line 1641 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 127 "sintatica.y" /* yacc.c:1646  */
+#line 397 "sintatica.y" /* yacc.c:1646  */
     {
-		    	(yyval).label = geraLabel();
+				buscaMapa((yyvsp[-2]).label);
+				
+				if(verificaDeclaracao((yyvsp[-2]).label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+				
+					erro = "Erro de Semântica na Linha : eu to na declaracao de exp ARIT atribuindo valor " + to_string(linha);
+					yyerror(erro);
+				}
 
-				(yyval).traducao = "\t" + (yyvsp[0]).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
+				else if(verificaDeclaracao((yyvsp[-2]).label) == 0){
+				
+					(yyval).label = geraLabel();
+				
+					if((yyvsp[-3]).label == (yyvsp[0]).tipo){
+					
+						if((yyvsp[0]).label == "NULL"){
+							
+							(yyval).traducao = (yyval).label + " = " + (yyvsp[0]).tipo_traducao + " ;\n\n";
 
-				addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
-		    }
-#line 1457 "y.tab.c" /* yacc.c:1646  */
+							addVarMap((yyvsp[-3]).label,(yyvsp[-2]).label,(yyval).label,(yyvsp[0]).tipo_traducao);
+						}
+
+						else{
+		
+							//cout<<$4.label<<endl<<endl<<$$.label<<endl<<$4.tipo_traducao<<endl; 
+							
+							(yyval).traducao = (yyvsp[0]).label + (yyval).label + " = " + (yyvsp[0]).tipo_traducao + " ;\n\n";
+							
+							addVarMap((yyvsp[-3]).label,(yyvsp[-2]).label,(yyval).label,(yyvsp[0]).tipo_traducao);
+						}
+					}
+
+					else{
+					
+						erro = "Erro de Semântica na Linha : eu to na declaracao de expressões atribuindo valor2 (tipo da variavel que vai receber a exp esta errado) " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+			}
+#line 1685 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 135 "sintatica.y" /* yacc.c:1646  */
+#line 438 "sintatica.y" /* yacc.c:1646  */
     {
-		    	if(verificaDeclaracao((yyvsp[-2]).label)==0){
-		    		(yyval).label = geraLabel();
+				if((yyvsp[-5]).label == "bool"){
 
-					(yyval).traducao = "\t" + (yyvsp[0]).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
+					buscaMapa((yyvsp[-4]).label);
+				
+					if(verificaDeclaracao((yyvsp[-4]).label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+					
+						erro = "Erro de Semântica na Linha : eu to na declaracao de exp REL atribuindo valor(variavel ja existente) " + to_string(linha);
+						yyerror(erro);
+					}
 
-					addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
+					else if(verificaDeclaracao((yyvsp[-4]).label) == 0){
+
+						(yyval).label = geraLabel();
+
+						if((yyvsp[-1]).label == "NULL"){
+							
+							(yyval).traducao = (yyval).label + " = " + (yyvsp[-1]).tipo_traducao + " ;\n\n";
+
+							addVarMap((yyvsp[-5]).label,(yyvsp[-4]).label,(yyval).label,(yyvsp[-1]).tipo_traducao);
+						}
+
+						else{
+																
+							(yyval).traducao = (yyvsp[-1]).label + (yyval).label + " = " + (yyvsp[-1]).tipo_traducao + " ;\n\n";
+							
+							addVarMap((yyvsp[-5]).label,(yyvsp[-4]).label,(yyval).label,(yyvsp[-1]).tipo_traducao);
+						}
+
+					}
+
+
 				}
-				if(verificaDeclaracao((yyvsp[-2]).label)==1){
-					string tempLabel = retornaNome((yyvsp[-2]).label);
-					(yyval).traducao = "\t" + tempLabel + " = " + (yyvsp[0]).label + ";\n\n";
- 				}
-		    }
-#line 1475 "y.tab.c" /* yacc.c:1646  */
+
+				else{
+					
+					erro = "Erro de Semântica na Linha : eu to na declaracao de expressões atribuindo valor3(Relacional)(tipo da variavel que vai receber a exp esta errado) " + to_string(linha);
+					yyerror(erro);
+				}
+			}
+#line 1730 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 149 "sintatica.y" /* yacc.c:1646  */
+#line 480 "sintatica.y" /* yacc.c:1646  */
     {
-		    	(yyval).label = geraLabel();
+				if((yyvsp[-3]).label == "bool"){
 
-				(yyval).traducao = "\tint " + (yyval).label + ";\n\n";
+					buscaMapa((yyvsp[-2]).label);
+				
+					if(verificaDeclaracao((yyvsp[-2]).label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+					
+						erro = "Erro de Semântica na Linha : eu to na declaracao de exp REL atribuindo valor(variavel ja existente) " + to_string(linha);
+						yyerror(erro);
+					}
 
-				addVarMap("int",(yyvsp[0]).label,(yyval).label);
-		    }
-#line 1487 "y.tab.c" /* yacc.c:1646  */
+					else if(verificaDeclaracao((yyvsp[-2]).label) == 0){
+						
+						
+						(yyval).label = geraLabel();
+
+						(yyval).traducao = (yyval).label +  (yyvsp[0]).label;
+							
+						addVarMap((yyvsp[-3]).label,(yyvsp[-2]).label,(yyval).label,(yyvsp[0]).tipo_traducao);	
+					}
+				}
+			}
+#line 1757 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 158 "sintatica.y" /* yacc.c:1646  */
+#line 504 "sintatica.y" /* yacc.c:1646  */
     {
-		    	(yyval).label = geraLabel();
-				(yyval).traducao = "\t" + (yyvsp[0]).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
-
-				addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
-		    }
-#line 1498 "y.tab.c" /* yacc.c:1646  */
+				//**************Definir conteudo*****************************************
+			}
+#line 1765 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 165 "sintatica.y" /* yacc.c:1646  */
+#line 509 "sintatica.y" /* yacc.c:1646  */
     {
-		    	if(verificaDeclaracao((yyvsp[-2]).label)==0){
-		    		(yyval).label = geraLabel();
-
-					(yyval).traducao = "\t" + (yyvsp[0]).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
-
-					addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
+			
+				buscaMapa((yyvsp[0]).label);
+			
+				if(verificaDeclaracao((yyvsp[0]).label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+			
+					erro = "Erro de Semântica na Linha : eu to na declaracao de variavel sem atribuir valor " + to_string(linha);
+					yyerror(erro);
 				}
-				if(verificaDeclaracao((yyvsp[-2]).label)==1){
-					string tempLabel = retornaNome((yyvsp[-2]).label);
-					(yyval).traducao = "\t" + tempLabel + " = " + (yyvsp[0]).label + ";\n\n";
- 				}
-		    }
-#line 1516 "y.tab.c" /* yacc.c:1646  */
+			
+				else if(verificaDeclaracao((yyvsp[0]).label) == 0){
+				
+						(yyval).label = geraLabel();
+						addVarMap((yyvsp[-1]).label,(yyvsp[0]).label,(yyval).label,"");
+					
+				}
+			}
+#line 1787 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 179 "sintatica.y" /* yacc.c:1646  */
+#line 528 "sintatica.y" /* yacc.c:1646  */
     {
-		    	(yyval).label = geraLabel();
-
-				(yyval).traducao = "\tfloat " + (yyval).label + ";\n\n";
-
-				addVarMap("float",(yyvsp[0]).label,(yyval).label);
-		    }
-#line 1528 "y.tab.c" /* yacc.c:1646  */
+		
+				buscaMapa((yyvsp[0]).label);
+		
+				if(verificaDeclaracao((yyvsp[0]).label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+		
+					erro = "Erro de Semântica na Linha :  to no qualquer" + to_string(linha);
+					yyerror(erro);
+				}
+		
+				else if(verificaDeclaracao((yyvsp[0]).label) == 0){
+		
+					(yyval).label = geraLabel();
+					addVarMap((yyvsp[-1]).label,(yyvsp[0]).label,(yyval).label,"");
+				}
+			}
+#line 1808 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 188 "sintatica.y" /* yacc.c:1646  */
+#line 547 "sintatica.y" /* yacc.c:1646  */
     {
-		    	(yyval).label = geraLabel();
-				(yyval).traducao = "\t" + (yyvsp[0]).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
+				buscaMapa((yyvsp[-2]).label);
+				if(verificaDeclaracao((yyvsp[-2]).label) == 1){ // Está tentando alterar o valor uma variavel já existente.
+				
+					string temp = retornaTipo((yyvsp[-2]).label);
+					string tempLabel = retornaNome((yyvsp[-2]).label);
+				
+					if((yyvsp[0]).tipo == temp){
 
-				addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
-		    }
-#line 1539 "y.tab.c" /* yacc.c:1646  */
+						if((yyvsp[0]).label == "true"){
+							alteraValor((yyvsp[-2]).label,"true");
+							(yyval).traducao = tempLabel + " = 1;\n"; // Printa no código intermediário a alteração
+						}
+				
+						else if((yyvsp[0]).label == "false"){
+							alteraValor((yyvsp[-2]).label,"false");
+							(yyval).traducao = tempLabel + " = 0;\n";
+						}
+					}
+					else if(temp == ""){
+
+						mudaTipo((yyvsp[-2]).label,"int");
+				
+						if((yyvsp[0]).label == "true"){
+				
+							alteraValor((yyvsp[-2]).label,"true");
+							(yyval).traducao = tempLabel + " = 1;\n"; // Printa no código intermediário a alteração
+						}
+				
+						else if((yyvsp[0]).label == "false"){
+				
+							alteraValor((yyvsp[-2]).label,"false");
+							(yyval).traducao = tempLabel + " = 0;\n";
+						}
+
+					}
+				
+					else if((yyvsp[0]).tipo != temp){ // Está tentando atribuir um valor de um tipo diferente a uma variável boolean
+				
+						erro = "Erro de Semântica na Linha : eu to na altera boolean " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+				
+				else if(verificaDeclaracao((yyvsp[-2]).label) == 0){// Variavel não declarada
+					
+					erro = "Erro de Semântica na Linha :  eu to na altera boolean2" + to_string(linha);
+					yyerror(erro);
+				}
+			}
+#line 1863 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 195 "sintatica.y" /* yacc.c:1646  */
+#line 599 "sintatica.y" /* yacc.c:1646  */
     {
-		    	if(verificaDeclaracao((yyvsp[-2]).label)==0){
-		    		(yyval).label = geraLabel();
+			
+				buscaMapa((yyvsp[-2]).label);
+				if(verificaDeclaracao((yyvsp[-2]).label) == 1){ // Está tentando alterar o valor uma variavel já existente.
 
-					(yyval).traducao = "\t" + (yyvsp[0]).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
-
-					addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
-				}
-				if(verificaDeclaracao((yyvsp[-2]).label)==1){
+					string temp = retornaTipo((yyvsp[-2]).label);
 					string tempLabel = retornaNome((yyvsp[-2]).label);
-					(yyval).traducao = "\t" + tempLabel + " = " + (yyvsp[0]).label + ";\n\n";
- 				}
-		    }
-#line 1557 "y.tab.c" /* yacc.c:1646  */
+
+					if((yyvsp[0]).tipo == temp){
+			
+						alteraValor((yyvsp[-2]).label,(yyvsp[0]).label);
+						(yyval).traducao =tempLabel + " = " + (yyvsp[0]).label + ";\n"; // Printa no código intermediário a alteração
+					}
+			
+					else if(temp == ""){
+			
+						alteraValor((yyvsp[-2]).label,(yyvsp[0]).label);
+						mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
+
+						(yyval).traducao = tempLabel + " = " + (yyvsp[0]).label + ";\n"; // Printa no código intermediário a alteração
+					}
+			
+					else if((yyvsp[0]).tipo != temp){ // Está tentando atribuir um valor de um tipo diferente a uma variável char
+			
+						erro = "Erro de Semântica na Linha : eu to na altera char " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+				
+				else if(verificaDeclaracao((yyvsp[-2]).label) == 0){// Variavel não declarada
+				
+					erro = "Erro de Semântica na Linha : eu to na altera char2 " + to_string(linha);
+					yyerror(erro);
+				}
+			}
+#line 1903 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 209 "sintatica.y" /* yacc.c:1646  */
+#line 636 "sintatica.y" /* yacc.c:1646  */
     {
-		    	(yyval).label = geraLabel();
+			
+				buscaMapa((yyvsp[-2]).label);
+			
+				if(verificaDeclaracao((yyvsp[-2]).label) == 1){ // Está tentando alterar o valor uma variavel já existente.
+			
+					string temp = retornaTipo((yyvsp[-2]).label);
+					string tempLabel = retornaNome((yyvsp[-2]).label);
+			
+					if((yyvsp[0]).tipo == temp){
+			
+						alteraValor((yyvsp[-2]).label,(yyvsp[0]).label);
+						(yyval).traducao =tempLabel + " = " + (yyvsp[0]).label + ";\n"; // Printa no código intermediário a alteração
+					}
+			
+					else if(temp == ""){
+			
+						alteraValor((yyvsp[-2]).label,(yyvsp[0]).label);
+						mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
 
-				(yyval).traducao = "\tchar " + (yyval).label + ";\n\n";
-
-				addVarMap("char",(yyvsp[0]).label,(yyval).label);
-		    }
-#line 1569 "y.tab.c" /* yacc.c:1646  */
+						(yyval).traducao = tempLabel + " = " + (yyvsp[0]).label + ";\n"; // Printa no código intermediário a alteração
+					}
+			
+					else if((yyvsp[0]).tipo != temp){ // Está tentando atribuir um valor de um tipo diferente a uma variável real
+			
+						erro = "Erro de Semântica na Linha : eu to na altera real " + to_string(linha);
+						yyerror(erro);
+				
+					}
+				}
+				
+				else if(verificaDeclaracao((yyvsp[-2]).label) == 0){// Variavel não declarada
+				
+					erro = "Erro de Semântica na Linha : eu to na altera real 2 " + to_string(linha);
+					yyerror(erro);
+				}
+			}
+#line 1945 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 218 "sintatica.y" /* yacc.c:1646  */
+#line 675 "sintatica.y" /* yacc.c:1646  */
     {
-		    	(yyval).label = geraLabel();
-				(yyval).traducao = "\t" + (yyvsp[0]).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
+			
+				if((yyvsp[-1]).label == "-"){
+			
+					buscaMapa((yyvsp[-3]).label);
+			
+					if(verificaDeclaracao((yyvsp[-3]).label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
 
-				addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
-		    }
-#line 1580 "y.tab.c" /* yacc.c:1646  */
+						string temp = retornaTipo((yyvsp[-3]).label);
+						string tempLabel = retornaNome((yyvsp[-3]).label);
+
+						if((yyvsp[0]).tipo == temp){
+			
+							string tempV = "-" + (yyvsp[0]).label;
+							alteraValor((yyvsp[-3]).label,tempV);
+			
+							(yyval).traducao = tempLabel + " = " + tempV + ";\n"; // Printa no código intermediário a alteração
+						}
+			
+						else if(temp == ""){
+			
+							string tempV = "-" + (yyvsp[0]).label;
+							alteraValor((yyvsp[-3]).label,tempV);
+							mudaTipo((yyvsp[-3]).label,(yyvsp[0]).tipo);
+
+							(yyval).traducao = tempLabel + " = " + tempV + ";\n"; // Printa no código intermediário a alteração
+						}
+			
+						else if((yyvsp[0]).tipo != temp){ // Está tentando atribuir um valor de um tipo diferente a uma variável real
+			
+							erro = "Erro de Semântica na Linha : eu to na altera real negativo " + to_string(linha);
+							yyerror(erro);
+						}
+					}
+
+					else if(verificaDeclaracao((yyvsp[-3]).label) == 0){// Variavel não declarada
+					
+						erro = "Erro de Semântica na Linha : eu to na altera real negativo2 " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+				
+				else{
+				
+					erro = "Erro de Semântica na Linha : eu to na altera real negativo3 " + to_string(linha);
+					yyerror(erro);
+				}
+			}
+#line 1998 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 225 "sintatica.y" /* yacc.c:1646  */
+#line 725 "sintatica.y" /* yacc.c:1646  */
     {
-		    	if(verificaDeclaracao((yyvsp[-2]).label)==0){
-		    		(yyval).label = geraLabel();
-
-					(yyval).traducao = "\t" + (yyvsp[0]).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
-
-					addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
-				}
-				if(verificaDeclaracao((yyvsp[-2]).label)==1){
+				buscaMapa((yyvsp[-2]).label);
+		
+				if(verificaDeclaracao((yyvsp[-2]).label) == 1){ // Está tentando alterar o valor uma variavel já existente.
+		
+					string temp = retornaTipo((yyvsp[-2]).label);
 					string tempLabel = retornaNome((yyvsp[-2]).label);
-					(yyval).traducao = "\t" + tempLabel + " = " + (yyvsp[0]).label + ";\n\n";
- 				}
-		    }
-#line 1598 "y.tab.c" /* yacc.c:1646  */
+
+					if((yyvsp[0]).tipo == temp){
+		
+						alteraValor((yyvsp[-2]).label,(yyvsp[0]).label);
+						(yyval).traducao = tempLabel + " = " + (yyvsp[0]).label + ";\n"; // Printa no código intermediário a alteração
+					}
+		
+					else if(temp == ""){
+		
+						alteraValor((yyvsp[-2]).label,(yyvsp[0]).label);
+						mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
+
+						(yyval).traducao = tempLabel + " = " + (yyvsp[0]).label + ";\n"; // Printa no código intermediário a alteração
+					}
+		
+					else if((yyvsp[0]).tipo != temp){ // Está tentando atribuir um valor de um tipo diferente a uma variável inteira
+		
+						erro = "Erro de Semântica na Linha : eu to na altera int " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+				
+				else if(verificaDeclaracao((yyvsp[-2]).label) == 0){// Variavel não declarada
+				
+					erro = "Erro de Semântica na Linha : eu to na altera int2 " + to_string(linha);
+					yyerror(erro);
+				}
+			}
+#line 2038 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 239 "sintatica.y" /* yacc.c:1646  */
+#line 762 "sintatica.y" /* yacc.c:1646  */
     {
-		    	(yyval).label = geraLabel();
+			
+				if((yyvsp[-1]).label == "-"){
+			
+					buscaMapa((yyvsp[-3]).label);
+			
+					if(verificaDeclaracao((yyvsp[-3]).label) == 1){ // Está alterandor uma variavel já existente, ou seja está usando um id já declarado.
+			
+						string temp = retornaTipo((yyvsp[-3]).label);
+						string tempLabel = retornaNome((yyvsp[-3]).label);
 
-				(yyval).traducao = "\tboolean " + (yyval).label + ";\n\n";
+						if((yyvsp[0]).tipo == temp){
+			
+							string tempV = "-" + (yyvsp[0]).label;
+							alteraValor((yyvsp[-3]).label,tempV);
+			
+							(yyval).traducao = tempLabel + " = " + tempV + ";\n"; // Printa no código intermediário a alteração
+						}
+			
+						else if(temp == ""){
+			
+							string tempV = "-" + (yyvsp[0]).label;
+							alteraValor((yyvsp[-3]).label,tempV);
+							mudaTipo((yyvsp[-3]).label,(yyvsp[0]).tipo);
 
-				addVarMap("boolean",(yyvsp[0]).label,(yyval).label);
-		    }
-#line 1610 "y.tab.c" /* yacc.c:1646  */
+							(yyval).traducao = tempLabel + " = " + tempV + ";\n"; // Printa no código intermediário a alteração
+						}
+			
+						else if((yyvsp[0]).tipo != temp){ // Está tentando atribuir um valor de um tipo diferente a uma variável inteira
+			
+							erro = "Erro de Semântica na Linha : eu to na altera int negativo " + to_string(linha);
+							yyerror(erro);
+						}
+					}
+					
+					else if(verificaDeclaracao((yyvsp[-3]).label) == 0){ // Variavel não declarada
+					
+						erro = "Erro de Semântica na Linha :  eu to na altera int negativo2" + to_string(linha);
+						yyerror(erro);
+					}
+				}
+				
+				else{
+				
+					erro = "Erro de Semântica na Linha :  eu to na altera int negativo3" + to_string(linha);
+					yyerror(erro);
+				}
+			}
+#line 2091 "y.tab.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 248 "sintatica.y" /* yacc.c:1646  */
-    {
-		    	(yyval).label = geraLabel();
-				(yyval).traducao = "\t" + (yyvsp[0]).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
-
-				addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
-		    }
-#line 1621 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 34:
-#line 255 "sintatica.y" /* yacc.c:1646  */
-    {
-		    	if(verificaDeclaracao((yyvsp[-2]).label)==0){
-		    		(yyval).label = geraLabel();
-
-					(yyval).traducao = "\t" + (yyvsp[0]).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
-
-					addVarMap((yyvsp[0]).tipo,(yyvsp[-2]).label,(yyval).label);
-				}
-				if(verificaDeclaracao((yyvsp[-2]).label)==1){
-					string tempLabel = retornaNome((yyvsp[-2]).label);
-					(yyval).traducao = "\t" + tempLabel + " = " + (yyvsp[0]).label + ";\n\n";
- 				}
-		    }
-#line 1639 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 35:
-#line 269 "sintatica.y" /* yacc.c:1646  */
-    {
-		    	(yyval).label = geraLabel();
-
-				(yyval).traducao = "\tid " + (yyval).label + ";\n\n";
-
-				addVarMap("id",(yyvsp[0]).label,(yyval).label);
-		    }
-#line 1651 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 36:
-#line 279 "sintatica.y" /* yacc.c:1646  */
-    {	
-
-				if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)==-1){
-					erro = "Erro de Semântica na Linha :  " + to_string(linha);
-					yyerror(erro);
-				}
-
-				if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 0 ){
-					(yyval).label = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
-				}
-
-				if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 1 ){
-					(yyval).tipo = (yyvsp[-2]).tipo = (yyvsp[0]).tipo;
-					(yyval).label = geraLabel();
-					string tempLabel = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")"+ (yyvsp[-2]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel + " = " + " "+ (yyval).label + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
-
-				}
-
-				if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 2 ){
-					(yyval).tipo = (yyvsp[0]).tipo = (yyvsp[-2]).tipo;
-					(yyval).label = geraLabel();
-					string tempLabel = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel + " = " + " "+ (yyvsp[-2]).label + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
-				}
-			}
-#line 1688 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 37:
-#line 313 "sintatica.y" /* yacc.c:1646  */
-    {
-				if(verificaDeclaracao((yyvsp[-2]).label)==1){
-					string tempTipo = retornaTipo((yyvsp[-2]).label);
-					string tempLabel = retornaNome((yyvsp[-2]).label);
-					(yyval).label = geraLabel();
-
-					if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == -1 ){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
-						yyerror(erro);
-					}
-
-					if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == 0 ){
-						(yyval).tipo = tempTipo;
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
-					}
-					if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == 1 ){
-					(yyval).tipo = tempTipo = (yyvsp[0]).tipo;
-					mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
-					}
-					if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == 2 ){
-						(yyval).tipo = (yyvsp[0]).tipo = tempTipo;
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
-					}
-				}
-				if(verificaDeclaracao((yyvsp[-2]).label)==0 )
-				{
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);
-				}
-			}
-#line 1733 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 38:
-#line 355 "sintatica.y" /* yacc.c:1646  */
-    {
-				if(verificaDeclaracao((yyvsp[0]).label)==1 ){
-				string tempTipo = retornaTipo((yyvsp[0]).label);
-				string tempLabel = retornaNome((yyvsp[0]).label);
-				(yyval).label = geraLabel();
-
-				if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == -1 ){
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);
-				}
-
-				if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == 0 ){
-					(yyval).tipo = tempTipo;
-					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + tempLabel + (yyvsp[-1]).label + (yyvsp[-2]).label +" ;\n\n";
-				}
-				if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == 1 ){
-					(yyval).tipo = (yyvsp[0]).tipo = tempTipo;
-					string tempLabel0 = geraLabel();
-
-					(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-					(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + (yyvsp[-1]).label + tempLabel +" ;\n\n";
-					}
-					if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == 2 ){
-						(yyval).tipo = tempTipo = (yyvsp[-2]).tipo;
-						mudaTipo((yyvsp[0]).label,(yyvsp[-2]).tipo);
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyvsp[-2]).label + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
-					}
-				}
-				if(verificaDeclaracao((yyvsp[0]).label)==0)
-				{
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);
-				}
-			}
-#line 1778 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 39:
-#line 398 "sintatica.y" /* yacc.c:1646  */
-    {	
-				
-				if(verificaDeclaracao((yyvsp[-2]).label)==1 && verificaDeclaracao((yyvsp[0]).label)==1 ){
-					string tempLabel  = retornaNome((yyvsp[-2]).label);
-					string tempLabel2 = retornaNome((yyvsp[0]).label);
-					string tempTipo   = retornaTipo((yyvsp[-2]).label);
-					string tempTipo2  = retornaTipo((yyvsp[0]).label);
-					(yyval).label = geraLabel();
-
-					if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == -1 ){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
-						yyerror(erro);
-					}
-
-					if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == 0 ){
-						(yyval).tipo = tempTipo;
-						(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + (yyvsp[-1]).label + tempLabel2 +" ;\n\n";
-					}
-
-					if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == 1 ){
-						(yyval).tipo = tempTipo = tempTipo2;
-						mudaTipo(tempLabel,tempTipo2);
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + (yyvsp[-1]).label + tempLabel2 +" ;\n\n";
-					}
-
-					if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == 2 ){
-						(yyval).tipo = tempTipo2 = tempTipo;
-						mudaTipo(tempLabel2,tempTipo);
-						string tempLabel0 = geraLabel();
-
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
-					}
-				}
-				if(verificaDeclaracao((yyvsp[-2]).label)==0 || verificaDeclaracao((yyvsp[0]).label)==0)
-				{
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);
-				}			
-			}
-#line 1829 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 42:
-#line 451 "sintatica.y" /* yacc.c:1646  */
-    {
-				(yyval).label = geraLabel();
-				string templabel = geraLabel();
-				(yyval).traducao = (yyvsp[-1]).traducao + (yyvsp[0]).traducao + "\t" +
-				(yyvsp[0]).tipo + " " + (yyval).label + " = " + " " + (yyvsp[0]).label +" ;\n\n\t" +
-				(yyvsp[0]).tipo + " " + templabel + " = " + " not " + (yyval).label +" ;\n\n";
-			}
-#line 1841 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 43:
-#line 461 "sintatica.y" /* yacc.c:1646  */
+#line 812 "sintatica.y" /* yacc.c:1646  */
     {
 
-				if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)==-1)
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
+				buscaMapa((yyvsp[-2]).label);
 
-				if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 0 ){
-					(yyval).label = geraLabel();
-					(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-					(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
-				}
-			}
-#line 1858 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 44:
-#line 474 "sintatica.y" /* yacc.c:1646  */
-    {
-				if(verificaDeclaracao((yyvsp[-2]).label) == 1){
-					string tempTipo = retornaTipo((yyvsp[-2]).label);
-					string tempLabel = retornaNome((yyvsp[-2]).label);
-
-					if(verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)==-1){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
-						yyerror(erro);
-					}
-					if(verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 0 ){
-						(yyval).label = geraLabel();
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
-					}
-				}
 				if(verificaDeclaracao((yyvsp[-2]).label) == 0){
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
+
+					erro = "Erro de Semântica na Linha : eu to na altera com expressões  arit " + to_string(linha);
 					yyerror(erro);
 				}
-			}
-#line 1883 "y.tab.c" /* yacc.c:1646  */
-    break;
 
-  case 45:
-#line 495 "sintatica.y" /* yacc.c:1646  */
-    {
-				if(verificaDeclaracao((yyvsp[0]).label)== 1){
-					string tempTipo = retornaTipo((yyvsp[0]).label);
-					string tempLabel = retornaNome((yyvsp[0]).label);
-					if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo)==-1){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
-						yyerror(erro);
-					}
-					if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo)== 0 ){
-						(yyval).label = geraLabel();
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + (yyvsp[-1]).label + tempLabel +" ;\n\n";
-					}
-				}
-				if(verificaDeclaracao((yyvsp[0]).label)==0){
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);			
-				}
-			}
-#line 1907 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 46:
-#line 515 "sintatica.y" /* yacc.c:1646  */
-    {
-				if(verificaDeclaracao((yyvsp[-2]).label) == 1 && verificaDeclaracao((yyvsp[0]).label) ==1 ){
-					string tempTipo1 = retornaTipo((yyvsp[-2]).label);
-					string tempLabel1 = retornaNome((yyvsp[-2]).label);
-					string tempTipo = retornaTipo((yyvsp[0]).label);
-					string tempLabel = retornaNome((yyvsp[0]).label);
-					if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo)==-1){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
-						yyerror(erro);
-					}
-					if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo)== 0 ){
-						(yyval).label = geraLabel();
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + tempLabel1 + (yyvsp[-1]).label + tempLabel +" ;\n\n";
-					}
-				}
-				if(verificaDeclaracao((yyvsp[-2]).label)==0 || verificaDeclaracao((yyvsp[0]).label) == 0){
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);			
-				}
-			}
-#line 1933 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 47:
-#line 539 "sintatica.y" /* yacc.c:1646  */
-    {
-		    	(yyval).label = geraLabel();
-					(yyval).traducao = "\t" + (yyval).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
-		    }
-#line 1942 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 48:
-#line 545 "sintatica.y" /* yacc.c:1646  */
-    {
-				(yyval).label = geraLabel();
-				(yyval).tipo = (yyvsp[0]).tipo;
-				(yyval).traducao = "\t" + (yyval).tipo + " " + (yyval).label + " = " + " - " + (yyvsp[0]).label + ";\n\n";
-			}
-#line 1952 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 49:
-#line 551 "sintatica.y" /* yacc.c:1646  */
-    {
-		    	(yyval).label = geraLabel();
-					(yyval).traducao = "\t" + (yyval).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
-		    }
-#line 1961 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 50:
-#line 556 "sintatica.y" /* yacc.c:1646  */
-    {
-					(yyval).label = geraLabel();
-					(yyval).tipo = (yyvsp[0]).tipo;
-					(yyval).traducao = "\t" + (yyval).tipo + " " + (yyval).label + " = " + " - " + (yyvsp[0]).label + ";\n\n";
-				}
-#line 1971 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 51:
-#line 563 "sintatica.y" /* yacc.c:1646  */
-    {
-		    }
-#line 1978 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 52:
-#line 567 "sintatica.y" /* yacc.c:1646  */
-    {
-		    	(yyval).label = geraLabel();
-					(yyval).traducao = "\t" + (yyval).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
-		    }
-#line 1987 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 53:
-#line 573 "sintatica.y" /* yacc.c:1646  */
-    {
-		    	(yyval).label = geraLabel();
-					(yyval).traducao = "\t" + (yyval).tipo + " " + (yyval).label + " = " + (yyvsp[0]).label + ";\n\n";
-		    }
-#line 1996 "y.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 54:
-#line 580 "sintatica.y" /* yacc.c:1646  */
-    {
-				(yyval).tipo = "boolean";
-				(yyval).label = geraLabel();
-
-				if((yyvsp[-2]).tipo == "id" && (yyvsp[0]).tipo == "id"){
-					if(verificaDeclaracao((yyvsp[-2]).label) == 1 && verificaDeclaracao((yyvsp[0]).label) == 1){
-						string tempLabel1  = retornaNome((yyvsp[-2]).label);
-						string tempLabel2 = retornaNome((yyvsp[0]).label);
-						string tempTipo   = retornaTipo((yyvsp[-2]).label);
-						string tempTipo2  = retornaTipo((yyvsp[0]).label);			
-						if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == -1 ){
-							erro = "Erro de Semântica na Linha : " + to_string(linha);
-							yyerror(erro);
-						}
-						if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == 0 ){		
-							(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + tempLabel1 + (yyvsp[-1]).label + tempLabel2 +" ;\n\n";
-						}
-						if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == 1 ){					
-							tempTipo = tempTipo2;
-							mudaTipo(tempLabel1,tempTipo2);
-							string tempLabel0 = geraLabel();
-							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel1 + " ;\n\n" + "\t" +
-							(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + (yyvsp[-1]).label + tempLabel2 +" ;\n\n";
-						}
-						if ( verificaCast(tempTipo,(yyvsp[-1]).label,tempTipo2) == 2 ){												
-							tempTipo2 = tempTipo;
-							mudaTipo(tempLabel2,tempTipo);
-							string tempLabel0 = geraLabel();
-							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-							(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel1 + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
-						}
-					}
-					if(verificaDeclaracao((yyvsp[-2]).label) == 0 || verificaDeclaracao((yyvsp[0]).label) == 0){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
-						yyerror(erro);
-					}
-				}
-				else if((yyvsp[-2]).tipo == "id"){
-					if(verificaDeclaracao((yyvsp[-2]).label) == 1){
-						string tempTipo = retornaTipo((yyvsp[-2]).label);
-						string tempLabel = retornaNome((yyvsp[-2]).label);
-						if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == -1 ){
-							erro = "Erro de Semântica na Linha : " + to_string(linha);
-							yyerror(erro);
-						}
-						if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == 0 ){
-							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + tempLabel + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
-						}
-						if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == 1 ){
-					
-							tempTipo = (yyvsp[0]).tipo;
-							mudaTipo((yyvsp[-2]).label,(yyvsp[0]).tipo);
-							string tempLabel0 = geraLabel();
+				else if(verificaDeclaracao((yyvsp[-2]).label) == 1){
 				
-							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-							(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
+					string tempTipo = retornaTipo((yyvsp[-2]).label);
+					string tempLabel = retornaNome((yyvsp[-2]).label);
+
+					if(tempTipo == (yyvsp[0]).tipo){
+
+						if((yyvsp[0]).label == "NULL"){
+
+							alteraValor((yyvsp[-2]).label,(yyvsp[0]).tipo_traducao);
+							(yyval).traducao = tempLabel + " = " + (yyvsp[0]).tipo_traducao + " ;\n\n";
 						}
-						if ( verificaCast(tempTipo,(yyvsp[-1]).label,(yyvsp[0]).tipo) == 2 ){
-							(yyvsp[0]).tipo = tempTipo;
-							string tempLabel0 = geraLabel();
-							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-							(yyval).tipo + " " + tempLabel0 + " = " + " "+ tempLabel + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
+
+						else{
+							alteraValor((yyvsp[-2]).label,(yyvsp[0]).tipo_traducao);
+							(yyval).traducao = (yyvsp[0]).label + tempLabel + " = " + (yyvsp[0]).tipo_traducao + " ;\n\n";
 						}
+
 					}
-					if(verificaDeclaracao((yyvsp[-2]).label) == 0){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
+
+					else{
+						erro = "Erro de Semântica na Linha : eu to na altera com expressões arit2  " + to_string(linha);
 						yyerror(erro);
 					}
-				}
-				else if((yyvsp[0]).tipo == "id"){
-					if(verificaDeclaracao((yyvsp[0]).label) == 1){
-						string tempTipo = retornaTipo((yyvsp[0]).label);
-						string tempLabel = retornaNome((yyvsp[0]).label);		
-						if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == -1 ){
-							erro = "Erro de Semântica na Linha : " + to_string(linha);
-							yyerror(erro);
-						}
-						if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == 0 ){
-							(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + tempLabel + (yyvsp[-1]).label + (yyvsp[-2]).label +" ;\n\n";
-						}
-						if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == 1 ){
-							(yyvsp[0]).tipo = tempTipo;
-							string tempLabel0 = geraLabel();
-							(yyval).traducao = (yyvsp[0]).traducao + (yyvsp[-2]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + tempTipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-							(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyval).label + (yyvsp[-1]).label + tempLabel +" ;\n\n";
-						}
-						if ( verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,tempTipo) == 2 ){
-							tempTipo = (yyvsp[-2]).tipo;
-							mudaTipo((yyvsp[0]).label,(yyvsp[-2]).tipo);
-							string tempLabel0 = geraLabel();
-							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-							(yyval).tipo + " " + tempLabel0 + " = " + " "+ (yyvsp[-2]).label + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
-						}
-					}
-					if(verificaDeclaracao((yyvsp[0]).label) == 0){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
-						yyerror(erro);
-					}
-				}
-				else{
-					if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)==-1){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
-						yyerror(erro);
-					}
-					if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 0 ){			
-							(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-							(yyval).tipo + " " + (yyval).label + " = " + (yyvsp[-2]).label + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
-					}					
-					if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 1 ){
-						(yyval).tipo = (yyvsp[-2]).tipo = (yyvsp[0]).tipo;
-						string tempLabel = geraLabel();
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[-2]).tipo + ")"+ (yyvsp[-2]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyval).label + (yyvsp[-1]).label + (yyvsp[0]).label +" ;\n\n";
-					}					
-					if(verificaCast((yyvsp[-2]).tipo,(yyvsp[-1]).label,(yyvsp[0]).tipo)== 2 ){
-						(yyval).tipo = (yyvsp[0]).tipo = (yyvsp[-2]).tipo;
-						string tempLabel = geraLabel();
-						(yyval).traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\t" +
-						(yyval).tipo + " " + (yyval).label + " = " + " " + "(" + (yyvsp[0]).tipo + ")"+ (yyvsp[0]).label + " ;\n\n" + "\t" +
-						(yyval).tipo + " " + tempLabel + " = " + " "+ (yyvsp[-2]).label + (yyvsp[-1]).label + (yyval).label +" ;\n\n";
-					}
+
+
 				}
 			}
 #line 2134 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 55:
-#line 717 "sintatica.y" /* yacc.c:1646  */
+  case 34:
+#line 852 "sintatica.y" /* yacc.c:1646  */
     {
-				string label = geraLabel(),
-						tipo0 = (yyvsp[0]).tipo,
-						tipo1 = "int",
-						temp;
-				int p;
+				buscaMapa((yyvsp[-4]).label);
 
-				(yyvsp[0]).traducao = temp = (yyvsp[0]).label;
+				if(verificaDeclaracao((yyvsp[-4]).label) == 0){
 
-				p = atoi((yyvsp[0]).traducao.c_str());
+					erro = "Erro de Semântica na Linha : eu to na altera com expressões REL " + to_string(linha);
+					yyerror(erro);
+				}
 
-				(yyvsp[0]).traducao = intToString(p);
+				else if(verificaDeclaracao((yyvsp[-4]).label) == 1){
+					
+					string tempTipo = retornaTipo((yyvsp[-4]).label);
+					string tempLabel = retornaNome((yyvsp[-4]).label);
 
-				(yyvsp[0]).label = label;
-				(yyval).tipo = (yyvsp[0]).tipo = tipo1;
-				string LABEL = geraLabel();
-				(yyval).traducao = "\t" + tipo0 + " " + label + " = " + temp + ";\n\n\t"
-				+ tipo1 + " " + LABEL + " = (" + tipo1 + ")" + label + ";\n\n";
-				//$$.tipo + " " + LABEL + " = " + $2.traducao + ";\n\n";
+					if(tempTipo == "bool"){
 
+						if((yyvsp[-1]).label == "NULL"){
 
+							alteraValor((yyvsp[-4]).label,(yyvsp[-1]).tipo_traducao);
+							(yyval).traducao = tempLabel + " = " + (yyvsp[-1]).tipo_traducao + " ;\n\n";
+						}
 
+						else{
+							alteraValor((yyvsp[-4]).label,(yyvsp[-1]).tipo_traducao);
+							(yyval).traducao = (yyvsp[-1]).label + tempLabel + " = " + (yyvsp[-1]).tipo_traducao + " ;\n\n";
+						}
+
+					}
+
+					else{
+						erro = "Erro de Semântica na Linha : eu to na altera com expressões REL 2  " + to_string(linha);
+						yyerror(erro);
+					}
+
+				}					
 			}
-#line 2162 "y.tab.c" /* yacc.c:1646  */
+#line 2175 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 56:
-#line 741 "sintatica.y" /* yacc.c:1646  */
+  case 35:
+#line 890 "sintatica.y" /* yacc.c:1646  */
     {
-				string tempTipoA = retornaTipo((yyvsp[0]).label);
-				string tempLabel = retornaNome((yyvsp[0]).label);
+				buscaMapa((yyvsp[-2]).label);
 
-				(yyval).label = geraLabel();
+				if(verificaDeclaracao((yyvsp[-2]).label) == 0){
 
-				if ( tempTipoA == "float"){
-
-					mudaTipo((yyvsp[0]).label,"int");
-					string tempTipo = retornaTipo((yyvsp[0]).label);
-
-
-					(yyval).traducao = (yyvsp[-1]).traducao + (yyvsp[0]).traducao + "\t" +
-					tempTipo + " " + (yyval).label + " = (" + tempTipo + ")" + tempLabel + ";\n\n";
-
-
-
+					erro = "Erro de Semântica na Linha : eu to na altera com expressões  not3 " + to_string(linha);
+					yyerror(erro);
 				}
+
+				else if(verificaDeclaracao((yyvsp[-2]).label) == 1){
+				
+					string tempTipo = retornaTipo((yyvsp[-2]).label);
+					string tempLabel = retornaNome((yyvsp[-2]).label);
+					
+					if(tempTipo == "bool" || tempTipo == "boolean"){
+						alteraValor((yyvsp[-2]).label,(yyvsp[0]).tipo);
+
+						(yyval).traducao = tempLabel + " " + (yyvsp[0]).label;
+					}
+					else{
+						erro = "Erro de Semântica na Linha : eu to no OP not 4 " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+			}
+#line 2205 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 36:
+#line 917 "sintatica.y" /* yacc.c:1646  */
+    {	
+		//****************************Definir o conteudo*****************************************
+			}
+#line 2213 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 37:
+#line 922 "sintatica.y" /* yacc.c:1646  */
+    {	
+				buscaMapa((yyvsp[0]).traducao);
+				alteraValor((yyvsp[0]).traducao,(yyvsp[0]).tipo);
+
+				(yyval).traducao = (yyvsp[0]).tipo_traducao;
+			}
+#line 2224 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 38:
+#line 931 "sintatica.y" /* yacc.c:1646  */
+    {
+		    	buscaMapa((yyvsp[0]).label);
+	
+		    	if(verificaDeclaracao((yyvsp[0]).label) == 0){
+	
+		    		string nome = geraLabel();
+	    	 		(yyval).label = (yyvsp[0]).label;
+		    		(yyval).tipo = (yyvsp[0]).tipo;
+					
+					(yyval).traducao = nome + " = " + (yyval).label + ";\n";
+
+		    		addVarMap((yyval).tipo,(yyval).label,nome,(yyval).label);
+		    	}
+		    }
+#line 2243 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 39:
+#line 947 "sintatica.y" /* yacc.c:1646  */
+    {
+	
+				(yyval).label = "-" + (yyvsp[0]).label;
+	
+				buscaMapa((yyval).label);
+	
+		    	if(verificaDeclaracao((yyval).label) == 0){
+
+					if((yyvsp[-1]).label == "-"){
+			
+						string nome = geraLabel();
+			    		(yyval).tipo = (yyvsp[0]).tipo;
+						(yyval).traducao = nome + " = " + (yyval).label + ";\n";
+
+			    		addVarMap((yyval).tipo,(yyval).label,nome,(yyval).label);
+			    	}
+		    	
+		    		else{
+				
+						erro = "Erro de Semântica na Linha : eu to no term int negativo " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+			}
+#line 2272 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 40:
+#line 973 "sintatica.y" /* yacc.c:1646  */
+    {
+	
+	    		buscaMapa((yyvsp[0]).label);
+	
+		    	if(verificaDeclaracao((yyvsp[0]).label) == 0){
+
+			    	string nome = geraLabel();
+	    		 	(yyval).label = (yyvsp[0]).label;
+		    		(yyval).tipo = (yyvsp[0]).tipo;
+		    		(yyval).traducao = nome + " = " + (yyval).label + ";\n";
+		    		
+		    		addVarMap((yyval).tipo,(yyval).label,nome,(yyval).label);
+			    }
+			}
+#line 2291 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 41:
+#line 989 "sintatica.y" /* yacc.c:1646  */
+    {
+				(yyval).label = "-" + (yyvsp[0]).label;
+			
+				buscaMapa((yyval).label);
+		    
+		    	if(verificaDeclaracao((yyval).label) == 0){
+
+					if((yyvsp[-1]).label == "-"){
+						string nome = geraLabel();
+			    		(yyval).tipo = (yyvsp[0]).tipo;
+			    		(yyval).traducao = nome + " = " + (yyval).label + ";\n";
+
+			    		addVarMap((yyval).tipo,(yyval).label,nome,(yyval).label);
+			    	}
+			    	else{
+			
+						erro = "Erro de Semântica na Linha : eu to no term real negativo " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+			}
+#line 2317 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 42:
+#line 1012 "sintatica.y" /* yacc.c:1646  */
+    {
+		    	buscaMapa((yyvsp[0]).label);
+		    
+		    	if(verificaDeclaracao((yyval).label) == 0){
+		    
+		    		string nome = geraLabel();
+	    	 		(yyval).label = (yyvsp[0]).label;
+		    		(yyval).tipo = (yyvsp[0]).tipo;
+		    		(yyval).traducao = nome + " = " + (yyval).label + ";\n";
+		    	
+		    		addVarMap((yyval).tipo,(yyval).label,nome,(yyval).label);
+		    	}
+			}
+#line 2335 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 43:
+#line 1027 "sintatica.y" /* yacc.c:1646  */
+    {
+		   		/* adiciona a variavel boolean autilizada num mapa de variaveis com tipo igual a int e id igual a 1 ou 0 se ele já não estiver lá */
+		     	if(verificaDeclaracao((yyvsp[0]).label)==0){
+		   	
+		   	 		(yyval).label = geraLabel();
+		    
+		    		if((yyvsp[0]).label == "true"){
+		    			
+		    			string nome = geraLabel();
+	    	 			(yyval).label = "1";
+		    			(yyval).tipo = (yyvsp[0]).tipo;
+		    			(yyval).traducao = nome + " = " + (yyval).label + ";\n";
+		    			
+		    			addVarMap((yyval).tipo,(yyval).label,nome,(yyval).label);		
+		    		}
+		    
+		    		else if((yyvsp[0]).label == "false"){
+		    			
+		    			string nome = geraLabel();
+	    	 			(yyval).label = "0";
+		    			(yyval).tipo = (yyvsp[0]).tipo;
+		    			(yyval).traducao = nome + " = " + (yyval).label + ";\n";
+		    			
+		    			addVarMap((yyval).tipo,(yyval).label,nome,(yyval).label);		
+		    		}
+		    	}
+		    }
+#line 2367 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 44:
+#line 1056 "sintatica.y" /* yacc.c:1646  */
+    {
+		    }
+#line 2374 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 45:
+#line 1061 "sintatica.y" /* yacc.c:1646  */
+    {
+
+				if((yyvsp[-2]).tipo == "id" && (yyvsp[0]).tipo == "id"){
+				
+					buscaMapa((yyvsp[-2]).label);
+				
+					if(verificaDeclaracao((yyvsp[-2]).label) == 1){//verifica se a primeira variavel foi declarada
+				
+						string tempLabel1 = retornaNome((yyvsp[-2]).label),
+							   tempTipo1  = retornaTipo((yyvsp[-2]).label);
+
+						buscaMapa((yyvsp[0]).label);
+				
+						if(verificaDeclaracao((yyvsp[0]).label) == 1){//verifica se a segunda variavel foi declarada
+				
+							string tempLabel3 = retornaNome((yyvsp[0]).label),
+								   tempTipo3  = retornaTipo((yyvsp[0]).label);
+
+							if ( verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+				
+								erro = "Erro de Semântica na Linha : eu to no OP id + id" + to_string(linha);
+								yyerror(erro);
+							}
+
+							else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 0){// não precisa de cast implicito
+
+								(yyval).tipo_traducao =  tempLabel1 + " " + (yyvsp[-1]).label + " " + tempLabel3;
+								(yyval).label = "NULL";
+								(yyval).tipo = tempTipo1;
+							}
+
+							else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+								string temp = geraLabel();
+								mudaTipo(tempLabel1,tempTipo3);
+
+								(yyval).label = temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+								(yyval).tipo_traducao =  temp + " " + (yyvsp[-1]).label + " " + tempLabel3;
+								(yyval).tipo = tempTipo3;
+								
+								addVarMap(tempTipo3,temp,temp,(yyval).traducao);
+							}
+
+							else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+								string temp = geraLabel();
+								mudaTipo(tempLabel3,tempTipo1);
+
+								(yyval).label = temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+								(yyval).tipo_traducao =  tempLabel1 + (yyvsp[-1]).label + temp;
+								(yyval).tipo = tempTipo1;
+								
+								addVarMap(tempTipo1,temp,temp,(yyval).traducao);
+							}
+						}
+					}
+				}
+
+				else if((yyvsp[-2]).tipo == "id"){
+
+					buscaMapa((yyvsp[-2]).label);
+
+					if(verificaDeclaracao((yyvsp[-2]).label) == 1){//verifica se a primeira variavel foi declarada
+
+						string tempLabel1 = retornaNome((yyvsp[-2]).label),
+							   tempTipo1  = retornaTipo((yyvsp[-2]).label),
+							   tempLabel3 = retornaNome((yyvsp[0]).label),
+							   tempTipo3  = retornaTipo((yyvsp[0]).label);
+
+						if ( verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP id + term" + to_string(linha);
+							yyerror(erro);
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 0){// não precisa de cast implicito
+
+							(yyval).tipo_traducao =  tempLabel1 + " " + (yyvsp[-1]).label + " " + tempLabel3;
+							(yyval).label = (yyvsp[0]).traducao + "\n";
+							(yyval).tipo = tempTipo1;
+							
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel1,tempTipo3);
+
+							(yyval).label = (yyvsp[0]).traducao + "\n"+ temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+							(yyval).tipo_traducao =  temp + " " + (yyvsp[-1]).label + " " + tempLabel3;
+							(yyval).tipo = tempTipo3;
+
+							addVarMap(tempTipo3,temp,temp,(yyval).traducao);
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel3,tempTipo1);
+
+							(yyval).label = (yyvsp[0]).traducao + "\n"+ temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+							(yyval).tipo_traducao =  tempLabel1 + (yyvsp[-1]).label + temp;
+							(yyval).tipo = tempTipo1;
+
+							addVarMap(tempTipo1,temp,temp,(yyval).traducao);
+						}
+					}
+				}
+
+				else if((yyvsp[0]).tipo == "id"){
+
+					buscaMapa((yyvsp[0]).label);
+
+					if(verificaDeclaracao((yyvsp[0]).label) == 1){//verifica se a segunda variavel foi declarada
+
+						string tempLabel1 = retornaNome((yyvsp[-2]).label),
+							   tempTipo1  = retornaTipo((yyvsp[-2]).label),
+							   tempLabel3 = retornaNome((yyvsp[0]).label),
+							   tempTipo3  = retornaTipo((yyvsp[0]).label);
+
+						if ( verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP term + id" + to_string(linha);
+							yyerror(erro);
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 0){// não precisa de cast implicito
+
+							(yyval).tipo_traducao =  tempLabel1 + " " + (yyvsp[-1]).label + " " + tempLabel3;
+							(yyval).label = (yyvsp[-2]).traducao;
+							(yyval).tipo = tempTipo1;
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel3,tempTipo1);
+
+							(yyval).label =(yyvsp[-2]).traducao + "\n"+ temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+							(yyval).tipo_traducao =  tempLabel1 + (yyvsp[-1]).label + temp;
+							(yyval).tipo = tempTipo3;
+
+							addVarMap(tempTipo1,temp,temp,(yyval).traducao);
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel1,tempTipo3);
+
+							(yyval).label =(yyvsp[-2]).traducao + "\n"+ temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+							(yyval).tipo_traducao =  temp + " " + (yyvsp[-1]).label + " " + tempLabel3;
+							(yyval).tipo = tempTipo1;
+
+							addVarMap(tempTipo3,temp,temp,(yyval).traducao);
+						}
+					}
+				}
+
 				else{
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-				}
 
+					string tempTipo1  = retornaTipo((yyvsp[-2]).label),
+						   tempLabel3 = retornaNome((yyvsp[0]).label),
+						   tempLabel1 = retornaNome((yyvsp[-2]).label),
+						   tempTipo3  = retornaTipo((yyvsp[0]).label);
+
+					if ( verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+						erro = "Erro de Semântica na Linha : eu to no OP term + term" + to_string(linha);
+						yyerror(erro);
+					}
+
+					else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 0){// não precisa de cast implicito
+
+						(yyval).tipo_traducao =  tempLabel1 + " " + (yyvsp[-1]).label + " " + tempLabel3;
+						(yyval).label = (yyvsp[-2]).traducao + (yyvsp[0]).traducao;
+						(yyval).tipo = tempTipo1;
+					}
+
+					else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+						string temp = geraLabel();
+						mudaTipo(tempLabel3,tempTipo1);
+
+						(yyval).label = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\n\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+						(yyval).tipo_traducao =  tempLabel1 + (yyvsp[-1]).label + temp;
+						(yyval).tipo = tempTipo3;
+
+						addVarMap(tempTipo1,temp,temp,(yyval).traducao);
+					}
+
+					else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+						string temp = geraLabel();
+						mudaTipo(tempLabel3,tempTipo1);
+
+						(yyval).label = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\n\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+						(yyval).tipo_traducao =  tempLabel1 + (yyvsp[-1]).label + temp;
+						(yyval).tipo = tempTipo1;
+
+						addVarMap(tempTipo1,temp,temp,(yyval).traducao);
+					}
+				}
 			}
-#line 2191 "y.tab.c" /* yacc.c:1646  */
+#line 2583 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 57:
-#line 766 "sintatica.y" /* yacc.c:1646  */
+  case 46:
+#line 1267 "sintatica.y" /* yacc.c:1646  */
     {
-				string label = geraLabel(),
-						tipo0 = (yyvsp[0]).tipo,
-						tipo1 = "float",
-						temp;
+			
+				if((yyvsp[-2]).tipo == "id" && (yyvsp[0]).tipo == "id"){
+			
+					buscaMapa((yyvsp[-2]).label);
+			
+					if(verificaDeclaracao((yyvsp[-2]).label) == 1){//verifica se a primeira variavel foi declarada
+			
+						string tempLabel1 = retornaNome((yyvsp[-2]).label),
+							   tempTipo1  = retornaTipo((yyvsp[-2]).label);
 
-				(yyvsp[0]).traducao = (yyvsp[0]).label;
-				temp = (yyvsp[0]).traducao;
-				(yyvsp[0]).traducao.append(".0");
-				(yyvsp[0]).label = label;
-				(yyval).tipo = (yyvsp[0]).tipo = tipo1;
+						buscaMapa((yyvsp[0]).label);
+			
+						if(verificaDeclaracao((yyvsp[0]).label) == 1){//verifica se a segunda variavel foi declarada
+			
+							string tempLabel3 = retornaNome((yyvsp[0]).label),
+								   tempTipo3  = retornaTipo((yyvsp[0]).label);
 
-				(yyval).traducao = "\t" + tipo0 + " " + label + " = " + temp + ";\n\n\t"
-				+ tipo0 + " " + label + " = (" + tipo1 + ")" + label + ";\n\n\t"+
-				(yyval).tipo + " " + label + " = " + (yyvsp[0]).traducao + ";\n\n";
-			}
-#line 2212 "y.tab.c" /* yacc.c:1646  */
-    break;
+							if ( verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+			
+								erro = "Erro de Semântica na Linha : eu to no OP id * id" + to_string(linha);
+								yyerror(erro);
+							}
 
-  case 58:
-#line 783 "sintatica.y" /* yacc.c:1646  */
-    {
-				string tempTipoA = retornaTipo((yyvsp[0]).label);
-				string tempLabel = retornaNome((yyvsp[0]).label);
-				(yyval).label = geraLabel();
+							else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 0){// não precisa de cast implicito
 
-				if ( tempTipoA == "int"){
+								(yyval).tipo_traducao =  tempLabel1 + " " + (yyvsp[-1]).label + " " + tempLabel3;
+								(yyval).label = "NULL";
+								(yyval).tipo = tempTipo1;
+							}
 
-					mudaTipo((yyvsp[0]).label,"float");
-					string tempTipo = retornaTipo((yyvsp[0]).label);
+							else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
 
+								string temp = geraLabel();
+								mudaTipo(tempLabel1,tempTipo3);
 
-					(yyval).traducao = (yyvsp[-1]).traducao + (yyvsp[0]).traducao + "\t" +
-					tempTipo + " " + (yyval).label + " = (" + tempTipo + ")" + tempLabel + ";\n\n";
+								(yyval).label = temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+								(yyval).tipo_traducao =  temp + " " + (yyvsp[-1]).label + " " + tempLabel3;
+								(yyval).tipo = tempTipo3;
 
+								addVarMap(tempTipo3,temp,temp,(yyval).traducao);
+							}
 
+							else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
 
+								string temp = geraLabel();
+								mudaTipo(tempLabel3,tempTipo1);
+
+								(yyval).label = temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+								(yyval).tipo_traducao =  tempLabel1 + (yyvsp[-1]).label + temp;
+								(yyval).tipo = tempTipo1;
+
+								addVarMap(tempTipo1,temp,temp,(yyval).traducao);
+							}
+						}
+					}
 				}
+
+				else if((yyvsp[-2]).tipo == "id"){
+
+					buscaMapa((yyvsp[-2]).label);
+
+					if(verificaDeclaracao((yyvsp[-2]).label) == 1){//verifica se a primeira variavel foi declarada
+
+						string tempLabel1 = retornaNome((yyvsp[-2]).label),
+							   tempTipo1  = retornaTipo((yyvsp[-2]).label),
+							   tempLabel3 = retornaNome((yyvsp[0]).label),
+							   tempTipo3  = retornaTipo((yyvsp[0]).label);
+
+						if ( verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP id * term" + to_string(linha);
+							yyerror(erro);
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 0){// não precisa de cast implicito
+
+							(yyval).tipo_traducao =  tempLabel1 + " " + (yyvsp[-1]).label + " " + tempLabel3;
+							(yyval).label =(yyvsp[0]).traducao + "\n\n";
+							(yyval).tipo = tempTipo1;
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel1,tempTipo3);
+
+							(yyval).label = (yyvsp[0]).traducao + "\n\n" + temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+							(yyval).tipo_traducao =  temp + " " + (yyvsp[-1]).label + " " + tempLabel3;
+							(yyval).tipo = tempTipo3;
+
+							addVarMap(tempTipo3,temp,temp,(yyval).traducao);
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel3,tempTipo1);
+
+							(yyval).label = (yyvsp[0]).traducao + "\n\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+							(yyval).tipo_traducao =  tempLabel1 + (yyvsp[-1]).label + temp;
+							(yyval).tipo = tempTipo1;
+
+							addVarMap(tempTipo1,temp,temp,(yyval).traducao);
+						}
+					}
+				}
+
+				else if((yyvsp[0]).tipo == "id"){
+
+					buscaMapa((yyvsp[0]).label);
+
+					if(verificaDeclaracao((yyvsp[0]).label) == 1){//verifica se a segunda variavel foi declarada
+
+						string tempLabel1 = retornaNome((yyvsp[-2]).label),
+							   tempTipo1  = retornaTipo((yyvsp[-2]).label),
+							   tempLabel3 = retornaNome((yyvsp[0]).label),
+							   tempTipo3  = retornaTipo((yyvsp[0]).label);
+
+						if ( verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP term * id" + to_string(linha);
+							yyerror(erro);
+						}
+					
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 0){// não precisa de cast implicito
+					
+							(yyval).tipo_traducao = tempLabel1 + " " + (yyvsp[-1]).label + " " + tempLabel3;
+							(yyval).label = (yyvsp[-2]).traducao + "\n\n";
+							
+							(yyval).tipo = tempTipo1;
+						}
+					
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+					
+							string temp = geraLabel();
+							mudaTipo(tempLabel1,tempTipo3);
+
+							(yyval).label = (yyvsp[-2]).traducao + "\n\n" + temp + " = (" + tempTipo3 + ")" + tempLabel1 + " ;\n\n";
+							(yyval).tipo_traducao =  tempLabel3 + (yyvsp[-1]).label + temp;
+							(yyval).tipo = tempTipo3;
+
+							addVarMap(tempTipo3,temp,temp,(yyval).tipo_traducao);
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel3,tempTipo1);
+
+							(yyval).label = (yyvsp[-2]).traducao + "\n\n" + temp + " = (" + tempTipo1 + ")"+ tempLabel3 + " ;\n\n";
+							(yyval).tipo_traducao =  temp + " " + (yyvsp[-1]).label + " " + tempLabel1;
+							(yyval).tipo = tempTipo1;
+
+							addVarMap(tempTipo1,temp,temp,(yyval).tipo_traducao);
+						}
+					}
+				}
+
 				else{
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
+
+					string tempLabel1 = retornaNome((yyvsp[-2]).label),
+						   tempTipo1  = retornaTipo((yyvsp[-2]).label),
+						   tempLabel3 = retornaNome((yyvsp[0]).label),
+						   tempTipo3  = retornaTipo((yyvsp[0]).label);
+
+					if ( verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+						erro = "Erro de Semântica na Linha : eu to no OP term * term" + to_string(linha);
+						yyerror(erro);
+					}
+
+					else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 0){// não precisa de cast implicito
+
+						(yyval).tipo_traducao =  tempLabel1 + " " + (yyvsp[-1]).label + " " + tempLabel3;
+						(yyval).label = (yyvsp[-2]).traducao + (yyvsp[0]).traducao;
+						(yyval).tipo = tempTipo1;
+					}
+
+					else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+						string temp = geraLabel();
+						mudaTipo(tempLabel3,tempTipo1);
+
+						(yyval).label = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\n\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+						(yyval).tipo_traducao =  tempLabel1 + (yyvsp[-1]).label + temp;
+						(yyval).tipo = tempTipo3;
+
+						addVarMap(tempTipo1,temp,temp,(yyval).traducao);
+					}
+
+					else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+						string temp = geraLabel();
+						mudaTipo(tempLabel3,tempTipo1);
+
+						(yyval).label = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + "\n\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+						(yyval).tipo_traducao =  tempLabel1 + (yyvsp[-1]).label + temp;
+						(yyval).tipo = tempTipo1;
+
+						addVarMap(tempTipo1,temp,temp,(yyval).traducao);
+					}
 				}
 			}
-#line 2239 "y.tab.c" /* yacc.c:1646  */
+#line 2792 "y.tab.c" /* yacc.c:1646  */
     break;
 
-  case 59:
-#line 808 "sintatica.y" /* yacc.c:1646  */
+  case 47:
+#line 1474 "sintatica.y" /* yacc.c:1646  */
     {
-				if(verificaDeclaracao((yyvsp[-1]).label)==1){
-					string tempLabel = retornaNome((yyvsp[-1]).label);
-					(yyval).traducao = (yyvsp[-3]).traducao + (yyvsp[-1]).traducao + "\t"
-					+ "cin >> " + tempLabel + ";\n\n";
+				if((yyvsp[-2]).tipo == "id" && (yyvsp[0]).tipo == "id"){
+
+					buscaMapa((yyvsp[-2]).label);
+
+					if(verificaDeclaracao((yyvsp[-2]).label) == 1){//verifica se a primeira variavel foi declarada
+
+						string tempLabel1 = retornaNome((yyvsp[-2]).label),
+							   tempTipo1  = retornaTipo((yyvsp[-2]).label);
+
+						buscaMapa((yyvsp[0]).label);
+
+						if(verificaDeclaracao((yyvsp[0]).label) == 1){//verifica se a segunda variavel foi declarada
+
+							string tempLabel3 = retornaNome((yyvsp[0]).label),
+								   tempTipo3  = retornaTipo((yyvsp[0]).label);
+
+							if ( verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+								erro = "Erro de Semântica na Linha : eu to no OP id < id" + to_string(linha);
+								yyerror(erro);
+							}
+
+							else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 0){// não precisa de cast implicito
+
+								(yyval).tipo_traducao = "(" + tempLabel1 + " " + (yyvsp[-1]).label + " " + tempLabel3 + ")";
+								(yyval).label = "NULL";
+								
+							}
+
+							else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+								string temp = geraLabel();
+								mudaTipo(tempLabel1,tempTipo3);
+
+								(yyval).label = temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+								(yyval).tipo_traducao = "(" + temp + " " + (yyvsp[-1]).label + " " + tempLabel3 + ")";
+						
+								addVarMap(tempTipo3,temp,temp,(yyval).traducao);
+							}
+
+							else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+								string temp = geraLabel();
+								mudaTipo(tempLabel3,tempTipo1);
+
+								(yyval).label = temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+								(yyval).tipo_traducao =  "(" + tempLabel1 + (yyvsp[-1]).label + temp + ")";
+						
+								addVarMap(tempTipo1,temp,temp,(yyval).traducao);
+							}
+						}
+					}
 				}
-				if(verificaDeclaracao((yyvsp[-1]).label)==0){
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-			}
-#line 2254 "y.tab.c" /* yacc.c:1646  */
-    break;
 
-  case 60:
-#line 821 "sintatica.y" /* yacc.c:1646  */
-    {
-				if(verificaDeclaracao((yyvsp[-1]).label)==1){
-					string tempLabel = retornaNome((yyvsp[-1]).label);
-					(yyval).traducao = (yyvsp[-3]).traducao + (yyvsp[-1]).traducao + "\t"
-					+ "cout<< " + tempLabel + " << endl;\n\n";
-				}	
-				if(verificaDeclaracao((yyvsp[-1]).label)==0){
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
+				else if((yyvsp[-2]).tipo == "id"){
+
+					buscaMapa((yyvsp[-2]).label);
+
+					if(verificaDeclaracao((yyvsp[-2]).label) == 1){//verifica se a primeira variavel foi declarada
+
+						string tempLabel1 = retornaNome((yyvsp[-2]).label),
+							   tempTipo1  = retornaTipo((yyvsp[-2]).label),
+							   tempLabel3 = retornaNome((yyvsp[0]).label),
+							   tempTipo3  = retornaTipo((yyvsp[0]).label);
+
+						if ( verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP id > term" + to_string(linha);
+							yyerror(erro);
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 0){// não precisa de cast implicito
+
+							(yyval).traducao =  "(" + tempLabel1 + " " + (yyvsp[-1]).label + " " + tempLabel3 + ")";
+							(yyval).label = (yyvsp[0]).traducao; 
+							
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel1,tempTipo3);
+
+							(yyval).label = (yyvsp[0]).traducao + "\n" + temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+							(yyval).tipo_traducao = "(" + temp + " " + (yyvsp[-1]).label + " " + tempLabel3 + ")";
+							
+
+							addVarMap(tempTipo3,temp,temp,(yyval).traducao);
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel3,tempTipo1);
+
+							(yyval).label =  (yyvsp[0]).traducao + "\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+							(yyval).tipo_traducao = "(" + tempLabel1 + (yyvsp[-1]).label + temp + ")";
+							
+							addVarMap(tempTipo1,temp,temp,(yyval).traducao);
+						}
+					}
+				}
+
+				else if((yyvsp[0]).tipo == "id"){
+
+					buscaMapa((yyvsp[0]).label);
+
+					if(verificaDeclaracao((yyvsp[0]).label) == 1){//verifica se a segunda variavel foi declarada
+
+						string tempLabel1 = retornaNome((yyvsp[-2]).label),
+							   tempTipo1  = retornaTipo((yyvsp[-2]).label),
+							   tempLabel3 = retornaNome((yyvsp[0]).label),
+							   tempTipo3  = retornaTipo((yyvsp[0]).label);
+							   cout<< tempLabel1 << endl<< tempTipo1;
+						if ( verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP term > id" + to_string(linha);
+							yyerror(erro);
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 0){// não precisa de cast implicito
+
+							(yyval).tipo_traducao = "(" + tempLabel1 + " " + (yyvsp[-1]).label + " " + tempLabel3 + ")";
+							(yyval).label =  (yyvsp[-2]).traducao;
+							
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel3,tempTipo1);
+
+							(yyval).label = (yyvsp[-2]).traducao + "\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+							(yyval).tipo_traducao = "(" + tempLabel1 + (yyvsp[-1]).label + temp + ")";
+							
+							addVarMap(tempTipo1,temp,temp,(yyval).traducao);
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel1,tempTipo3);
+
+							(yyval).label = (yyvsp[-2]).traducao + "\n" + temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+							(yyval).tipo_traducao = "(" + temp + " " + (yyvsp[-1]).label + " " + tempLabel3 + ")";
+							
+							addVarMap(tempTipo3,temp,temp,(yyval).traducao);
+						}
+					}
+				}
+ /*
+				else{
+
+					string tempLabel1 = retornaNome($1.label),
+						   tempTipo1  = retornaTipo($1.label),
+						   tempLabel3 = retornaNome($3.label),
+						   tempTipo3  = retornaTipo($3.label);
+
+					if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+						erro = "Erro de Semântica na Linha : eu to no OP term > term" + to_string(linha);
+						yyerror(erro);
+					}
+
+					else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+
+						$$.tipo_traducao = "(" + tempLabel1 + " " + $2.label + " " + tempLabel3 + ")";
+						$$.label = $1.traducao + $3.traducao; 
+					}
+
+					else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+						string temp = geraLabel();
+						mudaTipo(tempLabel3,tempTipo1);
+
+						$$.label = $1.traducao + $3.traducao + "\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+						$$.tipo_traducao = "(" + tempLabel1 + $2.label + temp + ")";
+						
+						addVarMap(tempTipo1,temp,temp,$$.traducao);
+					}
+
+					else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+						string temp = geraLabel();
+						mudaTipo(tempLabel3,tempTipo1);
+
+						$$.label = $1.traducao + $3.traducao + "\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+						$$.tipo_traducao = "(" + tempLabel1 + $2.label + temp + ")";
+						
+						addVarMap(tempTipo1,temp,temp,$$.traducao);
+					}
+				}
+				*/
+				else{
+
+					erro = "Erro de Semântica na Linha : eu to no OP REL pq eu comentei o else   " + to_string(linha);
 					yyerror(erro);
 				}
 			}
-#line 2270 "y.tab.c" /* yacc.c:1646  */
+#line 2997 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 48:
+#line 1677 "sintatica.y" /* yacc.c:1646  */
+    {
+
+				buscaMapa((yyvsp[0]).label);
+
+				if(verificaDeclaracao((yyvsp[0]).label) == 1){
+
+					string tempTipo = retornaTipo((yyvsp[0]).label);
+
+					if(tempTipo == "bool"){
+
+						string tempLabel = retornaNome((yyvsp[0]).label),
+							   tempValor = retornaValor((yyvsp[0]).label);
+							   
+						if(tempValor == "1"){
+
+							
+							(yyval).label = " = 0;\n\n";
+							
+							(yyval).tipo_traducao = tempLabel + " = 0;\n\n";
+						}
+
+						else if(tempValor == "0"){
+							(yyval).label = " = 1;\n\n";
+							
+							
+							(yyval).tipo_traducao = tempLabel + " = 1;\n\n";
+						}
+						(yyval).tipo = tempValor;
+						(yyval).traducao = (yyvsp[0]).label;
+					}
+
+					else{ // Está tentando negar algo q não é boolean
+					
+						erro = "Erro de Semântica na Linha : eu to no OP not" + to_string(linha);
+						yyerror(erro);
+					}
+
+				}
+
+				else{ // variavel não declarada
+
+						erro = "Erro de Semântica na Linha : eu to no not2" + to_string(linha);
+						yyerror(erro);
+				}
+			}
+#line 3047 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 49:
+#line 1725 "sintatica.y" /* yacc.c:1646  */
+    {
+			
+				if((yyvsp[-2]).tipo == "id" && (yyvsp[0]).tipo == "id"){
+
+					buscaMapa((yyvsp[-2]).label);
+
+					if(verificaDeclaracao((yyvsp[-2]).label) == 1){//verifica se a primeira variavel foi declarada
+
+						string tempLabel1 = retornaNome((yyvsp[-2]).label),
+							   tempTipo1  = retornaTipo((yyvsp[-2]).label);
+
+						buscaMapa((yyvsp[0]).label);
+
+						if(verificaDeclaracao((yyvsp[0]).label) == 1){//verifica se a segunda variavel foi declarada
+
+							string tempLabel3 = retornaNome((yyvsp[0]).label),
+								   tempTipo3  = retornaTipo((yyvsp[0]).label);
+
+							if ( verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+								erro = "Erro de Semântica na Linha : eu to no OP id and id" + to_string(linha);
+								yyerror(erro);
+							}
+
+							else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 0){// não precisa de cast implicito
+
+								(yyval).tipo_traducao =  tempLabel1 + " " + (yyvsp[-1]).label + " " + tempLabel3;														
+							}
+						}
+					}
+				}
+
+				else if((yyvsp[-2]).tipo == "id"){
+
+					buscaMapa((yyvsp[-2]).label);
+
+					if(verificaDeclaracao((yyvsp[-2]).label) == 1){//verifica se a primeira variavel foi declarada
+
+						string tempLabel1 = retornaNome((yyvsp[-2]).label),
+							   tempTipo1  = retornaTipo((yyvsp[-2]).label),
+							   tempLabel3 = retornaNome((yyvsp[0]).label),
+							   tempTipo3  = retornaTipo((yyvsp[0]).label);
+
+						if ( verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das 	variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP id and term" + to_string(linha);
+							yyerror(erro);
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 0){// não precisa de cast implicito
+
+							(yyval).tipo_traducao = (yyvsp[0]).traducao + tempLabel1 + " " + (yyvsp[-1]).label + " " + tempLabel3;													
+						}
+					}
+				}
+
+				else if((yyvsp[0]).tipo == "id"){
+
+					buscaMapa((yyvsp[0]).label);
+
+					if(verificaDeclaracao((yyvsp[0]).label) == 1){//verifica se a segunda variavel foi declarada
+
+						string tempLabel1 = retornaNome((yyvsp[-2]).label),
+							   tempTipo1  = retornaTipo((yyvsp[-2]).label),
+							   tempLabel3 = retornaNome((yyvsp[0]).label),
+							   tempTipo3  = retornaTipo((yyvsp[0]).label);
+
+						if ( verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP term and id" + to_string(linha);
+							yyerror(erro);
+						}
+
+						else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 0){// não precisa de cast implicito
+
+							(yyval).tipo_traducao = (yyvsp[-2]).traducao + tempLabel1 + " " + (yyvsp[-1]).label + " " + tempLabel3;													
+						}
+					}
+				}
+
+				else{
+					
+					string tempLabel1 = retornaNome((yyvsp[-2]).label),
+						   tempTipo1  = retornaTipo((yyvsp[-2]).label),
+						   tempLabel3 = retornaNome((yyvsp[0]).label),
+						   tempTipo3  = retornaTipo((yyvsp[0]).label);
+
+					if ( verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+						erro = "Erro de Semântica na Linha : eu to no OP term and term" + to_string(linha);
+						yyerror(erro);
+					}
+
+					else if(verificaCast(tempTipo1,(yyvsp[-1]).label,tempTipo3) == 0){// não precisa de cast implicito
+
+						(yyval).tipo_traducao = (yyvsp[-2]).traducao + (yyvsp[0]).traducao + tempLabel1 + " " + (yyvsp[-1]).label + " " + tempLabel3;												
+					}
+				}
+			}
+#line 3151 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 50:
+#line 1827 "sintatica.y" /* yacc.c:1646  */
+    {
+				if ((yyvsp[-1]).label == "int"){ // Devo criar um temp novo para representar a variavel após o cast ou faço variavel=(int)variavel ?
+		
+					buscaMapa((yyvsp[0]).label);
+		
+					if(verificaDeclaracao((yyvsp[0]).label) == 1){
+
+						mudaTipo((yyvsp[0]).label,(yyvsp[-1]).label);
+						string temp = retornaValor((yyvsp[0]).label);
+						int temp1 = atoi(temp.c_str());
+						temp = to_string(temp1);
+						alteraValor((yyvsp[0]).label,temp);
+
+						string tempLabel = retornaNome((yyvsp[0]).label);
+						(yyval).traducao = tempLabel + " = (" + (yyvsp[-1]).label + ") " + tempLabel + ";\n\n";
+					}
+		
+					else if (verificaDeclaracao((yyvsp[0]).label) == 0){
+		
+						erro = "Erro de Semântica na Linha : eu to no cast int" + to_string(linha);
+						yyerror(erro);
+					}
+				}
+				
+				else if((yyvsp[-1]).label == "float"){ // Devo criar um temp novo para representar a variavel após o cast ou faço variavel=(float)variavel ?
+				
+					buscaMapa((yyvsp[0]).label);
+				
+					if(verificaDeclaracao((yyvsp[0]).label) == 1){
+
+						mudaTipo((yyvsp[0]).label,(yyvsp[-1]).label);
+						string temp = retornaValor((yyvsp[0]).label);
+						temp = temp + ".0";
+						alteraValor((yyvsp[0]).label,temp);
+
+						string tempLabel = retornaNome((yyvsp[0]).label);
+						(yyval).traducao = tempLabel + " = (" + (yyvsp[-1]).label + ") " + tempLabel + ";\n\n";
+					}
+				
+					else if (verificaDeclaracao((yyvsp[0]).label) == 0){
+				
+						erro = "Erro de Semântica na Linha : eu to no cast float" + to_string(linha);
+						yyerror(erro);
+					}
+				}
+			}
+#line 3202 "y.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 51:
+#line 1876 "sintatica.y" /* yacc.c:1646  */
+    {
+
+				buscaMapa((yyvsp[-1]).label);
+
+				if((yyvsp[-3]).label == "cin"){
+
+					if(verificaDeclaracao((yyvsp[-1]).label)==1){
+
+						string tempLabel = retornaNome((yyvsp[-1]).label);
+						(yyval).traducao = (yyvsp[-3]).traducao + (yyvsp[-1]).traducao + "\t"
+						+ "cin >> " + tempLabel + ";\n\n";
+					}
+
+					if(verificaDeclaracao((yyvsp[-1]).label)==0){
+
+						erro = "Erro de Semântica na Linha :eu to no cin " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+
+				else if ((yyvsp[-3]).label == "cout"){
+
+					if(verificaDeclaracao((yyvsp[-1]).label)==1){
+
+						string tempLabel = retornaNome((yyvsp[-1]).label);
+						(yyval).traducao = (yyvsp[-3]).traducao + (yyvsp[-1]).traducao + "\t"
+						+ "cout<< " + tempLabel + " << endl;\n\n";
+					}
+
+					if(verificaDeclaracao((yyvsp[-1]).label)==0){
+
+						erro = "Erro de Semântica na Linha : eu to no cout" + to_string(linha);
+						yyerror(erro);
+					}
+				}
+			}
+#line 3243 "y.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 2274 "y.tab.c" /* yacc.c:1646  */
+#line 3247 "y.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2498,8 +3471,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 834 "sintatica.y" /* yacc.c:1906  */
-
+#line 1914 "sintatica.y" /* yacc.c:1906  */
 
 #include "lex.yy.c"
 
@@ -2519,106 +3491,139 @@ void yyerror( string MSG )
 }
 
 string geraLabel(){
-
-	char buffer[50];
 	string temp;
-
 	numero++;
-
-	sprintf(buffer,"temp%d",numero);
-
-	temp = buffer;
-
+	temp = "temp" + to_string(numero);
 	return temp;
 }
 
 void preencheMapCast(){
-
 	FILE* textFile = fopen("mapa_cast.txt", "r");
-
 	char op1[20] = "";
 	char op2[20] = "";
 	char operador[3] = "";
 	char opfinal[20] = "";
 	int retorno;
 	string id;
-
 	while(fscanf(textFile, "%s\t%s\t%s\t%s\t%d\n",op1,operador,op2,opfinal,&retorno)){
-
 		cast Cast = {opfinal,retorno};
-
 		id = geraId(op1,operador,op2);
 		mapCast[id] = Cast;
-
 		if(feof(textFile)) {
-
 				break;
 		}
 	}
-
 	fclose(textFile);
 }
 
 string geraId(string tipo1, string op, string tipo2 ){
-
 	return tipo1 + "_" + op + "_" + tipo2;
 }
 
 int verificaCast(string tipo1, string op, string tipo2 ){
-
 	string id = geraId(tipo1,op,tipo2);
 	int aux = mapCast[id].retorno;
 	return aux;
-
 }
 
-string intToString(int p){
-	string s;
-	char buffer [50];
-	sprintf(buffer,"%d",p);
-	s=buffer;
-	return s;
-}
-
-void addVarMap(string tipo,string id,string nome){
-
-	variavel vari = {tipo,nome};
-
+void addVarMap(string tipo,string id,string nome,string valor){
+	variavel vari = {tipo,nome,valor,""};
 	mapVar[id] = vari;
+	pilhaVar[pilhaPos] = mapVar;
 }
 
-
-int verificaDeclaracao(string id ){
-
-	if(mapVar.find(id) != mapVar.end()){
+void setTamString(string id, string tam){
+	mapVar[id].tam = tam;
+}
+int verificaDeclaracao(string id){
+	if(mapVar.find(id) != mapVar.end()){//achou
 		return 1;
 	}
 	return 0;
-
 }
 
 string retornaNome(string id){
-
-	/*if(mapVar.find(id) != mapVar.end()){
-		return NULL;
-	}*/
 	return mapVar[id].nome;
-
 }
 
 string retornaTipo(string id){
-
-	/*if(mapVar.find(id) != mapVar.end()){
-		return NULL;
-	}*/
 	return mapVar[id].tipo;
+}
 
+string retornaValor(string id){
+	return mapVar[id].valor;
 }
 
 void mudaTipo(string id, string tipo){
-
-	/*if(mapVar.find(id) != mapVar.end()){
-		return NULL;
-	}*/
 	mapVar[id].tipo = tipo;
+	pilhaVar[pilhaPos] = mapVar;
+}
+
+void empilhaNovoMapa(){
+	map<string,variavel> novoMapa;
+	pilhaVar.push_back(novoMapa);
+	mapVar = novoMapa;
+	pilhaPos++;
+}
+
+void alteraValor(string id, string valor){
+	mapVar[id].valor = valor;
+	pilhaVar[pilhaPos] = mapVar;
+}
+
+// essa funcao altera o mapVar q esta sendo utilizado DEVE SER CHAMADA ANTES DA VERIFICADECLARACAO
+void buscaMapa(string id){
+
+	pilhaPos = pilhaVar.size() - 1; // pego topo da pilhaVar
+	bool encontrouVariavel = false;
+
+	for (pilhaPos; pilhaPos > -1; pilhaPos--){
+
+		mapVar = pilhaVar[pilhaPos];
+		int existeVar = verificaDeclaracao(id);
+
+		if (existeVar == 1){
+			encontrouVariavel = true;
+			break;
+		}
+	}
+	if (encontrouVariavel == false){//nao encontrou a variavel retorna o mapa do topo da pilha
+
+		pilhaPos = pilhaVar.size() - 1;
+		mapVar = pilhaVar[pilhaPos];
+	}
+}
+
+string declara_variaveis_temp(mapaVar map, int flag){
+   	string s = "";
+
+	for (mapaVar::iterator it = map.begin(); it!=map.end(); ++it) {
+		if(flag == 0){
+			if(it->second.tipo == ""){
+				erro = "Erro: Não é possivel declarar uma variavel do tipo qualquer no escopo global.";
+				yyerror(erro);
+				break;
+			}
+		}
+		if(it->second.tipo == "string"){
+			s += "char ["+ it->second.tam + "] " + it->second.nome + ";\n";
+		}
+		if(it->second.nome == ""){
+			continue;
+		}
+		if(it->second.tipo == "bool" || it->second.tipo == "boolean"){
+			s += "int " + it->second.nome + ";\n";
+			continue;
+		}
+		s += it->second.tipo + ' ' + it->second.nome + ";\n";
+
+	}
+/*for (mapaVar::iterator it = map.begin(); it!=map.end(); ++it) {
+		if(it->second.valor != ""){
+			s += it->second.nome + " = " + it->second.valor + ";\n";
+		}
+		else
+			continue;
+	}*/
+    return s;
 }

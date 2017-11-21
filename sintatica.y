@@ -1,3 +1,36 @@
+/* OBSERVAÇÕES:
+ * 
+ * TEM QUE ARRUMAR DECLARA RECEBENDO EXP logic e Testar recebendo o exp rel
+ *
+ * Achei desnecessario poder fazer uma variavel receber true== false ou true and true sem ser atraveś de variaveis ja declaradas, então eu tirei isso
+ *
+ * Tem uma gambiarra na função que imprime as variaveis pq quando faz o cast de uma variavel na hora de fazer uma operação printava um tipo voando sem nome associado a ele ae eu coloquei aquele if com um continue dentro para parar de printar ele
+ * 
+ * O tipo_traducao adicionado no atributos é uma gambiarra para passar coisas de uma expressão para outra sem aparecer no codigo     * intermediario antes eu usava o traducao para isso mas aparecia lá
+ *
+ * A função alteraValor não funciona mais
+ *
+ * Atualmente um float não pode receber uma operação entre inteiros(acho que podemos deixar isso como uma caracteristica da nossa linguagem)
+ *
+ * Falta adicionar expressões com os outros tipo e expressões que suportem expressões lógicas em declarações.
+ *
+ * Preencher as seguintes expressões tipo id = log1 no DECLARA e id = log1 no ALTERA e testar os oplog(que é somente o not e o oplog1 é o and e o or)
+ *
+ * Entender/fazer ou refazer não sei dizer a string
+ *
+ * Ajustar o bloco para suportar loops e condicionais
+ *
+ * Criar if, else if, else, switch(é assim que escreve? não lembro mais kkk) 
+ * 
+ * Criar For,do while,while
+ *
+ * Criar a função geradora de rotulos
+ * 
+ * Criar break e continue(OBS o super break pode ser uma feature a mais)
+ *
+ * Quando fazer string vai ter de mexer na expressão io
+*/
+
 %{
 #include <iostream>
 #include <string>
@@ -5,8 +38,11 @@
 #include <fstream>
 #include <stdio.h>
 #include <map>
+#include <vector>
 
 #define YYSTYPE atributos
+#define true  1
+#define false 0
 
 using namespace std;
 
@@ -15,6 +51,8 @@ struct atributos
 	string label;
 	string traducao;
 	string tipo;
+	string tipo_traducao;
+	int tamanho;
 };
 
 typedef struct
@@ -28,10 +66,15 @@ struct variavel
 {
 	string tipo;
 	string nome;
+	string valor;/* Na versão anterior este campo não existia, pois o valor já era atribuido na mesma linha do código intermediário então ele não era necessário.*/
+	string tam;
 };
 
 typedef map<string,cast> mapaCast;
 typedef map<string,variavel> mapaVar;
+
+vector<map<string,variavel>> pilhaVar;// pilha utilizada para armazenar os mapas de variaveis, ela sempre começa com as variaveis globais
+int pilhaPos = -1;
 
 int linha = 1;
 string erro;
@@ -39,57 +82,73 @@ static int numero = -1;
 static mapaCast mapCast;
 static mapaVar mapVar;
 
-int yylex(void);
-void yyerror(string);
-string geraLabel();
-string geraId(string,string,string);
-void preencheMapCast();
-int verificaCast(string,string,string);
-string	intToString(int);
-void addVarMap(string,string,string);
-string retornaNome(string nome);
-string retornaTipo(string nome);
+void addVarMap(string,string,string,string);
+void setTamString(string,string);
+void alteraValor(string,string);
 void mudaTipo(string,string);
-int verificaDeclaracao(string);
+void buscaMapa(string);
+void empilhaNovoMapa();
+void preencheMapCast();
+void yyerror(string);
 
+string declara_variaveis_temp(mapaVar,int);
+string geraId(string,string,string);
+string retornaValor(string);
+string retornaNome(string);
+string retornaTipo(string);
+string geraLabel();
+
+int verificaCast(string,string,string);
+int verificaDeclaracao(string);
+int yylex(void);
 
 %}
 
-%token TK_INT  TK_REAL TK_BOOLEAN TK_CHAR TK_ID 
+%token TK_INT TK_REAL TK_BOOLEAN TK_CHAR TK_STRING TK_ID TK_MAIN TK_TIPO TK_TIPO_VAR TK_TIPO_STRING
 
-%token TK_MAIN TK_TIPO_INT TK_TIPO_BOOLEAN TK_TIPO_REAL TK_TIPO_CHAR TK_TIPO_ID
+%token TK_ADD_SUB TK_MULT_DIV_RES TK_REL TK_LOGIC TK_ATRIBUICAO TK_CAST TK_IO TK_NOT
 
-%token TK_ARIT	TK_REL TK_LOGIC TK_NOT
-
-%token TK_ATRIBUICAO TK_CAST_INT TK_CAST_FLOAT TK_CIN TK_COUT 
-
-%token TK_IF TK_WHILE TK_FOR TK_ELSE TK_ELSE_IF TK_DO 
-
-%token TK_FIM TK_ERROR
-
+%token TK_COND TK_LOOP TK_FIM TK_ERROR
 
 %start S
 
-%left '+' '-'
-%left '*' '/' TK_RESTO
-%left TK_MENOR TK_MAIOR TK_IGUAL TK_MENOR_IGUAL TK_MAIOR_IGUAL
-%left TK_OR
-%left TK_AND
+%left TK_ADD_SUB
+%left TK_MULT_DIV_RES
+%left TK_REL
+%left TK_LOGIC
 %left TK_NOT
 
 %%
 
-S 			: TK_TIPO_INT TK_MAIN '(' ')' BLOCO
+S 			: BLOCOGLOBAL D TK_MAIN '(' ')' BLOCO
 			{
-				cout << "/*Compilador Uma Linguagem Qualquer*/\n" << "#include <iostream>\n#include<string.h>\n#include<stdio.h>\nint main(void)\n{\n" << $5.traducao << "\treturn 0;\n}" << endl;
+				string s = declara_variaveis_temp(pilhaVar[pilhaPos],0);
+				cout << "/*Compilador Uma Linguagem Qualquer*/\n" << "#include <iostream>\n#include<string.h>\n#include<stdio.h>\n\nusing namespace std;\n"<< s <<$2.traducao << "\nint main(void)\n{\n" << $6.traducao << "\treturn 0;\n}" << endl;
 			}
 			;
 
+BLOCOGLOBAL:/* regra vazia pq sempre vai acontecer logo q o lex começar sempre q tiver uma variavel global
+sendo declarada */
+			{
+					empilhaNovoMapa();
+			}
+
 BLOCO		: '{' COMANDOS '}'
 			{
-				$$.traducao = $2.traducao;
+
+				pilhaPos = pilhaVar.size() - 1; // Pego o topo da pilha
+				string s = declara_variaveis_temp(pilhaVar[pilhaPos],1);
+				$$.traducao = s + $2.traducao;
+				pilhaVar.pop_back();// desempilho o mapa ao final do bloco
+				pilhaPos = pilhaVar.size() - 1;
 			}
 			;
+
+D 			: D DECLARA ';'
+			{
+				$$.traducao = $1.traducao + $2.traducao;
+			}
+			|
 
 COMANDOS	: COMANDO COMANDOS
 			{
@@ -98,741 +157,1761 @@ COMANDOS	: COMANDO COMANDOS
 			|
 			;
 
-COMANDO 	: E ';'
+COMANDO 	: DECLARA ';'
+			| IO ';'
+			| CAST ';'
+			| ALTERA ';'
 			;
 
-E 			: '('E')'
+/*
+ E 			: '(' OP ')'
 			{
-				$$.label = "(" + $2.label +")";
-				$$.traducao= $2.traducao;
-
+				$$.tipo = $2.tipo;
+				if($2.label == "NULL"){
+					$$.traducao = "(" + $2.tipo_traducao +")";
+				}
+				else{
+					$$.label = $2.label;
+					$$.traducao = "(" + $2.tipo_traducao +")";
+				}
 			}
-			| DECLARA
-			| OP_ARIT
-			| OP_LOGIC
-			| OP_REL
-			| CAST
-			| TERM
-			| CIN
-			| COUT
-			;
-DECLARA		: TIPO_BOOL
-			| TIPO_CHAR
-			| TIPO_INT
-			| TIPO_REAL
-			| TIPO_ID
-			;
-
-TIPO_INT    : TK_TIPO_INT TK_ID TK_ATRIBUICAO TK_INT
-		    {
-		    	$$.label = geraLabel();
-
-				$$.traducao = "\t" + $4.tipo + " " + $$.label + " = " + $4.label + ";\n\n";
-
-				addVarMap($4.tipo,$2.label,$$.label);
-		    }
-		    | TK_ID TK_ATRIBUICAO TK_INT
-		    {
-		    	if(verificaDeclaracao($1.label)==0){
-		    		$$.label = geraLabel();
-
-					$$.traducao = "\t" + $3.tipo + " " + $$.label + " = " + $3.label + ";\n\n";
-
-					addVarMap($3.tipo,$1.label,$$.label);
+			| OP
+			{
+				$$.tipo = $1.tipo;
+				if($1.label == "NULL"){
+					$$.traducao = "(" + $1.tipo_traducao +")";
 				}
-				if(verificaDeclaracao($1.label)==1){
-					string tempLabel = retornaNome($1.label);
-					$$.traducao = "\t" + tempLabel + " = " + $3.label + ";\n\n";
- 				}
-		    }
-		    | TK_TIPO_INT TK_ID
-		    {
-		    	$$.label = geraLabel();
-
-				$$.traducao = "\tint " + $$.label + ";\n\n";
-
-				addVarMap("int",$2.label,$$.label);
-		    }
-			;
-TIPO_REAL    : TK_TIPO_REAL TK_ID TK_ATRIBUICAO TK_REAL
-		    {
-		    	$$.label = geraLabel();
-				$$.traducao = "\t" + $4.tipo + " " + $$.label + " = " + $4.label + ";\n\n";
-
-				addVarMap($4.tipo,$2.label,$$.label);
-		    }
-		    | TK_ID TK_ATRIBUICAO TK_REAL
-		    {
-		    	if(verificaDeclaracao($1.label)==0){
-		    		$$.label = geraLabel();
-
-					$$.traducao = "\t" + $3.tipo + " " + $$.label + " = " + $3.label + ";\n\n";
-
-					addVarMap($3.tipo,$1.label,$$.label);
+				else{
+					$$.label = $1.label;
+					$$.traducao = "(" + $1.tipo_traducao +")";
 				}
-				if(verificaDeclaracao($1.label)==1){
-					string tempLabel = retornaNome($1.label);
-					$$.traducao = "\t" + tempLabel + " = " + $3.label + ";\n\n";
- 				}
-		    }
-		    | TK_TIPO_REAL TK_ID
-		    {
-		    	$$.label = geraLabel();
-
-				$$.traducao = "\tfloat " + $$.label + ";\n\n";
-
-				addVarMap("float",$2.label,$$.label);
-		    }
+			}
 			;
-TIPO_CHAR    : TK_TIPO_CHAR TK_ID TK_ATRIBUICAO TK_CHAR
-		    {
-		    	$$.label = geraLabel();
-				$$.traducao = "\t" + $4.tipo + " " + $$.label + " = " + $4.label + ";\n\n";
+*/
+STRING 		: TK_TIPO_STRING TK_ID TK_ATRIBUICAO TK_STRING
+			{
+				buscaMapa($2.label);
 
-				addVarMap($4.tipo,$2.label,$$.label);
-		    }
-		    | TK_ID TK_ATRIBUICAO TK_CHAR
-		    {
-		    	if(verificaDeclaracao($1.label)==0){
-		    		$$.label = geraLabel();
-
-					$$.traducao = "\t" + $3.tipo + " " + $$.label + " = " + $3.label + ";\n\n";
-
-					addVarMap($3.tipo,$1.label,$$.label);
-				}
-				if(verificaDeclaracao($1.label)==1){
-					string tempLabel = retornaNome($1.label);
-					$$.traducao = "\t" + tempLabel + " = " + $3.label + ";\n\n";
- 				}
-		    }
-		    | TK_TIPO_CHAR TK_ID
-		    {
-		    	$$.label = geraLabel();
-
-				$$.traducao = "\tchar " + $$.label + ";\n\n";
-
-				addVarMap("char",$2.label,$$.label);
-		    }
-			;
-TIPO_BOOL    : TK_TIPO_BOOLEAN TK_ID TK_ATRIBUICAO TK_BOOLEAN
-		    {
-		    	$$.label = geraLabel();
-				$$.traducao = "\t" + $4.tipo + " " + $$.label + " = " + $4.label + ";\n\n";
-
-				addVarMap($4.tipo,$2.label,$$.label);
-		    }
-		    | TK_ID TK_ATRIBUICAO TK_BOOLEAN
-		    {
-		    	if(verificaDeclaracao($1.label)==0){
-		    		$$.label = geraLabel();
-
-					$$.traducao = "\t" + $3.tipo + " " + $$.label + " = " + $3.label + ";\n\n";
-
-					addVarMap($3.tipo,$1.label,$$.label);
-				}
-				if(verificaDeclaracao($1.label)==1){
-					string tempLabel = retornaNome($1.label);
-					$$.traducao = "\t" + tempLabel + " = " + $3.label + ";\n\n";
- 				}
-		    }
-			| TK_TIPO_BOOLEAN TK_ID
-		    {
-		    	$$.label = geraLabel();
-
-				$$.traducao = "\tboolean " + $$.label + ";\n\n";
-
-				addVarMap("boolean",$2.label,$$.label);
-		    }
-			;
-TIPO_ID    	: TK_TIPO_ID TK_ID TK_ATRIBUICAO TK_ID
-		    {
-		    	$$.label = geraLabel();
-				$$.traducao = "\t" + $4.tipo + " " + $$.label + " = " + $4.label + ";\n\n";
-
-				addVarMap($4.tipo,$2.label,$$.label);
-		    }
-		    | TK_ID TK_ATRIBUICAO TK_ID
-		    {
-		    	if(verificaDeclaracao($1.label)==0){
-		    		$$.label = geraLabel();
-
-					$$.traducao = "\t" + $3.tipo + " " + $$.label + " = " + $3.label + ";\n\n";
-
-					addVarMap($3.tipo,$1.label,$$.label);
-				}
-				if(verificaDeclaracao($1.label)==1){
-					string tempLabel = retornaNome($1.label);
-					$$.traducao = "\t" + tempLabel + " = " + $3.label + ";\n\n";
- 				}
-		    }
-		    | TK_TIPO_ID TK_ID
-		    {
-		    	$$.label = geraLabel();
-
-				$$.traducao = "\tid " + $$.label + ";\n\n";
-
-				addVarMap("id",$2.label,$$.label);
-		    }
-			;
-
-OP_ARIT		: E TK_ARIT E
-			{	
-
-				if(verificaCast($1.tipo,$2.label,$3.tipo)==-1){
-					erro = "Erro de Semântica na Linha :  " + to_string(linha);
+				if(verificaDeclaracao($2.label) == 1){
+					erro = "Erro de Semântica na Linha : Eu to na string " + to_string(linha);
 					yyerror(erro);
 				}
-
-				if(verificaCast($1.tipo,$2.label,$3.tipo)== 0 ){
+				else if(verificaDeclaracao($2.label) == 0){
 					$$.label = geraLabel();
-					$$.traducao = $1.traducao + $3.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + $1.label + $2.label + $3.label +" ;\n\n";
+					addVarMap($1.tipo,$2.label,$$.label,$4.label);
+					string tam = to_string($1.tamanho);
+					setTamString($2.label,tam);
 				}
 
-				if(verificaCast($1.tipo,$2.label,$3.tipo)== 1 ){
-					$$.tipo = $1.tipo = $3.tipo;
-					$$.label = geraLabel();
-					string tempLabel = geraLabel();
-					$$.traducao = $1.traducao + $3.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + " " + "(" + $1.tipo + ")"+ $1.label + " ;\n\n" + "\t" +
-					$$.tipo + " " + tempLabel + " = " + " "+ $$.label + $2.label + $3.label +" ;\n\n";
 
-				}
-
-				if(verificaCast($1.tipo,$2.label,$3.tipo)== 2 ){
-					$$.tipo = $3.tipo = $1.tipo;
-					$$.label = geraLabel();
-					string tempLabel = geraLabel();
-					$$.traducao = $1.traducao + $3.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + " " + "(" + $3.tipo + ")"+ $3.label + " ;\n\n" + "\t" +
-					$$.tipo + " " + tempLabel + " = " + " "+ $1.label + $2.label + $$.label +" ;\n\n";
-				}
 			}
+			;
 
-			| TK_ID TK_ARIT E
+DECLARA 	: STRING ';'
+
+			| TK_TIPO TK_ID TK_ATRIBUICAO TK_INT
 			{
-				if(verificaDeclaracao($1.label)==1){
-					string tempTipo = retornaTipo($1.label);
-					string tempLabel = retornaNome($1.label);
-					$$.label = geraLabel();
-
-					if ( verificaCast(tempTipo,$2.label,$3.tipo) == -1 ){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
+		
+				if($1.label=="int"){
+		
+					buscaMapa($2.label);
+		
+					if(verificaDeclaracao($2.label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+		
+						erro = "Erro de Semântica na Linha :  eu to na declaracao de int atribuindo valor" + to_string(linha);
 						yyerror(erro);
 					}
-
-					if ( verificaCast(tempTipo,$2.label,$3.tipo) == 0 ){
-						$$.tipo = tempTipo;
-						$$.traducao = $1.traducao + $3.traducao + "\t" +
-						$$.tipo + " " + $$.label + " = " + tempLabel + $2.label + $3.label +" ;\n\n";
-					}
-					if ( verificaCast(tempTipo,$2.label,$3.tipo) == 1 ){
-					$$.tipo = tempTipo = $3.tipo;
-					mudaTipo($1.label,$3.tipo);
-					string tempLabel0 = geraLabel();
-
-					$$.traducao = $1.traducao + $3.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-					$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + $2.label + $3.label +" ;\n\n";
-					}
-					if ( verificaCast(tempTipo,$2.label,$3.tipo) == 2 ){
-						$$.tipo = $3.tipo = tempTipo;
-						string tempLabel0 = geraLabel();
-
-						$$.traducao = $1.traducao + $3.traducao + "\t" +
-						$$.tipo + " " + $$.label + " = " + " " + "(" + $3.tipo + ")"+ $3.label + " ;\n\n" + "\t" +
-						$$.tipo + " " + tempLabel0 + " = " + " "+ tempLabel + $2.label + $$.label +" ;\n\n";
+		
+					else if(verificaDeclaracao($2.label) == 0){
+		
+						$$.label = geraLabel();
+						$$.traducao = $$.label + " = " + $4.label + ";\n";
+		
+						addVarMap($1.label,$2.label,$$.label,$4.label);
 					}
 				}
-				if(verificaDeclaracao($1.label)==0 )
-				{
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
+		
+				else{
+		
+					erro = "Erro de Semântica na Linha :  eu to na declaracao de int atribuindo valor2" + to_string(linha);
 					yyerror(erro);
 				}
 			}
 
-			| E TK_ARIT TK_ID
+			| TK_TIPO TK_ID TK_ATRIBUICAO TK_ADD_SUB TK_INT
 			{
-				if(verificaDeclaracao($3.label)==1 ){
-				string tempTipo = retornaTipo($3.label);
-				string tempLabel = retornaNome($3.label);
-				$$.label = geraLabel();
-
-				if ( verificaCast($1.tipo,$2.label,tempTipo) == -1 ){
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);
-				}
-
-				if ( verificaCast($1.tipo,$2.label,tempTipo) == 0 ){
-					$$.tipo = tempTipo;
-					$$.traducao = $3.traducao + $1.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + tempLabel + $2.label + $1.label +" ;\n\n";
-				}
-				if ( verificaCast($1.tipo,$2.label,tempTipo) == 1 ){
-					$$.tipo = $3.tipo = tempTipo;
-					string tempLabel0 = geraLabel();
-
-					$$.traducao = $3.traducao + $1.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ $3.label + " ;\n\n" + "\t" +
-					$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + $2.label + tempLabel +" ;\n\n";
+	
+				if($1.label == "int" && $4.label == "-"){
+	
+					buscaMapa($2.label);
+	
+					if(verificaDeclaracao($2.label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id 	já declarado.
+	
+						erro = "Erro de Semântica na Linha : eu to na declaracao de int atribuindo valor negativo" + to_string(linha);
+						yyerror(erro);
 					}
-					if ( verificaCast($1.tipo,$2.label,tempTipo) == 2 ){
-						$$.tipo = tempTipo = $1.tipo;
-						mudaTipo($3.label,$1.tipo);
-						string tempLabel0 = geraLabel();
-
-						$$.traducao = $1.traducao + $3.traducao + "\t" +
-						$$.tipo + " " + $$.label + " = " + " " + "(" + $1.tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-						$$.tipo + " " + tempLabel0 + " = " + " "+ $1.label + $2.label + $$.label +" ;\n\n";
+					
+					else if(verificaDeclaracao($2.label) == 0){
+							
+						$$.label = geraLabel();
+						string temp = "-" + $5.label;
+						$$.traducao = $$.label + " = " + temp + ";\n";
+						
+						addVarMap($1.label,$2.label,$$.label,temp);
 					}
 				}
-				if(verificaDeclaracao($3.label)==0)
-				{
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
+	
+				else{
+	
+					erro = "Erro de Semântica na Linha : eu to na declaracao de int atribuindo valor negativo " + to_string(linha);
 					yyerror(erro);
-				}
+				}	
 			}
-
-			| TK_ID TK_ARIT TK_ID
-
-			{	
+			
+			| TK_TIPO TK_ID TK_ATRIBUICAO TK_REAL
+			{
+				if($1.label == "float"){
 				
-				if(verificaDeclaracao($1.label)==1 && verificaDeclaracao($3.label)==1 ){
-					string tempLabel  = retornaNome($1.label);
-					string tempLabel2 = retornaNome($3.label);
-					string tempTipo   = retornaTipo($1.label);
-					string tempTipo2  = retornaTipo($3.label);
-					$$.label = geraLabel();
+					buscaMapa($2.label);
+				
+					if(verificaDeclaracao($2.label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id 	já declarado.
+				
+						erro = "Erro de Semântica na Linha : eu to na declaracao de real atribuindo valor " + to_string(linha);
+						yyerror(erro);
+					}
+				
+					else if(verificaDeclaracao($2.label) == 0){
+				
+						$$.label = geraLabel();
+						$$.traducao = $$.label + " = " + $4.label + ";\n";
+				
+						addVarMap($1.label,$2.label,$$.label,$4.label);
+					}
+				}
+				
+				else{
+				
+					erro = "Erro de Semântica na Linha : eu to na declaracao de real atribuindo valor2 " + to_string(linha);
+					yyerror(erro);
+				}
+			}
+			
+			| TK_TIPO TK_ID TK_ATRIBUICAO TK_ADD_SUB TK_REAL
+			{
+	
+				if($1.label == "float" && $4.label == "-"){
+	
+					buscaMapa($2.label);
+	
+					if(verificaDeclaracao($2.label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id 	já declarado.
+	
+						erro = "Erro de Semântica na Linha : eu to na declaracao de real atribuindo valor negativo " + to_string(linha);
+						yyerror(erro);
+					}
+	
+					else if(verificaDeclaracao($2.label) == 0){
+	
+						$$.label = geraLabel();
+						string temp = "-" + $5.label;
+						$$.traducao = $$.label + " = " + temp + ";\n";
+	
+						addVarMap($1.label,$2.label,$$.label,temp);
+					}
+				}
+	
+				else{
+	
+					erro = "Erro de Semântica na Linha :  eu to na declaracao de real atribuindo valor negativo" + to_string(linha);
+					yyerror(erro);
+				}
+			}
+			
+			| TK_TIPO TK_ID TK_ATRIBUICAO TK_CHAR
+			{
+	
+				if($1.label == "char"){
+		
+					buscaMapa($2.label);
+		
+					if(verificaDeclaracao($2.label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+		
+						erro = "Erro de Semântica na Linha : eu to na declaracao de char atribuindo valor " + to_string(linha);
+						yyerror(erro);
+					}
+		
+					else if(verificaDeclaracao($2.label) == 0){
+		
+						$$.label = geraLabel();
+						$$.traducao = $$.label + " = " + $4.label + ";\n";
+		
+						addVarMap($1.label,$2.label,$$.label,$4.label);
+					}
+				}
+		
+				else{
+		
+					erro = "Erro de Semântica na Linha : eu to na declaracao de char atribuindo valor2 " + to_string(linha);
+					yyerror(erro);
+				}
+			}
+			
+			| TK_TIPO TK_ID TK_ATRIBUICAO TK_BOOLEAN
+			{
+	
+				if($1.label == "bool"){
+	
+					buscaMapa($2.label);
+	
+					if(verificaDeclaracao($2.label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+	
+						erro = "Erro de Semântica na Linha : eu to na declaracao de boolean atribuindo valor " + to_string(linha);
+						yyerror(erro);
+					}
+	
+					else if(verificaDeclaracao($2.label) == 0){
+	
+						$$.label = geraLabel();
+	
+						if($4.label=="true"){
+	
+							$$.traducao = $$.label + " = " + "1" + ";\n";
+							addVarMap($1.label,$2.label,$$.label,"1");
+						}
+	
+						else if($4.label == "false"){
+	
+							$$.traducao = $$.label + " = " + "0" + ";\n";
+							addVarMap($1.label,$2.label,$$.label,"0");
+						}
+					}
+				}
+	
+				else{
+	
+					erro = "Erro de Semântica na Linha : eu to na declaracao de boolean atribuindo valor2 " + to_string(linha);
+					yyerror(erro);
+				}
+			}
 
-					if ( verificaCast(tempTipo,$2.label,tempTipo2) == -1 ){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
+			| TK_TIPO TK_ID TK_ATRIBUICAO OP_ARIT
+			{
+				buscaMapa($2.label);
+				
+				if(verificaDeclaracao($2.label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+				
+					erro = "Erro de Semântica na Linha : eu to na declaracao de exp ARIT atribuindo valor " + to_string(linha);
+					yyerror(erro);
+				}
+
+				else if(verificaDeclaracao($2.label) == 0){
+				
+					$$.label = geraLabel();
+				
+					if($1.label == $4.tipo){
+					
+						if($4.label == "NULL"){
+							
+							$$.traducao = $$.label + " = " + $4.tipo_traducao + " ;\n\n";
+
+							addVarMap($1.label,$2.label,$$.label,$4.tipo_traducao);
+						}
+
+						else{
+		
+							//cout<<$4.label<<endl<<endl<<$$.label<<endl<<$4.tipo_traducao<<endl; 
+							
+							$$.traducao = $4.label + $$.label + " = " + $4.tipo_traducao + " ;\n\n";
+							
+							addVarMap($1.label,$2.label,$$.label,$4.tipo_traducao);
+						}
+					}
+
+					else{
+					
+						erro = "Erro de Semântica na Linha : eu to na declaracao de expressões atribuindo valor2 (tipo da variavel que vai receber a exp esta errado) " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+			}
+
+			| TK_TIPO TK_ID TK_ATRIBUICAO '(' OP_REL ')'
+			{
+				if($1.label == "bool"){
+
+					buscaMapa($2.label);
+				
+					if(verificaDeclaracao($2.label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+					
+						erro = "Erro de Semântica na Linha : eu to na declaracao de exp REL atribuindo valor(variavel ja existente) " + to_string(linha);
 						yyerror(erro);
 					}
 
-					if ( verificaCast(tempTipo,$2.label,tempTipo2) == 0 ){
-						$$.tipo = tempTipo;
-						$$.traducao = $3.traducao + $1.traducao + "\t" +
-						$$.tipo + " " + $$.label + " = " + tempLabel + $2.label + tempLabel2 +" ;\n\n";
+					else if(verificaDeclaracao($2.label) == 0){
+
+						$$.label = geraLabel();
+
+						if($5.label == "NULL"){
+							
+							$$.traducao = $$.label + " = " + $5.tipo_traducao + " ;\n\n";
+
+							addVarMap($1.label,$2.label,$$.label,$5.tipo_traducao);
+						}
+
+						else{
+																
+							$$.traducao = $5.label + $$.label + " = " + $5.tipo_traducao + " ;\n\n";
+							
+							addVarMap($1.label,$2.label,$$.label,$5.tipo_traducao);
+						}
+
 					}
 
-					if ( verificaCast(tempTipo,$2.label,tempTipo2) == 1 ){
-						$$.tipo = tempTipo = tempTipo2;
-						mudaTipo(tempLabel,tempTipo2);
-						string tempLabel0 = geraLabel();
 
-						$$.traducao = $1.traducao + $3.traducao + "\t" +
-						$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-						$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + $2.label + tempLabel2 +" ;\n\n";
-					}
-
-					if ( verificaCast(tempTipo,$2.label,tempTipo2) == 2 ){
-						$$.tipo = tempTipo2 = tempTipo;
-						mudaTipo(tempLabel2,tempTipo);
-						string tempLabel0 = geraLabel();
-
-						$$.traducao = $1.traducao + $3.traducao + "\t" +
-						$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-						$$.tipo + " " + tempLabel0 + " = " + " "+ tempLabel + $2.label + $$.label +" ;\n\n";
-					}
 				}
-				if(verificaDeclaracao($1.label)==0 || verificaDeclaracao($3.label)==0)
-				{
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
+
+				else{
+					
+					erro = "Erro de Semântica na Linha : eu to na declaracao de expressões atribuindo valor3(Relacional)(tipo da variavel que vai receber a exp esta errado) " + to_string(linha);
 					yyerror(erro);
-				}			
-			}
-			;
-
-OP_LOGIC	: NOT
-			| AND_OR
-			;
-
-NOT 		: TK_NOT TK_BOOLEAN
-			{
-				$$.label = geraLabel();
-				string templabel = geraLabel();
-				$$.traducao = $1.traducao + $2.traducao + "\t" +
-				$2.tipo + " " + $$.label + " = " + " " + $2.label +" ;\n\n\t" +
-				$2.tipo + " " + templabel + " = " + " not " + $$.label +" ;\n\n";
-			}
-			;
-
-AND_OR 		: E TK_LOGIC E
-			{
-
-				if(verificaCast($1.tipo,$2.label,$3.tipo)==-1)
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-
-				if(verificaCast($1.tipo,$2.label,$3.tipo)== 0 ){
-					$$.label = geraLabel();
-					$$.traducao = $1.traducao + $3.traducao + "\t" +
-					$$.tipo + " " + $$.label + " = " + $1.label + $2.label + $3.label +" ;\n\n";
 				}
 			}
-			| TK_ID TK_LOGIC E
+			
+			| TK_TIPO TK_ID TK_ATRIBUICAO OP_LOG
 			{
-				if(verificaDeclaracao($1.label) == 1){
+				if($1.label == "bool"){
+
+					buscaMapa($2.label);
+				
+					if(verificaDeclaracao($2.label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+					
+						erro = "Erro de Semântica na Linha : eu to na declaracao de exp REL atribuindo valor(variavel ja existente) " + to_string(linha);
+						yyerror(erro);
+					}
+
+					else if(verificaDeclaracao($2.label) == 0){
+						
+						
+						$$.label = geraLabel();
+
+						$$.traducao = $$.label +  $4.label;
+							
+						addVarMap($1.label,$2.label,$$.label,$4.tipo_traducao);	
+					}
+				}
+			}
+			
+			| TK_TIPO TK_ID TK_ATRIBUICAO OP_LOG1
+			{
+				//**************Definir conteudo*****************************************
+			}
+
+			| TK_TIPO TK_ID
+			{
+			
+				buscaMapa($2.label);
+			
+				if(verificaDeclaracao($2.label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+			
+					erro = "Erro de Semântica na Linha : eu to na declaracao de variavel sem atribuir valor " + to_string(linha);
+					yyerror(erro);
+				}
+			
+				else if(verificaDeclaracao($2.label) == 0){
+				
+						$$.label = geraLabel();
+						addVarMap($1.label,$2.label,$$.label,"");
+					
+				}
+			}
+			
+			| TK_TIPO_VAR TK_ID
+			{
+		
+				buscaMapa($2.label);
+		
+				if(verificaDeclaracao($2.label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+		
+					erro = "Erro de Semântica na Linha :  to no qualquer" + to_string(linha);
+					yyerror(erro);
+				}
+		
+				else if(verificaDeclaracao($2.label) == 0){
+		
+					$$.label = geraLabel();
+					addVarMap($1.label,$2.label,$$.label,"");
+				}
+			}
+			;
+
+ALTERA 		: TK_ID TK_ATRIBUICAO TK_BOOLEAN
+			{
+				buscaMapa($1.label);
+				if(verificaDeclaracao($1.label) == 1){ // Está tentando alterar o valor uma variavel já existente.
+				
+					string temp = retornaTipo($1.label);
+					string tempLabel = retornaNome($1.label);
+				
+					if($3.tipo == temp){
+
+						if($3.label == "true"){
+							alteraValor($1.label,"true");
+							$$.traducao = tempLabel + " = 1;\n"; // Printa no código intermediário a alteração
+						}
+				
+						else if($3.label == "false"){
+							alteraValor($1.label,"false");
+							$$.traducao = tempLabel + " = 0;\n";
+						}
+					}
+					else if(temp == ""){
+
+						mudaTipo($1.label,"int");
+				
+						if($3.label == "true"){
+				
+							alteraValor($1.label,"true");
+							$$.traducao = tempLabel + " = 1;\n"; // Printa no código intermediário a alteração
+						}
+				
+						else if($3.label == "false"){
+				
+							alteraValor($1.label,"false");
+							$$.traducao = tempLabel + " = 0;\n";
+						}
+
+					}
+				
+					else if($3.tipo != temp){ // Está tentando atribuir um valor de um tipo diferente a uma variável boolean
+				
+						erro = "Erro de Semântica na Linha : eu to na altera boolean " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+				
+				else if(verificaDeclaracao($1.label) == 0){// Variavel não declarada
+					
+					erro = "Erro de Semântica na Linha :  eu to na altera boolean2" + to_string(linha);
+					yyerror(erro);
+				}
+			}
+
+			| TK_ID TK_ATRIBUICAO TK_CHAR
+			{
+			
+				buscaMapa($1.label);
+				if(verificaDeclaracao($1.label) == 1){ // Está tentando alterar o valor uma variavel já existente.
+
+					string temp = retornaTipo($1.label);
+					string tempLabel = retornaNome($1.label);
+
+					if($3.tipo == temp){
+			
+						alteraValor($1.label,$3.label);
+						$$.traducao =tempLabel + " = " + $3.label + ";\n"; // Printa no código intermediário a alteração
+					}
+			
+					else if(temp == ""){
+			
+						alteraValor($1.label,$3.label);
+						mudaTipo($1.label,$3.tipo);
+
+						$$.traducao = tempLabel + " = " + $3.label + ";\n"; // Printa no código intermediário a alteração
+					}
+			
+					else if($3.tipo != temp){ // Está tentando atribuir um valor de um tipo diferente a uma variável char
+			
+						erro = "Erro de Semântica na Linha : eu to na altera char " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+				
+				else if(verificaDeclaracao($1.label) == 0){// Variavel não declarada
+				
+					erro = "Erro de Semântica na Linha : eu to na altera char2 " + to_string(linha);
+					yyerror(erro);
+				}
+			}
+
+			| TK_ID TK_ATRIBUICAO TK_REAL
+			{
+			
+				buscaMapa($1.label);
+			
+				if(verificaDeclaracao($1.label) == 1){ // Está tentando alterar o valor uma variavel já existente.
+			
+					string temp = retornaTipo($1.label);
+					string tempLabel = retornaNome($1.label);
+			
+					if($3.tipo == temp){
+			
+						alteraValor($1.label,$3.label);
+						$$.traducao =tempLabel + " = " + $3.label + ";\n"; // Printa no código intermediário a alteração
+					}
+			
+					else if(temp == ""){
+			
+						alteraValor($1.label,$3.label);
+						mudaTipo($1.label,$3.tipo);
+
+						$$.traducao = tempLabel + " = " + $3.label + ";\n"; // Printa no código intermediário a alteração
+					}
+			
+					else if($3.tipo != temp){ // Está tentando atribuir um valor de um tipo diferente a uma variável real
+			
+						erro = "Erro de Semântica na Linha : eu to na altera real " + to_string(linha);
+						yyerror(erro);
+				
+					}
+				}
+				
+				else if(verificaDeclaracao($1.label) == 0){// Variavel não declarada
+				
+					erro = "Erro de Semântica na Linha : eu to na altera real 2 " + to_string(linha);
+					yyerror(erro);
+				}
+			}
+
+			| TK_ID TK_ATRIBUICAO TK_ADD_SUB TK_REAL
+			{
+			
+				if($3.label == "-"){
+			
+					buscaMapa($1.label);
+			
+					if(verificaDeclaracao($1.label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+
+						string temp = retornaTipo($1.label);
+						string tempLabel = retornaNome($1.label);
+
+						if($4.tipo == temp){
+			
+							string tempV = "-" + $4.label;
+							alteraValor($1.label,tempV);
+			
+							$$.traducao = tempLabel + " = " + tempV + ";\n"; // Printa no código intermediário a alteração
+						}
+			
+						else if(temp == ""){
+			
+							string tempV = "-" + $4.label;
+							alteraValor($1.label,tempV);
+							mudaTipo($1.label,$4.tipo);
+
+							$$.traducao = tempLabel + " = " + tempV + ";\n"; // Printa no código intermediário a alteração
+						}
+			
+						else if($4.tipo != temp){ // Está tentando atribuir um valor de um tipo diferente a uma variável real
+			
+							erro = "Erro de Semântica na Linha : eu to na altera real negativo " + to_string(linha);
+							yyerror(erro);
+						}
+					}
+
+					else if(verificaDeclaracao($1.label) == 0){// Variavel não declarada
+					
+						erro = "Erro de Semântica na Linha : eu to na altera real negativo2 " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+				
+				else{
+				
+					erro = "Erro de Semântica na Linha : eu to na altera real negativo3 " + to_string(linha);
+					yyerror(erro);
+				}
+			}
+		
+			| TK_ID TK_ATRIBUICAO TK_INT
+			{
+				buscaMapa($1.label);
+		
+				if(verificaDeclaracao($1.label) == 1){ // Está tentando alterar o valor uma variavel já existente.
+		
+					string temp = retornaTipo($1.label);
+					string tempLabel = retornaNome($1.label);
+
+					if($3.tipo == temp){
+		
+						alteraValor($1.label,$3.label);
+						$$.traducao = tempLabel + " = " + $3.label + ";\n"; // Printa no código intermediário a alteração
+					}
+		
+					else if(temp == ""){
+		
+						alteraValor($1.label,$3.label);
+						mudaTipo($1.label,$3.tipo);
+
+						$$.traducao = tempLabel + " = " + $3.label + ";\n"; // Printa no código intermediário a alteração
+					}
+		
+					else if($3.tipo != temp){ // Está tentando atribuir um valor de um tipo diferente a uma variável inteira
+		
+						erro = "Erro de Semântica na Linha : eu to na altera int " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+				
+				else if(verificaDeclaracao($1.label) == 0){// Variavel não declarada
+				
+					erro = "Erro de Semântica na Linha : eu to na altera int2 " + to_string(linha);
+					yyerror(erro);
+				}
+			}
+			
+			| TK_ID TK_ATRIBUICAO TK_ADD_SUB TK_INT
+			{
+			
+				if($3.label == "-"){
+			
+					buscaMapa($1.label);
+			
+					if(verificaDeclaracao($1.label) == 1){ // Está alterandor uma variavel já existente, ou seja está usando um id já declarado.
+			
+						string temp = retornaTipo($1.label);
+						string tempLabel = retornaNome($1.label);
+
+						if($4.tipo == temp){
+			
+							string tempV = "-" + $4.label;
+							alteraValor($1.label,tempV);
+			
+							$$.traducao = tempLabel + " = " + tempV + ";\n"; // Printa no código intermediário a alteração
+						}
+			
+						else if(temp == ""){
+			
+							string tempV = "-" + $4.label;
+							alteraValor($1.label,tempV);
+							mudaTipo($1.label,$4.tipo);
+
+							$$.traducao = tempLabel + " = " + tempV + ";\n"; // Printa no código intermediário a alteração
+						}
+			
+						else if($4.tipo != temp){ // Está tentando atribuir um valor de um tipo diferente a uma variável inteira
+			
+							erro = "Erro de Semântica na Linha : eu to na altera int negativo " + to_string(linha);
+							yyerror(erro);
+						}
+					}
+					
+					else if(verificaDeclaracao($1.label) == 0){ // Variavel não declarada
+					
+						erro = "Erro de Semântica na Linha :  eu to na altera int negativo2" + to_string(linha);
+						yyerror(erro);
+					}
+				}
+				
+				else{
+				
+					erro = "Erro de Semântica na Linha :  eu to na altera int negativo3" + to_string(linha);
+					yyerror(erro);
+				}
+			}
+
+			| TK_ID TK_ATRIBUICAO OP_ARIT
+			{
+
+				buscaMapa($1.label);
+
+				if(verificaDeclaracao($1.label) == 0){
+
+					erro = "Erro de Semântica na Linha : eu to na altera com expressões  arit " + to_string(linha);
+					yyerror(erro);
+				}
+
+				else if(verificaDeclaracao($1.label) == 1){
+				
 					string tempTipo = retornaTipo($1.label);
 					string tempLabel = retornaNome($1.label);
 
-					if(verificaCast(tempTipo,$2.label,$3.tipo)==-1){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
+					if(tempTipo == $3.tipo){
+
+						if($3.label == "NULL"){
+
+							alteraValor($1.label,$3.tipo_traducao);
+							$$.traducao = tempLabel + " = " + $3.tipo_traducao + " ;\n\n";
+						}
+
+						else{
+							alteraValor($1.label,$3.tipo_traducao);
+							$$.traducao = $3.label + tempLabel + " = " + $3.tipo_traducao + " ;\n\n";
+						}
+
+					}
+
+					else{
+						erro = "Erro de Semântica na Linha : eu to na altera com expressões arit2  " + to_string(linha);
 						yyerror(erro);
 					}
-					if(verificaCast(tempTipo,$2.label,$3.tipo)== 0 ){
-						$$.label = geraLabel();
-						$$.traducao = $1.traducao + $3.traducao + "\t" +
-						$$.tipo + " " + $$.label + " = " + tempLabel + $2.label + $3.label +" ;\n\n";
-					}
+
+
 				}
+			}
+
+			| TK_ID TK_ATRIBUICAO '(' OP_REL ')'
+			{
+				buscaMapa($1.label);
+
 				if(verificaDeclaracao($1.label) == 0){
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
+
+					erro = "Erro de Semântica na Linha : eu to na altera com expressões REL " + to_string(linha);
 					yyerror(erro);
 				}
-			}
-			| E TK_LOGIC TK_ID
-			{
-				if(verificaDeclaracao($3.label)== 1){
-					string tempTipo = retornaTipo($3.label);
-					string tempLabel = retornaNome($3.label);
-					if(verificaCast($1.tipo,$2.label,tempTipo)==-1){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
+
+				else if(verificaDeclaracao($1.label) == 1){
+					
+					string tempTipo = retornaTipo($1.label);
+					string tempLabel = retornaNome($1.label);
+
+					if(tempTipo == "bool"){
+
+						if($4.label == "NULL"){
+
+							alteraValor($1.label,$4.tipo_traducao);
+							$$.traducao = tempLabel + " = " + $4.tipo_traducao + " ;\n\n";
+						}
+
+						else{
+							alteraValor($1.label,$4.tipo_traducao);
+							$$.traducao = $4.label + tempLabel + " = " + $4.tipo_traducao + " ;\n\n";
+						}
+
+					}
+
+					else{
+						erro = "Erro de Semântica na Linha : eu to na altera com expressões REL 2  " + to_string(linha);
 						yyerror(erro);
 					}
-					if(verificaCast($1.tipo,$2.label,tempTipo)== 0 ){
-						$$.label = geraLabel();
-						$$.traducao = $1.traducao + $3.traducao + "\t" +
-						$$.tipo + " " + $$.label + " = " + $1.label + $2.label + tempLabel +" ;\n\n";
-					}
-				}
-				if(verificaDeclaracao($3.label)==0){
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);			
-				}
+
+				}					
 			}
-			| TK_ID TK_LOGIC TK_ID
+
+			| TK_ID TK_ATRIBUICAO OP_LOG
 			{
-				if(verificaDeclaracao($1.label) == 1 && verificaDeclaracao($3.label) ==1 ){
-					string tempTipo1 = retornaTipo($1.label);
-					string tempLabel1 = retornaNome($1.label);
-					string tempTipo = retornaTipo($3.label);
-					string tempLabel = retornaNome($3.label);
-					if(verificaCast(tempTipo1,$2.label,tempTipo)==-1){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
+				buscaMapa($1.label);
+
+				if(verificaDeclaracao($1.label) == 0){
+
+					erro = "Erro de Semântica na Linha : eu to na altera com expressões  not3 " + to_string(linha);
+					yyerror(erro);
+				}
+
+				else if(verificaDeclaracao($1.label) == 1){
+				
+					string tempTipo = retornaTipo($1.label);
+					string tempLabel = retornaNome($1.label);
+					
+					if(tempTipo == "bool" || tempTipo == "boolean"){
+						alteraValor($1.label,$3.tipo);
+
+						$$.traducao = tempLabel + " " + $3.label;
+					}
+					else{
+						erro = "Erro de Semântica na Linha : eu to no OP not 4 " + to_string(linha);
 						yyerror(erro);
 					}
-					if(verificaCast(tempTipo1,$2.label,tempTipo)== 0 ){
-						$$.label = geraLabel();
-						$$.traducao = $1.traducao + $3.traducao + "\t" +
-						$$.tipo + " " + $$.label + " = " + tempLabel1 + $2.label + tempLabel +" ;\n\n";
-					}
 				}
-				if(verificaDeclaracao($1.label)==0 || verificaDeclaracao($3.label) == 0){
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);			
-				}
+			}
+
+			| TK_ID TK_ATRIBUICAO OP_LOG1
+			{	
+		//****************************Definir o conteudo*****************************************
+			}
+
+			| OP_LOG
+			{	
+				buscaMapa($1.traducao);
+				alteraValor($1.traducao,$1.tipo);
+
+				$$.traducao = $1.tipo_traducao;
 			}
 			;
 
 TERM		: TK_INT
 		    {
-		    	$$.label = geraLabel();
-					$$.traducao = "\t" + $$.tipo + " " + $$.label + " = " + $1.label + ";\n\n";
-		    }
+		    	buscaMapa($1.label);
+	
+		    	if(verificaDeclaracao($1.label) == 0){
+	
+		    		string nome = geraLabel();
+	    	 		$$.label = $1.label;
+		    		$$.tipo = $1.tipo;
+					
+					$$.traducao = nome + " = " + $$.label + ";\n";
 
-			| '-' TK_INT /*regra para ler inteiros negativos*/
+		    		addVarMap($$.tipo,$$.label,nome,$$.label);
+		    	}
+		    }
+	
+			| TK_ADD_SUB TK_INT /*regra para ler inteiros negativos*/
 			{
-				$$.label = geraLabel();
-				$$.tipo = $2.tipo;
-				$$.traducao = "\t" + $$.tipo + " " + $$.label + " = " + " - " + $2.label + ";\n\n";
+	
+				$$.label = "-" + $2.label;
+	
+				buscaMapa($$.label);
+	
+		    	if(verificaDeclaracao($$.label) == 0){
+
+					if($1.label == "-"){
+			
+						string nome = geraLabel();
+			    		$$.tipo = $2.tipo;
+						$$.traducao = nome + " = " + $$.label + ";\n";
+
+			    		addVarMap($$.tipo,$$.label,nome,$$.label);
+			    	}
+		    	
+		    		else{
+				
+						erro = "Erro de Semântica na Linha : eu to no term int negativo " + to_string(linha);
+						yyerror(erro);
+					}
+				}
 			}
+	
 			| TK_REAL
 		    {
-		    	$$.label = geraLabel();
-					$$.traducao = "\t" + $$.tipo + " " + $$.label + " = " + $1.label + ";\n\n";
-		    }
-				| '-' TK_REAL /*regra para ler reais negativos */
-				{
-					$$.label = geraLabel();
-					$$.tipo = $2.tipo;
-					$$.traducao = "\t" + $$.tipo + " " + $$.label + " = " + " - " + $2.label + ";\n\n";
+	
+	    		buscaMapa($1.label);
+	
+		    	if(verificaDeclaracao($1.label) == 0){
+
+			    	string nome = geraLabel();
+	    		 	$$.label = $1.label;
+		    		$$.tipo = $1.tipo;
+		    		$$.traducao = nome + " = " + $$.label + ";\n";
+		    		
+		    		addVarMap($$.tipo,$$.label,nome,$$.label);
+			    }
+			}
+
+			| '-' TK_REAL /*regra para ler reais negativos */
+			{
+				$$.label = "-" + $2.label;
+			
+				buscaMapa($$.label);
+		    
+		    	if(verificaDeclaracao($$.label) == 0){
+
+					if($1.label == "-"){
+						string nome = geraLabel();
+			    		$$.tipo = $2.tipo;
+			    		$$.traducao = nome + " = " + $$.label + ";\n";
+
+			    		addVarMap($$.tipo,$$.label,nome,$$.label);
+			    	}
+			    	else{
+			
+						erro = "Erro de Semântica na Linha : eu to no term real negativo " + to_string(linha);
+						yyerror(erro);
+					}
 				}
-
-			| TK_ID
-		    {
-		    }
-
+			}
+			
 			| TK_CHAR
 		    {
-		    	$$.label = geraLabel();
-					$$.traducao = "\t" + $$.tipo + " " + $$.label + " = " + $1.label + ";\n\n";
-		    }
-
+		    	buscaMapa($1.label);
+		    
+		    	if(verificaDeclaracao($$.label) == 0){
+		    
+		    		string nome = geraLabel();
+	    	 		$$.label = $1.label;
+		    		$$.tipo = $1.tipo;
+		    		$$.traducao = nome + " = " + $$.label + ";\n";
+		    	
+		    		addVarMap($$.tipo,$$.label,nome,$$.label);
+		    	}
+			}
+			
 			| TK_BOOLEAN
 		    {
-		    	$$.label = geraLabel();
-					$$.traducao = "\t" + $$.tipo + " " + $$.label + " = " + $1.label + ";\n\n";
+		   		/* adiciona a variavel boolean autilizada num mapa de variaveis com tipo igual a int e id igual a 1 ou 0 se ele já não estiver lá */
+		     	if(verificaDeclaracao($1.label)==0){
+		   	
+		   	 		$$.label = geraLabel();
+		    
+		    		if($1.label == "true"){
+		    			
+		    			string nome = geraLabel();
+	    	 			$$.label = "1";
+		    			$$.tipo = $1.tipo;
+		    			$$.traducao = nome + " = " + $$.label + ";\n";
+		    			
+		    			addVarMap($$.tipo,$$.label,nome,$$.label);		
+		    		}
+		    
+		    		else if($1.label == "false"){
+		    			
+		    			string nome = geraLabel();
+	    	 			$$.label = "0";
+		    			$$.tipo = $1.tipo;
+		    			$$.traducao = nome + " = " + $$.label + ";\n";
+		    			
+		    			addVarMap($$.tipo,$$.label,nome,$$.label);		
+		    		}
+		    	}
+		    }
+
+		    | TK_ID
+		    {
 		    }
 			;
 
-OP_REL 		: E TK_REL E
+OP_ARIT		: TERM TK_ADD_SUB TERM
 			{
-				$$.tipo = "boolean";
-				$$.label = geraLabel();
 
 				if($1.tipo == "id" && $3.tipo == "id"){
-					if(verificaDeclaracao($1.label) == 1 && verificaDeclaracao($3.label) == 1){
-						string tempLabel1  = retornaNome($1.label);
-						string tempLabel2 = retornaNome($3.label);
-						string tempTipo   = retornaTipo($1.label);
-						string tempTipo2  = retornaTipo($3.label);			
-						if ( verificaCast(tempTipo,$2.label,tempTipo2) == -1 ){
-							erro = "Erro de Semântica na Linha : " + to_string(linha);
-							yyerror(erro);
-						}
-						if ( verificaCast(tempTipo,$2.label,tempTipo2) == 0 ){		
-							$$.traducao = $3.traducao + $1.traducao + "\t" +
-							$$.tipo + " " + $$.label + " = " + tempLabel1 + $2.label + tempLabel2 +" ;\n\n";
-						}
-						if ( verificaCast(tempTipo,$2.label,tempTipo2) == 1 ){					
-							tempTipo = tempTipo2;
-							mudaTipo(tempLabel1,tempTipo2);
-							string tempLabel0 = geraLabel();
-							$$.traducao = $1.traducao + $3.traducao + "\t" +
-							$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ tempLabel1 + " ;\n\n" + "\t" +
-							$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + $2.label + tempLabel2 +" ;\n\n";
-						}
-						if ( verificaCast(tempTipo,$2.label,tempTipo2) == 2 ){												
-							tempTipo2 = tempTipo;
-							mudaTipo(tempLabel2,tempTipo);
-							string tempLabel0 = geraLabel();
-							$$.traducao = $1.traducao + $3.traducao + "\t" +
-							$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")" + tempLabel2 + " ;\n\n" + "\t" +
-							$$.tipo + " " + tempLabel0 + " = " + " "+ tempLabel1 + $2.label + $$.label +" ;\n\n";
-						}
-					}
-					if(verificaDeclaracao($1.label) == 0 || verificaDeclaracao($3.label) == 0){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
-						yyerror(erro);
-					}
-				}
-				else if($1.tipo == "id"){
-					if(verificaDeclaracao($1.label) == 1){
-						string tempTipo = retornaTipo($1.label);
-						string tempLabel = retornaNome($1.label);
-						if ( verificaCast(tempTipo,$2.label,$3.tipo) == -1 ){
-							erro = "Erro de Semântica na Linha : " + to_string(linha);
-							yyerror(erro);
-						}
-						if ( verificaCast(tempTipo,$2.label,$3.tipo) == 0 ){
-							$$.traducao = $1.traducao + $3.traducao + "\t" +
-							$$.tipo + " " + $$.label + " = " + tempLabel + $2.label + $3.label +" ;\n\n";
-						}
-						if ( verificaCast(tempTipo,$2.label,$3.tipo) == 1 ){
-					
-							tempTipo = $3.tipo;
-							mudaTipo($1.label,$3.tipo);
-							string tempLabel0 = geraLabel();
 				
-							$$.traducao = $1.traducao + $3.traducao + "\t" +
-							$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ tempLabel + " ;\n\n" + "\t" +
-							$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + $2.label + $3.label +" ;\n\n";
+					buscaMapa($1.label);
+				
+					if(verificaDeclaracao($1.label) == 1){//verifica se a primeira variavel foi declarada
+				
+						string tempLabel1 = retornaNome($1.label),
+							   tempTipo1  = retornaTipo($1.label);
+
+						buscaMapa($3.label);
+				
+						if(verificaDeclaracao($3.label) == 1){//verifica se a segunda variavel foi declarada
+				
+							string tempLabel3 = retornaNome($3.label),
+								   tempTipo3  = retornaTipo($3.label);
+
+							if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+				
+								erro = "Erro de Semântica na Linha : eu to no OP id + id" + to_string(linha);
+								yyerror(erro);
+							}
+
+							else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+
+								$$.tipo_traducao =  tempLabel1 + " " + $2.label + " " + tempLabel3;
+								$$.label = "NULL";
+								$$.tipo = tempTipo1;
+							}
+
+							else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+								string temp = geraLabel();
+								mudaTipo(tempLabel1,tempTipo3);
+
+								$$.label = temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+								$$.tipo_traducao =  temp + " " + $2.label + " " + tempLabel3;
+								$$.tipo = tempTipo3;
+								
+								addVarMap(tempTipo3,temp,temp,$$.traducao);
+							}
+
+							else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+								string temp = geraLabel();
+								mudaTipo(tempLabel3,tempTipo1);
+
+								$$.label = temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+								$$.tipo_traducao =  tempLabel1 + $2.label + temp;
+								$$.tipo = tempTipo1;
+								
+								addVarMap(tempTipo1,temp,temp,$$.traducao);
+							}
 						}
-						if ( verificaCast(tempTipo,$2.label,$3.tipo) == 2 ){
-							$3.tipo = tempTipo;
-							string tempLabel0 = geraLabel();
-							$$.traducao = $1.traducao + $3.traducao + "\t" +
-							$$.tipo + " " + $$.label + " = " + " " + "(" + $3.tipo + ")"+ $3.label + " ;\n\n" + "\t" +
-							$$.tipo + " " + tempLabel0 + " = " + " "+ tempLabel + $2.label + $$.label +" ;\n\n";
-						}
-					}
-					if(verificaDeclaracao($1.label) == 0){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
-						yyerror(erro);
 					}
 				}
-				else if($3.tipo == "id"){
-					if(verificaDeclaracao($3.label) == 1){
-						string tempTipo = retornaTipo($3.label);
-						string tempLabel = retornaNome($3.label);		
-						if ( verificaCast($1.tipo,$2.label,tempTipo) == -1 ){
-							erro = "Erro de Semântica na Linha : " + to_string(linha);
+
+				else if($1.tipo == "id"){
+
+					buscaMapa($1.label);
+
+					if(verificaDeclaracao($1.label) == 1){//verifica se a primeira variavel foi declarada
+
+						string tempLabel1 = retornaNome($1.label),
+							   tempTipo1  = retornaTipo($1.label),
+							   tempLabel3 = retornaNome($3.label),
+							   tempTipo3  = retornaTipo($3.label);
+
+						if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP id + term" + to_string(linha);
 							yyerror(erro);
 						}
-						if ( verificaCast($1.tipo,$2.label,tempTipo) == 0 ){
-							$$.traducao = $3.traducao + $1.traducao + "\t" +
-							$$.tipo + " " + $$.label + " = " + tempLabel + $2.label + $1.label +" ;\n\n";
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+
+							$$.tipo_traducao =  tempLabel1 + " " + $2.label + " " + tempLabel3;
+							$$.label = $3.traducao + "\n";
+							$$.tipo = tempTipo1;
+							
 						}
-						if ( verificaCast($1.tipo,$2.label,tempTipo) == 1 ){
-							$3.tipo = tempTipo;
-							string tempLabel0 = geraLabel();
-							$$.traducao = $3.traducao + $1.traducao + "\t" +
-							$$.tipo + " " + $$.label + " = " + " " + "(" + tempTipo + ")"+ $3.label + " ;\n\n" + "\t" +
-							$$.tipo + " " + tempLabel0 + " = " + " "+ $$.label + $2.label + tempLabel +" ;\n\n";
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel1,tempTipo3);
+
+							$$.label = $3.traducao + "\n"+ temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+							$$.tipo_traducao =  temp + " " + $2.label + " " + tempLabel3;
+							$$.tipo = tempTipo3;
+
+							addVarMap(tempTipo3,temp,temp,$$.traducao);
 						}
-						if ( verificaCast($1.tipo,$2.label,tempTipo) == 2 ){
-							tempTipo = $1.tipo;
-							mudaTipo($3.label,$1.tipo);
-							string tempLabel0 = geraLabel();
-							$$.traducao = $1.traducao + $3.traducao + "\t" +
-							$$.tipo + " " + $$.label + " = " + " " + "(" + $1.tipo + ")" + tempLabel + " ;\n\n" + "\t" +
-							$$.tipo + " " + tempLabel0 + " = " + " "+ $1.label + $2.label + $$.label +" ;\n\n";
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel3,tempTipo1);
+
+							$$.label = $3.traducao + "\n"+ temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+							$$.tipo_traducao =  tempLabel1 + $2.label + temp;
+							$$.tipo = tempTipo1;
+
+							addVarMap(tempTipo1,temp,temp,$$.traducao);
 						}
 					}
-					if(verificaDeclaracao($3.label) == 0){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
+				}
+
+				else if($3.tipo == "id"){
+
+					buscaMapa($3.label);
+
+					if(verificaDeclaracao($3.label) == 1){//verifica se a segunda variavel foi declarada
+
+						string tempLabel1 = retornaNome($1.label),
+							   tempTipo1  = retornaTipo($1.label),
+							   tempLabel3 = retornaNome($3.label),
+							   tempTipo3  = retornaTipo($3.label);
+
+						if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP term + id" + to_string(linha);
+							yyerror(erro);
+						}
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+
+							$$.tipo_traducao =  tempLabel1 + " " + $2.label + " " + tempLabel3;
+							$$.label = $1.traducao;
+							$$.tipo = tempTipo1;
+						}
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel3,tempTipo1);
+
+							$$.label =$1.traducao + "\n"+ temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+							$$.tipo_traducao =  tempLabel1 + $2.label + temp;
+							$$.tipo = tempTipo3;
+
+							addVarMap(tempTipo1,temp,temp,$$.traducao);
+						}
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel1,tempTipo3);
+
+							$$.label =$1.traducao + "\n"+ temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+							$$.tipo_traducao =  temp + " " + $2.label + " " + tempLabel3;
+							$$.tipo = tempTipo1;
+
+							addVarMap(tempTipo3,temp,temp,$$.traducao);
+						}
+					}
+				}
+
+				else{
+
+					string tempTipo1  = retornaTipo($1.label),
+						   tempLabel3 = retornaNome($3.label),
+						   tempLabel1 = retornaNome($1.label),
+						   tempTipo3  = retornaTipo($3.label);
+
+					if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+						erro = "Erro de Semântica na Linha : eu to no OP term + term" + to_string(linha);
 						yyerror(erro);
 					}
+
+					else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+
+						$$.tipo_traducao =  tempLabel1 + " " + $2.label + " " + tempLabel3;
+						$$.label = $1.traducao + $3.traducao;
+						$$.tipo = tempTipo1;
+					}
+
+					else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+						string temp = geraLabel();
+						mudaTipo(tempLabel3,tempTipo1);
+
+						$$.label = $1.traducao + $3.traducao + "\n\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+						$$.tipo_traducao =  tempLabel1 + $2.label + temp;
+						$$.tipo = tempTipo3;
+
+						addVarMap(tempTipo1,temp,temp,$$.traducao);
+					}
+
+					else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+						string temp = geraLabel();
+						mudaTipo(tempLabel3,tempTipo1);
+
+						$$.label = $1.traducao + $3.traducao + "\n\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+						$$.tipo_traducao =  tempLabel1 + $2.label + temp;
+						$$.tipo = tempTipo1;
+
+						addVarMap(tempTipo1,temp,temp,$$.traducao);
+					}
 				}
+			}
+
+			| TERM TK_MULT_DIV_RES TERM
+			{
+			
+				if($1.tipo == "id" && $3.tipo == "id"){
+			
+					buscaMapa($1.label);
+			
+					if(verificaDeclaracao($1.label) == 1){//verifica se a primeira variavel foi declarada
+			
+						string tempLabel1 = retornaNome($1.label),
+							   tempTipo1  = retornaTipo($1.label);
+
+						buscaMapa($3.label);
+			
+						if(verificaDeclaracao($3.label) == 1){//verifica se a segunda variavel foi declarada
+			
+							string tempLabel3 = retornaNome($3.label),
+								   tempTipo3  = retornaTipo($3.label);
+
+							if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+			
+								erro = "Erro de Semântica na Linha : eu to no OP id * id" + to_string(linha);
+								yyerror(erro);
+							}
+
+							else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+
+								$$.tipo_traducao =  tempLabel1 + " " + $2.label + " " + tempLabel3;
+								$$.label = "NULL";
+								$$.tipo = tempTipo1;
+							}
+
+							else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+								string temp = geraLabel();
+								mudaTipo(tempLabel1,tempTipo3);
+
+								$$.label = temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+								$$.tipo_traducao =  temp + " " + $2.label + " " + tempLabel3;
+								$$.tipo = tempTipo3;
+
+								addVarMap(tempTipo3,temp,temp,$$.traducao);
+							}
+
+							else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+								string temp = geraLabel();
+								mudaTipo(tempLabel3,tempTipo1);
+
+								$$.label = temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+								$$.tipo_traducao =  tempLabel1 + $2.label + temp;
+								$$.tipo = tempTipo1;
+
+								addVarMap(tempTipo1,temp,temp,$$.traducao);
+							}
+						}
+					}
+				}
+
+				else if($1.tipo == "id"){
+
+					buscaMapa($1.label);
+
+					if(verificaDeclaracao($1.label) == 1){//verifica se a primeira variavel foi declarada
+
+						string tempLabel1 = retornaNome($1.label),
+							   tempTipo1  = retornaTipo($1.label),
+							   tempLabel3 = retornaNome($3.label),
+							   tempTipo3  = retornaTipo($3.label);
+
+						if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP id * term" + to_string(linha);
+							yyerror(erro);
+						}
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+
+							$$.tipo_traducao =  tempLabel1 + " " + $2.label + " " + tempLabel3;
+							$$.label =$3.traducao + "\n\n";
+							$$.tipo = tempTipo1;
+						}
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel1,tempTipo3);
+
+							$$.label = $3.traducao + "\n\n" + temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+							$$.tipo_traducao =  temp + " " + $2.label + " " + tempLabel3;
+							$$.tipo = tempTipo3;
+
+							addVarMap(tempTipo3,temp,temp,$$.traducao);
+						}
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel3,tempTipo1);
+
+							$$.label = $3.traducao + "\n\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+							$$.tipo_traducao =  tempLabel1 + $2.label + temp;
+							$$.tipo = tempTipo1;
+
+							addVarMap(tempTipo1,temp,temp,$$.traducao);
+						}
+					}
+				}
+
+				else if($3.tipo == "id"){
+
+					buscaMapa($3.label);
+
+					if(verificaDeclaracao($3.label) == 1){//verifica se a segunda variavel foi declarada
+
+						string tempLabel1 = retornaNome($1.label),
+							   tempTipo1  = retornaTipo($1.label),
+							   tempLabel3 = retornaNome($3.label),
+							   tempTipo3  = retornaTipo($3.label);
+
+						if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP term * id" + to_string(linha);
+							yyerror(erro);
+						}
+					
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+					
+							$$.tipo_traducao = tempLabel1 + " " + $2.label + " " + tempLabel3;
+							$$.label = $1.traducao + "\n\n";
+							
+							$$.tipo = tempTipo1;
+						}
+					
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+					
+							string temp = geraLabel();
+							mudaTipo(tempLabel1,tempTipo3);
+
+							$$.label = $1.traducao + "\n\n" + temp + " = (" + tempTipo3 + ")" + tempLabel1 + " ;\n\n";
+							$$.tipo_traducao =  tempLabel3 + $2.label + temp;
+							$$.tipo = tempTipo3;
+
+							addVarMap(tempTipo3,temp,temp,$$.tipo_traducao);
+						}
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel3,tempTipo1);
+
+							$$.label = $1.traducao + "\n\n" + temp + " = (" + tempTipo1 + ")"+ tempLabel3 + " ;\n\n";
+							$$.tipo_traducao =  temp + " " + $2.label + " " + tempLabel1;
+							$$.tipo = tempTipo1;
+
+							addVarMap(tempTipo1,temp,temp,$$.tipo_traducao);
+						}
+					}
+				}
+
 				else{
-					if(verificaCast($1.tipo,$2.label,$3.tipo)==-1){
-						erro = "Erro de Semântica na Linha : " + to_string(linha);
+
+					string tempLabel1 = retornaNome($1.label),
+						   tempTipo1  = retornaTipo($1.label),
+						   tempLabel3 = retornaNome($3.label),
+						   tempTipo3  = retornaTipo($3.label);
+
+					if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+						erro = "Erro de Semântica na Linha : eu to no OP term * term" + to_string(linha);
 						yyerror(erro);
 					}
-					if(verificaCast($1.tipo,$2.label,$3.tipo)== 0 ){			
-							$$.traducao = $1.traducao + $3.traducao + "\t" +
-							$$.tipo + " " + $$.label + " = " + $1.label + $2.label + $3.label +" ;\n\n";
-					}					
-					if(verificaCast($1.tipo,$2.label,$3.tipo)== 1 ){
-						$$.tipo = $1.tipo = $3.tipo;
-						string tempLabel = geraLabel();
-						$$.traducao = $1.traducao + $3.traducao + "\t" +
-						$$.tipo + " " + $$.label + " = " + " " + "(" + $1.tipo + ")"+ $1.label + " ;\n\n" + "\t" +
-						$$.tipo + " " + tempLabel + " = " + " "+ $$.label + $2.label + $3.label +" ;\n\n";
-					}					
-					if(verificaCast($1.tipo,$2.label,$3.tipo)== 2 ){
-						$$.tipo = $3.tipo = $1.tipo;
-						string tempLabel = geraLabel();
-						$$.traducao = $1.traducao + $3.traducao + "\t" +
-						$$.tipo + " " + $$.label + " = " + " " + "(" + $3.tipo + ")"+ $3.label + " ;\n\n" + "\t" +
-						$$.tipo + " " + tempLabel + " = " + " "+ $1.label + $2.label + $$.label +" ;\n\n";
+
+					else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+
+						$$.tipo_traducao =  tempLabel1 + " " + $2.label + " " + tempLabel3;
+						$$.label = $1.traducao + $3.traducao;
+						$$.tipo = tempTipo1;
+					}
+
+					else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+						string temp = geraLabel();
+						mudaTipo(tempLabel3,tempTipo1);
+
+						$$.label = $1.traducao + $3.traducao + "\n\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+						$$.tipo_traducao =  tempLabel1 + $2.label + temp;
+						$$.tipo = tempTipo3;
+
+						addVarMap(tempTipo1,temp,temp,$$.traducao);
+					}
+
+					else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+						string temp = geraLabel();
+						mudaTipo(tempLabel3,tempTipo1);
+
+						$$.label = $1.traducao + $3.traducao + "\n\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+						$$.tipo_traducao =  tempLabel1 + $2.label + temp;
+						$$.tipo = tempTipo1;
+
+						addVarMap(tempTipo1,temp,temp,$$.traducao);
 					}
 				}
 			}
 			;
 
-
-CAST 		: TK_CAST_INT TK_REAL
+OP_REL		: TERM TK_REL TERM
 			{
-				string label = geraLabel(),
-						tipo0 = $2.tipo,
-						tipo1 = "int",
-						temp;
-				int p;
+				if($1.tipo == "id" && $3.tipo == "id"){
 
-				$2.traducao = temp = $2.label;
+					buscaMapa($1.label);
 
-				p = atoi($2.traducao.c_str());
+					if(verificaDeclaracao($1.label) == 1){//verifica se a primeira variavel foi declarada
 
-				$2.traducao = intToString(p);
+						string tempLabel1 = retornaNome($1.label),
+							   tempTipo1  = retornaTipo($1.label);
 
-				$2.label = label;
-				$$.tipo = $2.tipo = tipo1;
-				string LABEL = geraLabel();
-				$$.traducao = "\t" + tipo0 + " " + label + " = " + temp + ";\n\n\t"
-				+ tipo1 + " " + LABEL + " = (" + tipo1 + ")" + label + ";\n\n";
-				//$$.tipo + " " + LABEL + " = " + $2.traducao + ";\n\n";
+						buscaMapa($3.label);
 
+						if(verificaDeclaracao($3.label) == 1){//verifica se a segunda variavel foi declarada
 
+							string tempLabel3 = retornaNome($3.label),
+								   tempTipo3  = retornaTipo($3.label);
 
-			}
-			| TK_CAST_INT TK_ID
-			{
-				string tempTipoA = retornaTipo($2.label);
-				string tempLabel = retornaNome($2.label);
+							if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
 
-				$$.label = geraLabel();
+								erro = "Erro de Semântica na Linha : eu to no OP id < id" + to_string(linha);
+								yyerror(erro);
+							}
 
-				if ( tempTipoA == "float"){
+							else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
 
-					mudaTipo($2.label,"int");
-					string tempTipo = retornaTipo($2.label);
+								$$.tipo_traducao = "(" + tempLabel1 + " " + $2.label + " " + tempLabel3 + ")";
+								$$.label = "NULL";
+								
+							}
 
+							else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
 
-					$$.traducao = $1.traducao + $2.traducao + "\t" +
-					tempTipo + " " + $$.label + " = (" + tempTipo + ")" + tempLabel + ";\n\n";
+								string temp = geraLabel();
+								mudaTipo(tempLabel1,tempTipo3);
 
+								$$.label = temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+								$$.tipo_traducao = "(" + temp + " " + $2.label + " " + tempLabel3 + ")";
+						
+								addVarMap(tempTipo3,temp,temp,$$.traducao);
+							}
 
+							else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
 
+								string temp = geraLabel();
+								mudaTipo(tempLabel3,tempTipo1);
+
+								$$.label = temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+								$$.tipo_traducao =  "(" + tempLabel1 + $2.label + temp + ")";
+						
+								addVarMap(tempTipo1,temp,temp,$$.traducao);
+							}
+						}
+					}
 				}
+
+				else if($1.tipo == "id"){
+
+					buscaMapa($1.label);
+
+					if(verificaDeclaracao($1.label) == 1){//verifica se a primeira variavel foi declarada
+
+						string tempLabel1 = retornaNome($1.label),
+							   tempTipo1  = retornaTipo($1.label),
+							   tempLabel3 = retornaNome($3.label),
+							   tempTipo3  = retornaTipo($3.label);
+
+						if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP id > term" + to_string(linha);
+							yyerror(erro);
+						}
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+
+							$$.traducao =  "(" + tempLabel1 + " " + $2.label + " " + tempLabel3 + ")";
+							$$.label = $3.traducao; 
+							
+						}
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel1,tempTipo3);
+
+							$$.label = $3.traducao + "\n" + temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+							$$.tipo_traducao = "(" + temp + " " + $2.label + " " + tempLabel3 + ")";
+							
+
+							addVarMap(tempTipo3,temp,temp,$$.traducao);
+						}
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel3,tempTipo1);
+
+							$$.label =  $3.traducao + "\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+							$$.tipo_traducao = "(" + tempLabel1 + $2.label + temp + ")";
+							
+							addVarMap(tempTipo1,temp,temp,$$.traducao);
+						}
+					}
+				}
+
+				else if($3.tipo == "id"){
+
+					buscaMapa($3.label);
+
+					if(verificaDeclaracao($3.label) == 1){//verifica se a segunda variavel foi declarada
+
+						string tempLabel1 = retornaNome($1.label),
+							   tempTipo1  = retornaTipo($1.label),
+							   tempLabel3 = retornaNome($3.label),
+							   tempTipo3  = retornaTipo($3.label);
+							   cout<< tempLabel1 << endl<< tempTipo1;
+						if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP term > id" + to_string(linha);
+							yyerror(erro);
+						}
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+
+							$$.tipo_traducao = "(" + tempLabel1 + " " + $2.label + " " + tempLabel3 + ")";
+							$$.label =  $1.traducao;
+							
+						}
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel3,tempTipo1);
+
+							$$.label = $1.traducao + "\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+							$$.tipo_traducao = "(" + tempLabel1 + $2.label + temp + ")";
+							
+							addVarMap(tempTipo1,temp,temp,$$.traducao);
+						}
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+							string temp = geraLabel();
+							mudaTipo(tempLabel1,tempTipo3);
+
+							$$.label = $1.traducao + "\n" + temp + " = (" + tempTipo3 + ")"+ tempLabel1 + " ;\n\n";
+							$$.tipo_traducao = "(" + temp + " " + $2.label + " " + tempLabel3 + ")";
+							
+							addVarMap(tempTipo3,temp,temp,$$.traducao);
+						}
+					}
+				}
+ /*
 				else{
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
+
+					string tempLabel1 = retornaNome($1.label),
+						   tempTipo1  = retornaTipo($1.label),
+						   tempLabel3 = retornaNome($3.label),
+						   tempTipo3  = retornaTipo($3.label);
+
+					if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+						erro = "Erro de Semântica na Linha : eu to no OP term > term" + to_string(linha);
+						yyerror(erro);
+					}
+
+					else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+
+						$$.tipo_traducao = "(" + tempLabel1 + " " + $2.label + " " + tempLabel3 + ")";
+						$$.label = $1.traducao + $3.traducao; 
+					}
+
+					else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 1){// a primeira variavel precisa de cast implicito para o tipo da segunda
+
+						string temp = geraLabel();
+						mudaTipo(tempLabel3,tempTipo1);
+
+						$$.label = $1.traducao + $3.traducao + "\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+						$$.tipo_traducao = "(" + tempLabel1 + $2.label + temp + ")";
+						
+						addVarMap(tempTipo1,temp,temp,$$.traducao);
+					}
+
+					else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 2){// a segunda variavel precisa de cast implicito para o tipo da primeira
+
+						string temp = geraLabel();
+						mudaTipo(tempLabel3,tempTipo1);
+
+						$$.label = $1.traducao + $3.traducao + "\n" + temp + " = (" + tempTipo1 + ")" + tempLabel3 + " ;\n\n";
+						$$.tipo_traducao = "(" + tempLabel1 + $2.label + temp + ")";
+						
+						addVarMap(tempTipo1,temp,temp,$$.traducao);
+					}
 				}
-
-			}
-			| TK_CAST_FLOAT TK_INT
-			{
-				string label = geraLabel(),
-						tipo0 = $2.tipo,
-						tipo1 = "float",
-						temp;
-
-				$2.traducao = $2.label;
-				temp = $2.traducao;
-				$2.traducao.append(".0");
-				$2.label = label;
-				$$.tipo = $2.tipo = tipo1;
-
-				$$.traducao = "\t" + tipo0 + " " + label + " = " + temp + ";\n\n\t"
-				+ tipo0 + " " + label + " = (" + tipo1 + ")" + label + ";\n\n\t"+
-				$$.tipo + " " + label + " = " + $2.traducao + ";\n\n";
-			}
-			| TK_CAST_FLOAT TK_ID
-			{
-				string tempTipoA = retornaTipo($2.label);
-				string tempLabel = retornaNome($2.label);
-				$$.label = geraLabel();
-
-				if ( tempTipoA == "int"){
-
-					mudaTipo($2.label,"float");
-					string tempTipo = retornaTipo($2.label);
-
-
-					$$.traducao = $1.traducao + $2.traducao + "\t" +
-					tempTipo + " " + $$.label + " = (" + tempTipo + ")" + tempLabel + ";\n\n";
-
-
-
-				}
+				*/
 				else{
-					{erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-				}
-			}
-			;
 
-CIN 		: TK_CIN '(' TK_ID ')'
-			{
-				if(verificaDeclaracao($3.label)==1){
-					string tempLabel = retornaNome($3.label);
-					$$.traducao = $1.traducao + $3.traducao + "\t"
-					+ "cin >> " + tempLabel + ";\n\n";
-				}
-				if(verificaDeclaracao($3.label)==0){
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
-					yyerror(erro);}
-			}
-			;
-
-COUT 		: TK_COUT '(' TK_ID ')'
-			{
-				if(verificaDeclaracao($3.label)==1){
-					string tempLabel = retornaNome($3.label);
-					$$.traducao = $1.traducao + $3.traducao + "\t"
-					+ "cout<< " + tempLabel + " << endl;\n\n";
-				}	
-				if(verificaDeclaracao($3.label)==0){
-					erro = "Erro de Semântica na Linha : " + to_string(linha);
+					erro = "Erro de Semântica na Linha : eu to no OP REL pq eu comentei o else   " + to_string(linha);
 					yyerror(erro);
 				}
 			}
 			;
 
-%%
+OP_LOG		: TK_NOT TK_ID
+			{
 
+				buscaMapa($2.label);
+
+				if(verificaDeclaracao($2.label) == 1){
+
+					string tempTipo = retornaTipo($2.label);
+
+					if(tempTipo == "bool"){
+
+						string tempLabel = retornaNome($2.label),
+							   tempValor = retornaValor($2.label);
+							   
+						if(tempValor == "1"){
+
+							
+							$$.label = " = 0;\n\n";
+							
+							$$.tipo_traducao = tempLabel + " = 0;\n\n";
+						}
+
+						else if(tempValor == "0"){
+							$$.label = " = 1;\n\n";
+							
+							
+							$$.tipo_traducao = tempLabel + " = 1;\n\n";
+						}
+						$$.tipo = tempValor;
+						$$.traducao = $2.label;
+					}
+
+					else{ // Está tentando negar algo q não é boolean
+					
+						erro = "Erro de Semântica na Linha : eu to no OP not" + to_string(linha);
+						yyerror(erro);
+					}
+
+				}
+
+				else{ // variavel não declarada
+
+						erro = "Erro de Semântica na Linha : eu to no not2" + to_string(linha);
+						yyerror(erro);
+				}
+			}
+			;
+
+OP_LOG1 	: TERM TK_LOGIC TERM
+			{
+			
+				if($1.tipo == "id" && $3.tipo == "id"){
+
+					buscaMapa($1.label);
+
+					if(verificaDeclaracao($1.label) == 1){//verifica se a primeira variavel foi declarada
+
+						string tempLabel1 = retornaNome($1.label),
+							   tempTipo1  = retornaTipo($1.label);
+
+						buscaMapa($3.label);
+
+						if(verificaDeclaracao($3.label) == 1){//verifica se a segunda variavel foi declarada
+
+							string tempLabel3 = retornaNome($3.label),
+								   tempTipo3  = retornaTipo($3.label);
+
+							if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+								erro = "Erro de Semântica na Linha : eu to no OP id and id" + to_string(linha);
+								yyerror(erro);
+							}
+
+							else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+
+								$$.tipo_traducao =  tempLabel1 + " " + $2.label + " " + tempLabel3;														
+							}
+						}
+					}
+				}
+
+				else if($1.tipo == "id"){
+
+					buscaMapa($1.label);
+
+					if(verificaDeclaracao($1.label) == 1){//verifica se a primeira variavel foi declarada
+
+						string tempLabel1 = retornaNome($1.label),
+							   tempTipo1  = retornaTipo($1.label),
+							   tempLabel3 = retornaNome($3.label),
+							   tempTipo3  = retornaTipo($3.label);
+
+						if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das 	variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP id and term" + to_string(linha);
+							yyerror(erro);
+						}
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+
+							$$.tipo_traducao = $3.traducao + tempLabel1 + " " + $2.label + " " + tempLabel3;													
+						}
+					}
+				}
+
+				else if($3.tipo == "id"){
+
+					buscaMapa($3.label);
+
+					if(verificaDeclaracao($3.label) == 1){//verifica se a segunda variavel foi declarada
+
+						string tempLabel1 = retornaNome($1.label),
+							   tempTipo1  = retornaTipo($1.label),
+							   tempLabel3 = retornaNome($3.label),
+							   tempTipo3  = retornaTipo($3.label);
+
+						if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+							erro = "Erro de Semântica na Linha : eu to no OP term and id" + to_string(linha);
+							yyerror(erro);
+						}
+
+						else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+
+							$$.tipo_traducao = $1.traducao + tempLabel1 + " " + $2.label + " " + tempLabel3;													
+						}
+					}
+				}
+
+				else{
+					
+					string tempLabel1 = retornaNome($1.label),
+						   tempTipo1  = retornaTipo($1.label),
+						   tempLabel3 = retornaNome($3.label),
+						   tempTipo3  = retornaTipo($3.label);
+
+					if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+						erro = "Erro de Semântica na Linha : eu to no OP term and term" + to_string(linha);
+						yyerror(erro);
+					}
+
+					else if(verificaCast(tempTipo1,$2.label,tempTipo3) == 0){// não precisa de cast implicito
+
+						$$.tipo_traducao = $1.traducao + $3.traducao + tempLabel1 + " " + $2.label + " " + tempLabel3;												
+					}
+				}
+			}
+			;
+
+CAST 		: TK_CAST TK_ID
+			{
+				if ($1.label == "int"){ // Devo criar um temp novo para representar a variavel após o cast ou faço variavel=(int)variavel ?
+		
+					buscaMapa($2.label);
+		
+					if(verificaDeclaracao($2.label) == 1){
+
+						mudaTipo($2.label,$1.label);
+						string temp = retornaValor($2.label);
+						int temp1 = atoi(temp.c_str());
+						temp = to_string(temp1);
+						alteraValor($2.label,temp);
+
+						string tempLabel = retornaNome($2.label);
+						$$.traducao = tempLabel + " = (" + $1.label + ") " + tempLabel + ";\n\n";
+					}
+		
+					else if (verificaDeclaracao($2.label) == 0){
+		
+						erro = "Erro de Semântica na Linha : eu to no cast int" + to_string(linha);
+						yyerror(erro);
+					}
+				}
+				
+				else if($1.label == "float"){ // Devo criar um temp novo para representar a variavel após o cast ou faço variavel=(float)variavel ?
+				
+					buscaMapa($2.label);
+				
+					if(verificaDeclaracao($2.label) == 1){
+
+						mudaTipo($2.label,$1.label);
+						string temp = retornaValor($2.label);
+						temp = temp + ".0";
+						alteraValor($2.label,temp);
+
+						string tempLabel = retornaNome($2.label);
+						$$.traducao = tempLabel + " = (" + $1.label + ") " + tempLabel + ";\n\n";
+					}
+				
+					else if (verificaDeclaracao($2.label) == 0){
+				
+						erro = "Erro de Semântica na Linha : eu to no cast float" + to_string(linha);
+						yyerror(erro);
+					}
+				}
+			}
+			;
+
+IO 			:TK_IO '(' TK_ID ')'
+			{
+
+				buscaMapa($3.label);
+
+				if($1.label == "cin"){
+
+					if(verificaDeclaracao($3.label)==1){
+
+						string tempLabel = retornaNome($3.label);
+						$$.traducao = $1.traducao + $3.traducao + "\t"
+						+ "cin >> " + tempLabel + ";\n\n";
+					}
+
+					if(verificaDeclaracao($3.label)==0){
+
+						erro = "Erro de Semântica na Linha :eu to no cin " + to_string(linha);
+						yyerror(erro);
+					}
+				}
+
+				else if ($1.label == "cout"){
+
+					if(verificaDeclaracao($3.label)==1){
+
+						string tempLabel = retornaNome($3.label);
+						$$.traducao = $1.traducao + $3.traducao + "\t"
+						+ "cout<< " + tempLabel + " << endl;\n\n";
+					}
+
+					if(verificaDeclaracao($3.label)==0){
+
+						erro = "Erro de Semântica na Linha : eu to no cout" + to_string(linha);
+						yyerror(erro);
+					}
+				}
+			}
+			;
+
+%%
 #include "lex.yy.c"
 
 int yyparse();
@@ -851,106 +1930,139 @@ void yyerror( string MSG )
 }
 
 string geraLabel(){
-
-	char buffer[50];
 	string temp;
-
 	numero++;
-
-	sprintf(buffer,"temp%d",numero);
-
-	temp = buffer;
-
+	temp = "temp" + to_string(numero);
 	return temp;
 }
 
 void preencheMapCast(){
-
 	FILE* textFile = fopen("mapa_cast.txt", "r");
-
 	char op1[20] = "";
 	char op2[20] = "";
 	char operador[3] = "";
 	char opfinal[20] = "";
 	int retorno;
 	string id;
-
 	while(fscanf(textFile, "%s\t%s\t%s\t%s\t%d\n",op1,operador,op2,opfinal,&retorno)){
-
 		cast Cast = {opfinal,retorno};
-
 		id = geraId(op1,operador,op2);
 		mapCast[id] = Cast;
-
 		if(feof(textFile)) {
-
 				break;
 		}
 	}
-
 	fclose(textFile);
 }
 
 string geraId(string tipo1, string op, string tipo2 ){
-
 	return tipo1 + "_" + op + "_" + tipo2;
 }
 
 int verificaCast(string tipo1, string op, string tipo2 ){
-
 	string id = geraId(tipo1,op,tipo2);
 	int aux = mapCast[id].retorno;
 	return aux;
-
 }
 
-string intToString(int p){
-	string s;
-	char buffer [50];
-	sprintf(buffer,"%d",p);
-	s=buffer;
-	return s;
-}
-
-void addVarMap(string tipo,string id,string nome){
-
-	variavel vari = {tipo,nome};
-
+void addVarMap(string tipo,string id,string nome,string valor){
+	variavel vari = {tipo,nome,valor,""};
 	mapVar[id] = vari;
+	pilhaVar[pilhaPos] = mapVar;
 }
 
-
-int verificaDeclaracao(string id ){
-
-	if(mapVar.find(id) != mapVar.end()){
+void setTamString(string id, string tam){
+	mapVar[id].tam = tam;
+}
+int verificaDeclaracao(string id){
+	if(mapVar.find(id) != mapVar.end()){//achou
 		return 1;
 	}
 	return 0;
-
 }
 
 string retornaNome(string id){
-
-	/*if(mapVar.find(id) != mapVar.end()){
-		return NULL;
-	}*/
 	return mapVar[id].nome;
-
 }
 
 string retornaTipo(string id){
-
-	/*if(mapVar.find(id) != mapVar.end()){
-		return NULL;
-	}*/
 	return mapVar[id].tipo;
+}
 
+string retornaValor(string id){
+	return mapVar[id].valor;
 }
 
 void mudaTipo(string id, string tipo){
-
-	/*if(mapVar.find(id) != mapVar.end()){
-		return NULL;
-	}*/
 	mapVar[id].tipo = tipo;
+	pilhaVar[pilhaPos] = mapVar;
+}
+
+void empilhaNovoMapa(){
+	map<string,variavel> novoMapa;
+	pilhaVar.push_back(novoMapa);
+	mapVar = novoMapa;
+	pilhaPos++;
+}
+
+void alteraValor(string id, string valor){
+	mapVar[id].valor = valor;
+	pilhaVar[pilhaPos] = mapVar;
+}
+
+// essa funcao altera o mapVar q esta sendo utilizado DEVE SER CHAMADA ANTES DA VERIFICADECLARACAO
+void buscaMapa(string id){
+
+	pilhaPos = pilhaVar.size() - 1; // pego topo da pilhaVar
+	bool encontrouVariavel = false;
+
+	for (pilhaPos; pilhaPos > -1; pilhaPos--){
+
+		mapVar = pilhaVar[pilhaPos];
+		int existeVar = verificaDeclaracao(id);
+
+		if (existeVar == 1){
+			encontrouVariavel = true;
+			break;
+		}
+	}
+	if (encontrouVariavel == false){//nao encontrou a variavel retorna o mapa do topo da pilha
+
+		pilhaPos = pilhaVar.size() - 1;
+		mapVar = pilhaVar[pilhaPos];
+	}
+}
+
+string declara_variaveis_temp(mapaVar map, int flag){
+   	string s = "";
+
+	for (mapaVar::iterator it = map.begin(); it!=map.end(); ++it) {
+		if(flag == 0){
+			if(it->second.tipo == ""){
+				erro = "Erro: Não é possivel declarar uma variavel do tipo qualquer no escopo global.";
+				yyerror(erro);
+				break;
+			}
+		}
+		if(it->second.tipo == "string"){
+			s += "char ["+ it->second.tam + "] " + it->second.nome + ";\n";
+		}
+		if(it->second.nome == ""){
+			continue;
+		}
+		if(it->second.tipo == "bool" || it->second.tipo == "boolean"){
+			s += "int " + it->second.nome + ";\n";
+			continue;
+		}
+		s += it->second.tipo + ' ' + it->second.nome + ";\n";
+
+	}
+/*for (mapaVar::iterator it = map.begin(); it!=map.end(); ++it) {
+		if(it->second.valor != ""){
+			s += it->second.nome + " = " + it->second.valor + ";\n";
+		}
+		else
+			continue;
+	}*/
+    return s;
 }

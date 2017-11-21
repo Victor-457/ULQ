@@ -1,7 +1,12 @@
+
 int main()
 
 {
-	1+5;
-	
-		
+	bool k = true;
+	bool e = false;
+	real r =9.0;
+	not k;
+
+	char u = 'd';
+	not k;
 }
