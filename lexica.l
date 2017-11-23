@@ -15,7 +15,7 @@ REAL {INT}+("."{INT}+)?
 boolean [true|false]
 CHAR \'({LETRA}|{INT})\'
 ID {LETRA}({LETRA}|{INT})*
-STRING \"[^"\n]*["]
+STRING \"([^\"\n]|\\\")*\"
 
 %%
 
@@ -23,7 +23,7 @@ STRING \"[^"\n]*["]
 
 {DELIM} 	{}
 
-"int main"		{return TK_MAIN;}
+"qualquer main"		{return TK_MAIN;}
 
 "int"		{yylval.label = "int";return TK_TIPO;}
 
@@ -33,7 +33,7 @@ STRING \"[^"\n]*["]
 
 "bool"		{yylval.label = "bool";return TK_TIPO;}
 
-"string"	{yylval.label = "string"; return TK_TIPO_STRING; }
+"string"	{yylval.tipo = "string"; return TK_TIPO_STRING; }
 
 "qualquer"	{yylval.label = "";return TK_TIPO_VAR;}
 
@@ -104,7 +104,7 @@ true|false	{ yylval.label = yytext; yylval.tipo = "boolean" ;return TK_BOOLEAN;}
 				yylval.label = texto;
 				yylval.tipo = "string";
 				yylval.tipo_traducao = "char";
-				yylval.tamanho = texto.size();
+				yylval.tamanho = strlen(yytext);
 				return TK_STRING;
 }
 {REAL}		{ yylval.label = yytext; yylval.tipo = "float"; return TK_REAL;}

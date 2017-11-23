@@ -1,0 +1,27 @@
+$$.label 
+em operações aritimeticas guarda o cast
+em operação logica de not guarda "=valor;\n\n"
+em operaçes relacionais guarda o cast
+
+Em IO não é utilizado
+Em Cast não é utilizado
+Em Termo é utilizado para guardar o id e valor
+Em Altera não é utilizado
+Em Declara é utlilizado para guardar o nome da variavel temporaria (tempN N e naturais);
+Em String é utlilizado para guardar o nome da variavel temporaria (tempN N e naturais);
+a =1;
+
+
+$$.tipo_traducao
+
+em operações aritimeticas, logicas e relacionais guarda a expressão(1+1, 1<1, etc).
+
+$$.tipo
+
+
+
+ a = 3 + a
+ 
+  a = 1 +1;
+  
+  tempo0 = 2;
