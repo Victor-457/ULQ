@@ -36,7 +36,7 @@
 
 %{
 #include <iostream>
-#include <string>
+#include <string.h>
 #include <sstream>
 #include <fstream>
 #include <stdio.h>
@@ -109,7 +109,7 @@ int yylex(void);
 
 %token TK_INT TK_REAL TK_BOOLEAN TK_CHAR TK_STRING TK_ID TK_MAIN TK_TIPO TK_TIPO_VAR TK_TIPO_STRING
 
-%token TK_ADD_SUB TK_MULT_DIV_RES TK_REL TK_LOGIC TK_ATRIBUICAO TK_CAST TK_IO TK_NOT
+%token TK_ADD_SUB TK_MULT_DIV_RES TK_REL TK_LOGIC TK_ATRIBUICAO TK_CAST TK_IN TK_OUT TK_NOT
 
 %token TK_COND TK_LOOP TK_FIM TK_ERROR
 
@@ -161,29 +161,32 @@ COMANDOS	: COMANDO COMANDOS
 			;
 
 COMANDO 	: DECLARA ';'
-			| IO ';'
+			| IN ';'
+			| OUT ';'
 			| CAST ';'
 			| ALTERA ';'
 			;
-
-
 
 STRING 		: TK_TIPO_STRING TK_ID TK_ATRIBUICAO TK_STRING
 			{
 				buscaMapa($2.label,1);
 
 				if(verificaDeclaracao($2.label) == 1){
+					
 					erro = "Erro de Semântica na Linha : Eu to na string " + to_string(linha);
 					yyerror(erro);
 				}
+
 				else if(verificaDeclaracao($2.label) == 0){
+					
 					$$.label = geraLabel();
-					cout << "tipo:" << $1.tipo << "\n" << "label:" << $2.label << "\n" << "temp:" << $$.label << "\n" <<
-					"string:" << $4.label << "\n"
-					<<"tamanho:" << $4.tamanho << "\n"<<endl;
+					
 					addVarMap($1.tipo,$2.label,$$.label,$4.label);
+					
 					string tam = to_string($4.tamanho);
 					setTamString($2.label,tam);
+					
+					$$.traducao = "strcpy(" + $$.label + "," + $4.label + ");\n\n" ;
 				}
 
 
@@ -1636,7 +1639,6 @@ OP_REL		: TERM TK_REL TERM
 						}
 					}
 				}
- /*
 				else{
 
 					string tempLabel1 = retornaNome($1.label),
@@ -1677,12 +1679,6 @@ OP_REL		: TERM TK_REL TERM
 
 						addVarMap(tempTipo1,temp,temp,$$.traducao);
 					}
-				}
-				*/
-				else{
-
-					erro = "Erro de Semântica na Linha : eu to no OP REL pq eu comentei o else   " + to_string(linha);
-					yyerror(erro);
 				}
 			}
 			;
@@ -1883,7 +1879,7 @@ CAST 		: TK_CAST TK_ID
 			}
 			;
 
-IO 			:TK_IO '(' TK_ID ')'
+IN 			:TK_IN '(' TK_ID ')'
 			{
 
 				buscaMapa($3.label,0);
@@ -1903,25 +1899,48 @@ IO 			:TK_IO '(' TK_ID ')'
 						yyerror(erro);
 					}
 				}
+			}
+			;
+			
+OUT 		: TK_OUT '(' T ')'{
 
-				else if ($1.label == "cout"){
+				if($3.tipo == "NULL"){
 
-					if(verificaDeclaracao($3.label)==1){
+					erro = "Erro de Semântica na Linha :eu to no cin " + to_string(linha);
+					yyerror(erro);
+				}
+				else{
 
-						string tempLabel = retornaNome($3.label);
-						$$.traducao = $1.traducao + $3.traducao + "\t"
-						+ "cout<< " + tempLabel + " << endl;\n\n";
-					}
-
-					if(verificaDeclaracao($3.label)==0){
-
-						erro = "Erro de Semântica na Linha : eu to no cout" + to_string(linha);
-						yyerror(erro);
-					}
+					$3.label.erase($3.label.end() - 3, $3.label.end());
+					$$.traducao = "cout << " + $3.label + ";\n\n";
 				}
 			}
 			;
 
+T 	 		: TK_STRING T
+			{
+				$$.label = $1.label + " << " + $2.label;
+			}
+			| TK_ID T{
+
+				if(verificaDeclaracao($1.label)==1){
+
+						string tempLabel = retornaNome($1.label);
+						$$.label = tempLabel + " << " + $2.label;						
+				}
+
+				else if(verificaDeclaracao($1.label)==0){
+
+						erro = "Erro de Semântica na Linha : vARIAVEL NÃO DECLARADA(T) " + to_string(linha);
+						yyerror(erro);
+				}
+			}
+			|
+			{
+
+				$$.tipo = "NULL";
+			}
+			;
 %%
 #include "lex.yy.c"
 
@@ -2081,7 +2100,7 @@ string declara_variaveis_temp(mapaVar map, int flag){
 		}
 		if(it->second.tipo == "string"){
 
-			s += "char ["+ it->second.tam + "] " + it->second.nome + ";\n";
+			s += "char " + it->second.nome + "[" + it->second.tam + "] ;\n";
 			continue;
 		}
 		if(it->second.nome == ""){

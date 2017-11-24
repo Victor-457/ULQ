@@ -972,12 +972,12 @@ YY_RULE_SETUP
 case 27:
 YY_RULE_SETUP
 #line 74 "lexica.l"
-{yylval.label = "cin";return TK_IO;}
+{yylval.label = "cin";return TK_IN;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
 #line 76 "lexica.l"
-{yylval.label = "cout";return TK_IO;}
+{yylval.label = "cout";return TK_OUT;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
@@ -1037,11 +1037,12 @@ YY_RULE_SETUP
 case 40:
 YY_RULE_SETUP
 #line 100 "lexica.l"
-{   string texto = yytext;		
+{   string texto = yytext;
+				yylval.label = texto;		
 				texto.replace(texto.begin(), texto.begin() + 1, "");
 				texto.replace(texto.end() - 1, texto.end(), "");
-				yylval.traducao = texto;
-				yylval.label = texto;
+				//yylval.traducao = texto;
+				
 				yylval.tipo = "string";
 				yylval.tipo_traducao = "char";
 				yylval.tamanho = strlen(yytext);
@@ -1050,30 +1051,30 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 110 "lexica.l"
+#line 111 "lexica.l"
 { yylval.label = yytext; yylval.tipo = "float"; return TK_REAL;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 111 "lexica.l"
+#line 112 "lexica.l"
 { yylval.label = yytext; yylval.tipo = "id"; return TK_ID; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 112 "lexica.l"
+#line 113 "lexica.l"
 { yylval.label = yytext; yylval.tipo = "char"; return TK_CHAR; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 114 "lexica.l"
+#line 115 "lexica.l"
 { *yytext; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 116 "lexica.l"
+#line 117 "lexica.l"
 ECHO;
 	YY_BREAK
-#line 1077 "lex.yy.c"
+#line 1078 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2074,7 +2075,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 116 "lexica.l"
+#line 117 "lexica.l"
 
 
 

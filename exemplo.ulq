@@ -1,7 +1,10 @@
 
 qualquer main()
 {
-	int a;
-	int b;
-	int a;
+int o;
+	string p = "hello World";
+	int k=0;
+	string E = "hello Word";
+
+	puts("Victor diz " p "olha");
 }

@@ -71,9 +71,9 @@ STRING \"([^\"\n]|\\\")*\"
 
 "castR"		{yylval.label = "float";return TK_CAST;}
 
-"que?!"		{yylval.label = "cin";return TK_IO;}
+"que?!"		{yylval.label = "cin";return TK_IN;}
 
-"puts"		{yylval.label = "cout";return TK_IO;}
+"puts"		{yylval.label = "cout";return TK_OUT;}
 
 "if"		{yylval.label = "if";return TK_COND;}
 
@@ -97,11 +97,12 @@ STRING \"([^\"\n]|\\\")*\"
 true|false	{ yylval.label = yytext; yylval.tipo = "boolean" ;return TK_BOOLEAN;}
 {INT}		{ yylval.label = yytext; yylval.tipo = "int" ;return TK_INT; }
 
-{STRING}  	{   string texto = yytext;		
+{STRING}  	{   string texto = yytext;
+				yylval.label = texto;		
 				texto.replace(texto.begin(), texto.begin() + 1, "");
 				texto.replace(texto.end() - 1, texto.end(), "");
-				yylval.traducao = texto;
-				yylval.label = texto;
+				//yylval.traducao = texto;
+				
 				yylval.tipo = "string";
 				yylval.tipo_traducao = "char";
 				yylval.tamanho = strlen(yytext);
