@@ -6,13 +6,6 @@ then
     exit 1
 fi
 
-echo "removendo o repositorio origin"
-if ! git remote rm origin
-then
-    echo "Não foi possível remover origin."
-    exit 1
-fi
-echo "remoção feita com sucesso"
 
 if ! git add .
 then
