@@ -31,7 +31,7 @@
  *
  * Criar break e continue(OBS o super break pode ser uma feature a mais)
  *
- * Quando fazer string vai ter de mexer na expressão io
+ *
 */
 
 %{
@@ -65,6 +65,15 @@ typedef struct
 
 }cast;
 
+typedef struct
+{
+	bool ehLoop;
+	string labelInicio;
+	string labelFim;
+
+}Bloco;
+
+
 struct variavel
 {
 	string tipo;
@@ -77,13 +86,18 @@ typedef map<string,cast> mapaCast;
 typedef map<string,variavel> mapaVar;
 
 vector<map<string,variavel>> pilhaVar;// pilha utilizada para armazenar os mapas de variaveis, ela sempre começa com as variaveis globais
+vector<Bloco> pilhaBloco;
 int pilhaPos = -1;
+int pilhaBlocoPos = -1;
 
 int linha = 1;
 string erro;
 static int numero = -1;
+static int numeroLabelBloco = -1;
 static mapaCast mapCast;
 static mapaVar mapVar;
+
+std::vector<std::string> geraLabelBloco();
 
 void addVarMap(string,string,string,string);
 void setTamString(string,string);
@@ -98,6 +112,7 @@ string declara_variaveis_temp(mapaVar,int);
 string geraId(string,string,string);
 string retornaValor(string);
 string retornaNome(string);
+
 string retornaTipo(string);
 string geraLabel();
 
@@ -111,7 +126,9 @@ int yylex(void);
 
 %token TK_ADD_SUB TK_MULT_DIV_RES TK_REL TK_LOGIC TK_ATRIBUICAO TK_CAST TK_IN TK_OUT TK_NOT
 
-%token TK_COND TK_LOOP TK_FIM TK_ERROR
+%token TK_COND TK_COND1 TK_COND2 TK_LOOP TK_FIM TK_ERROR
+
+%token TK_BREAK TK_CONTINUE
 
 %start S
 
@@ -123,27 +140,93 @@ int yylex(void);
 
 %%
 
-S 			: BLOCOGLOBAL D TK_MAIN '(' ')' BLOCO
+S 			:GERABLOCONORMAL BLOCOGLOBAL D TK_MAIN '(' ')' GERABLOCONORMAL BLOCO
 			{
 				string s = declara_variaveis_temp(pilhaVar[pilhaPos],0);
-				cout << "/*Compilador Uma Linguagem Qualquer*/\n" << "#include <iostream>\n#include<string.h>\n#include<stdio.h>\n\nusing namespace std;\n"<< s <<$2.traducao << "\nint main(void)\n{\n" << $6.traducao << "\treturn 0;\n}" << endl;
+				Bloco bloco = pilhaBloco[pilhaBlocoPos];
+				pilhaBloco.pop_back();
+				pilhaBlocoPos --;
+				Bloco blocoGlobal = pilhaBloco[pilhaBlocoPos];
+				pilhaBloco.pop_back();
+				pilhaBlocoPos--;
+				cout << "/*Compilador Uma Linguagem Qualquer*/\n" << "#include <iostream>\n#include<string.h>\n#include<stdio.h>\n\nusing namespace std;\n\n"<< s <<$3.traducao << "\nint main(void)\n{\n" << $7.traducao << $8.traducao << bloco.labelFim << ":\n" <<"\treturn 0;\n}\n" << endl;
 			}
 			;
 
+GERABLOCONORMAL:
+		{
+			pilhaBlocoPos++;
+			std::vector<std::string> labels = geraLabelBloco();
+			Bloco bloco = {.ehLoop = false,.labelInicio = labels[1], .labelFim = labels[0]};
+			pilhaBloco.push_back(bloco);
+			$$.traducao = bloco.labelInicio + ":\n";
+		}
+		;
+
+GERABLOCOLOOP:
+{
+	pilhaBlocoPos++;
+	std::vector<std::string> labels = geraLabelBloco();
+	Bloco bloco = {.ehLoop = true,.labelInicio = labels[1], .labelFim = labels[0]};
+	pilhaBloco.push_back(bloco);
+	$$.traducao = bloco.labelInicio + ":\n";
+}
+;
 BLOCOGLOBAL:/* regra vazia pq sempre vai acontecer logo q o lex começar sempre q tiver uma variavel global
 sendo declarada */
 			{
 					empilhaNovoMapa();
 			}
+			;
+
+LOOP 		: TK_LOOP '('OP_REL')' GERABLOCOLOOP BLOCO
+			{
+				Bloco bloco = pilhaBloco[pilhaBlocoPos];
+				 if($1.label == "while"){
+					 string tempVarLabel = geraLabel();
+					  $$.traducao = $5.traducao;
+						$$.traducao += "int " + tempVarLabel + " = " + $3.tipo_traducao + ";\n";
+
+						$$.traducao += "if(!(" + tempVarLabel + ")) goto " + bloco.labelFim + ";\n";
+						$$.traducao += $6.traducao;
+						$$.traducao += "goto " + bloco.labelInicio + ";\n";
+						$$.traducao += bloco.labelFim + ":\n\n";
+						pilhaBloco.pop_back(); // desempilho bloco atual
+						pilhaBlocoPos --;
+				 }else{
+					 string erro = "Erro de sintática na linha: " + to_string(linha) + " use a palavra while!";
+					 yyerror(erro);
+				 }
+			}
+			|TK_LOOP GERABLOCOLOOP BLOCO TK_LOOP '(' OP_REL ')'
+			{
+					Bloco bloco = pilhaBloco[pilhaBlocoPos];
+					if($1.label == "do" && $4.label == "while"){
+						string tempVarLabel = geraLabel();
+ 					  $$.traducao = $2.traducao;
+ 						$$.traducao += $3.traducao;
+						$$.traducao += "int " + tempVarLabel + " = " + $6.tipo_traducao + ";\n";
+						$$.traducao += "if(!(" + tempVarLabel + ")) goto " + bloco.labelFim + ";\n";
+ 						$$.traducao += "goto " + bloco.labelInicio + ";\n";
+ 						$$.traducao += bloco.labelFim + ":\n\n";
+ 						pilhaBloco.pop_back(); // desempilho bloco atual
+ 						pilhaBlocoPos --;
+					}else{
+						string erro = "Erro de sintática na linha: " + to_string(linha) + " use do{comandos}while(condição) !";
+ 					 yyerror(erro);
+					}
+			}
+			;
 
 BLOCO		: '{' COMANDOS '}'
 			{
-
+				Bloco bloco = pilhaBloco[pilhaBlocoPos];
 				pilhaPos = pilhaVar.size() - 1; // Pego o topo da pilha
 				string s = declara_variaveis_temp(pilhaVar[pilhaPos],1);
-				$$.traducao = s + $2.traducao;
+				$$.traducao += s + $2.traducao;
 				pilhaVar.pop_back();// desempilho o mapa ao final do bloco
 				pilhaPos = pilhaVar.size() - 1;
+
 			}
 			;
 
@@ -165,6 +248,34 @@ COMANDO 	: DECLARA ';'
 			| OUT ';'
 			| CAST ';'
 			| ALTERA ';'
+			| LOOP
+			| COND_IF
+			| BREAK ';'
+			| CONTINUE ';'
+			;
+
+BREAK : TK_BREAK
+			{
+					Bloco bloco = pilhaBloco[pilhaBlocoPos];
+					if (bloco.ehLoop){
+							$$.traducao = "goto " + bloco.labelFim + ";\n";
+					}else{
+						string erro = "Não é possível utilizar break fora do contexto de um loop! na Linha: " + to_string(linha);
+						yyerror(erro);
+					}
+			}
+			;
+
+CONTINUE : TK_CONTINUE
+			{
+					Bloco bloco = pilhaBloco[pilhaBlocoPos];
+					if (bloco.ehLoop){
+							$$.traducao = "goto " + bloco.labelInicio + ";\n";
+					}else{
+						string erro = "Não é possível utilizar continue fora do contexto de um loop! na Linha: " + to_string(linha);
+						yyerror(erro);
+					}
+			}
 			;
 
 STRING 		: TK_TIPO_STRING TK_ID TK_ATRIBUICAO TK_STRING
@@ -172,20 +283,20 @@ STRING 		: TK_TIPO_STRING TK_ID TK_ATRIBUICAO TK_STRING
 				buscaMapa($2.label,1);
 
 				if(verificaDeclaracao($2.label) == 1){
-					
+
 					erro = "Erro de Semântica na Linha : Eu to na string " + to_string(linha);
 					yyerror(erro);
 				}
 
 				else if(verificaDeclaracao($2.label) == 0){
-					
+
 					$$.label = geraLabel();
-					
+
 					addVarMap($1.tipo,$2.label,$$.label,$4.label);
-					
+
 					string tam = to_string($4.tamanho);
 					setTamString($2.label,tam);
-					
+
 					$$.traducao = "strcpy(" + $$.label + "," + $4.label + ");\n\n" ;
 				}
 
@@ -193,8 +304,72 @@ STRING 		: TK_TIPO_STRING TK_ID TK_ATRIBUICAO TK_STRING
 			}
 			;
 
-DECLARA 	: STRING
+DECLARACAST : TK_TIPO TK_ID TK_ATRIBUICAO TK_CAST TK_REAL
+			{
+				if($1.label=="int" && $4.label == "int"){//Se eu to declarando um int então o cast tem q ser pra int
 
+					buscaMapa($2.label,1);
+
+					if(verificaDeclaracao($2.label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+
+						erro = "Erro de declaração na linha: " + to_string(linha) + " Variável já existe.";
+						yyerror(erro);
+					}
+
+					else if(verificaDeclaracao($2.label) == 0){
+
+						$$.label = geraLabel();
+						$$.traducao = $$.label + " = " " (" + $4.label + ") " + $5.label + ";\n\n";
+						string tempValor = $5.label;
+						int temp1 = atoi(tempValor.c_str());
+						tempValor = to_string(temp1);
+
+						addVarMap($1.label,$2.label,$$.label,tempValor);
+					}
+				}
+
+				else{
+
+					erro = "Erro na declaração na Linha :" + to_string(linha);
+					yyerror(erro);
+				}
+			}
+
+			| TK_TIPO TK_ID TK_ATRIBUICAO TK_CAST TK_INT
+			{
+				if($1.label=="float" && $4.label == "float"){//Se eu to declarando um int então o cast tem q ser pra int
+
+					buscaMapa($2.label,1);
+
+					if(verificaDeclaracao($2.label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+
+						erro = "Erro de declaração na linha: " + to_string(linha) + " Variável já existe.";
+						yyerror(erro);
+					}
+
+					else if(verificaDeclaracao($2.label) == 0){
+
+						$$.label = geraLabel();
+						$$.traducao = $$.label + " = " " (" + $4.label + ") " + $5.label + ";\n\n";
+						string tempValor = $5.label;
+						tempValor.append(".0");
+
+						addVarMap($1.label,$2.label,$$.label,tempValor);
+					}
+				}
+
+				else{
+
+					erro = "Erro na declaração na Linha :" + to_string(linha);
+					yyerror(erro);
+				}
+			}
+			;
+
+DECLARA 	: STRING
+			
+			| DECLARACAST
+			
 			| TK_TIPO TK_ID TK_ATRIBUICAO TK_INT
 			{
 
@@ -525,6 +700,25 @@ DECLARA 	: STRING
 
 					$$.label = geraLabel();
 					addVarMap($1.label,$2.label,$$.label,"");
+				}
+			}
+
+			| TK_TIPO_STRING TK_ID
+			{
+
+				buscaMapa($2.label,1);
+
+				if(verificaDeclaracao($2.label) == 1){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+
+					erro = "Erro de Semântica na Linha : eu to na declaracao de variavel sem atribuir valor string " + to_string(linha);
+					yyerror(erro);
+				}
+
+				else if(verificaDeclaracao($2.label) == 0){
+
+						$$.label = geraLabel();
+						addVarMap($1.tipo,$2.label,$$.label,"");
+
 				}
 			}
 			;
@@ -930,6 +1124,88 @@ ALTERA 		: TK_ID TK_ATRIBUICAO TK_BOOLEAN
 			{
 				buscaMapa($1.traducao,0);
 				$$.traducao = $1.tipo_traducao;
+			}
+
+			| TK_ID TK_ATRIBUICAO TK_ID
+			{
+				buscaMapa($1.label,0);
+
+				if(verificaDeclaracao($1.label) == 0){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+
+					erro = "Erro de Semântica na Linha :  to no qualqueraquiiiii" + to_string(linha);
+					yyerror(erro);
+				}
+
+				else if(verificaDeclaracao($1.label) == 1){
+
+					buscaMapa($3.label,0);
+
+					if(verificaDeclaracao($3.label) == 0){ // Está tentando declarar uma variavel já existente, ou seja está usando um id já declarado.
+
+						erro = "Erro de Semântica na Linha :  to no qualquer puta que me pariu" + to_string(linha);
+						yyerror(erro);
+					}
+
+					else if(verificaDeclaracao($3.label) == 1){
+
+						string tempTipo1  = retornaTipo($1.label);
+						string tempTipo3  = retornaTipo($3.label);
+						string tempLabel1 = retornaNome($1.label);
+						string tempLabel3 = retornaNome($3.label);
+						string tempValor1 = retornaValor($1.label);
+
+						if (tempTipo3 == ""){
+
+							erro = "Erro de Semântica na Linha :  variavel não pode receber outra do tipo qualquer vai tomar no cu" + to_string(linha);
+							yyerror(erro);
+						}
+
+						else if(tempTipo1 == ""){
+
+							alteraValor($1.label,$3.label);
+							mudaTipo($1.label,$3.tipo);
+
+							$$.traducao = tempLabel1 + " = " + tempLabel3 + ";\n"; // Printa no código intermediário a alteração
+						}
+
+						else{
+
+							if ( verificaCast(tempTipo1,$2.label,tempTipo3) == -1 ){ // verifica se não é possivel fazer a operação devido aos tipos das variaveis
+
+								erro = "Erro de Semântica na Linha : eu to no OP id < id vai se foder" + to_string(linha);
+								yyerror(erro);
+							}
+
+							else if ( verificaCast(tempTipo1,$2.label,tempTipo3) == 0 ){
+								
+								if(tempTipo1 == "string"){
+								
+									$$.traducao = tempLabel1 + "[0] = " + tempLabel3 + ";\n";
+									setTamString($1.label,"1");
+								}
+								
+								else{
+								
+									$$.traducao = tempLabel1 + " = " + tempLabel3 + ";\n";
+								}
+							}
+
+							else if	( verificaCast(tempTipo1,$2.label,tempTipo3) == 2 ){
+
+								string temp = geraLabel();
+								mudaTipo(tempLabel3,tempTipo1);
+
+								$$.label = temp + " = (" + tempTipo1 + ")"+ tempLabel3 + ";\n\n";
+								$$.traducao = $$.label + tempLabel1 + " " + $2.label + " " + temp + ";\n\n";
+								$$.tipo_traducao = tempLabel1 + " " + $2.label + " " + temp ;
+								$$.tipo = tempTipo3;
+
+								addVarMap(tempTipo3,temp,temp,$$.tipo_traducao);
+
+							}
+						}
+					}
+				}
 			}
 			;
 
@@ -1877,6 +2153,7 @@ CAST 		: TK_CAST TK_ID
 					}
 				}
 			}
+
 			;
 
 IN 			:TK_IN '(' TK_ID ')'
@@ -1901,8 +2178,9 @@ IN 			:TK_IN '(' TK_ID ')'
 				}
 			}
 			;
-			
-OUT 		: TK_OUT '(' T ')'{
+
+OUT 		: TK_OUT '(' T ')'
+		{
 
 				if($3.tipo == "NULL"){
 
@@ -1911,7 +2189,7 @@ OUT 		: TK_OUT '(' T ')'{
 				}
 				else{
 
-					$3.label.erase($3.label.end() - 3, $3.label.end());
+					$3.label.erase($3.label.end() - 4, $3.label.end());
 					$$.traducao = "cout << " + $3.label + ";\n\n";
 				}
 			}
@@ -1926,7 +2204,7 @@ T 	 		: TK_STRING T
 				if(verificaDeclaracao($1.label)==1){
 
 						string tempLabel = retornaNome($1.label);
-						$$.label = tempLabel + " << " + $2.label;						
+						$$.label = tempLabel + " << " + $2.label;
 				}
 
 				else if(verificaDeclaracao($1.label)==0){
@@ -1941,6 +2219,40 @@ T 	 		: TK_STRING T
 				$$.tipo = "NULL";
 			}
 			;
+
+COND_IF		: IF
+			| ELSEIF
+			| ELSEIF1
+			| ELSE
+			;
+
+IF 			: TK_COND OP_REL GERABLOCONORMAL BLOCO{
+
+			}
+			;
+
+ELSEIF 		: IF TK_COND1 OP_REL GERABLOCONORMAL BLOCO{
+
+			}
+			;
+
+ELSEIF1		: ELSEIF TK_COND1 OP_REL GERABLOCONORMAL BLOCO{
+
+			}
+			;
+
+ELSE 		: IF TK_COND2 GERABLOCONORMAL BLOCO{
+
+			}
+			| ELSEIF TK_COND2 BLOCO{
+
+			}
+			| ELSEIF1 TK_COND2 BLOCO{
+
+			}
+			;
+
+
 %%
 #include "lex.yy.c"
 
@@ -2080,6 +2392,21 @@ void buscaMapa(string id,int declaracao){
 	}
 }
 
+std::vector<std::string> geraLabelBloco(){
+		numeroLabelBloco++;
+		std::vector<std::string> labels;
+
+		string label1 = "inicioBloco" + to_string(numeroLabelBloco);
+		string label2 = "finalBloco" + to_string(numeroLabelBloco);
+
+		labels.push_back(label2);
+		labels.push_back(label1);
+
+
+
+		return labels;
+
+}
 string declara_variaveis_temp(mapaVar map, int flag){
    	string s = "";
 

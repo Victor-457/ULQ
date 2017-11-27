@@ -79,13 +79,16 @@ STRING \"([^\"\n]|\\\")*\"
 
 "while" 	{yylval.label = "while";return TK_LOOP;}
 
-"for" 		{yylval.label = "for";return TK_COND;}
+"for" 		{yylval.label = "for";return TK_LOOP;}
 
-"else"	 	{yylval.label = "else";return TK_COND;}
+"else"	 	{yylval.label = "else";return TK_COND2;}
 
-"else if"   {yylval.label = "else if";return TK_COND;}
+"else if"   {yylval.label = "else if";return TK_COND1;}
 
 "do" 		{yylval.label = "do";return TK_LOOP;}
+
+"break" 		{yylval.label = "break";return TK_BREAK;}
+"continue" 		{yylval.label = "continue";return TK_CONTINUE;}
 
 "{"		    {empilhaNovoMapa();return *yytext;}
 
@@ -98,11 +101,11 @@ true|false	{ yylval.label = yytext; yylval.tipo = "boolean" ;return TK_BOOLEAN;}
 {INT}		{ yylval.label = yytext; yylval.tipo = "int" ;return TK_INT; }
 
 {STRING}  	{   string texto = yytext;
-				yylval.label = texto;		
+				yylval.label = texto;
 				texto.replace(texto.begin(), texto.begin() + 1, "");
 				texto.replace(texto.end() - 1, texto.end(), "");
 				//yylval.traducao = texto;
-				
+
 				yylval.tipo = "string";
 				yylval.tipo_traducao = "char";
 				yylval.tamanho = strlen(yytext);

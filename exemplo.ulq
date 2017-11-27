@@ -1,10 +1,31 @@
 
 qualquer main()
 {
-int o;
-	string p = "hello World";
-	int k=0;
-	string E = "hello Word";
+	int o = castI 3.1;
+	int a = 2;
+	do{
+		int c = 2;
+		continue;
+	}while(o<a)
 
-	puts("Victor diz " p "olha");
+
+
+char k='d';
+string b;
+b=k;
+
+if 3<4{
+	if 9<4356{
+
+	}
+}
+else if 3>76{
+
+}
+else{
+
+}
+
+
+
 }

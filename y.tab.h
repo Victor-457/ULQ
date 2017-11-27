@@ -65,9 +65,13 @@ extern int yydebug;
     TK_OUT = 275,
     TK_NOT = 276,
     TK_COND = 277,
-    TK_LOOP = 278,
-    TK_FIM = 279,
-    TK_ERROR = 280
+    TK_COND1 = 278,
+    TK_COND2 = 279,
+    TK_LOOP = 280,
+    TK_FIM = 281,
+    TK_ERROR = 282,
+    TK_BREAK = 283,
+    TK_CONTINUE = 284
   };
 #endif
 /* Tokens.  */
@@ -91,9 +95,13 @@ extern int yydebug;
 #define TK_OUT 275
 #define TK_NOT 276
 #define TK_COND 277
-#define TK_LOOP 278
-#define TK_FIM 279
-#define TK_ERROR 280
+#define TK_COND1 278
+#define TK_COND2 279
+#define TK_LOOP 280
+#define TK_FIM 281
+#define TK_ERROR 282
+#define TK_BREAK 283
+#define TK_CONTINUE 284
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
